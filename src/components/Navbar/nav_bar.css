@@ -1,0 +1,13 @@
+.navbar{
+    background-color: #ECECEC
+}
+
+.nav-link {
+    display: inline;
+}
+
+.navbar-text{
+    font-size: 14px;
+    color: #525252;
+    padding:3%
+}
