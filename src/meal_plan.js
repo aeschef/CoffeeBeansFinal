@@ -1,10 +1,9 @@
-import React, { Component } from 'react'
-import logo from './logo.svg';
-import './App.css';
+
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+
 import { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import CreateMeal from "./modals/CreateMeal"
@@ -190,4 +189,3 @@ return(
   );
 };
 
-export default Meal_Plan;
