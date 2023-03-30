@@ -3,42 +3,30 @@ import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarElements from './NavbarElements';
-import { BrowserRouter as Router, Route, Routes, render } from 'react-router-dom';
-import grocery_list from './grocery_list';
+import GroceryListHome from './grocery_list';
 import inventory from './inventory';
 import meal_plan from './meal_plan';
 import recipes from './recipes';
 import account from './account';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  BrowserRouter
+} from "react-router-dom";
 
 function App() {
 {/*export default class App extends React.Component{*/}
   {/*render(){*/}
   return (
-    <div className="App">
-      <header className="App-header">
-        <Router>
-          <div>
-            <NavbarElements />
-            <Routes path="/" component={App}>
-              {/*<Route path='grocery_list' render={() => <grocery_list></grocery_list>} />
-              <Route exact path='inventory' render={() => <inventory></inventory>} />
-              <Route exact path='meal_plan' render={() => <meal_plan></meal_plan>} />
-              <Route exact path='recipes' render={() => <recipes></recipes>} />
-              <Route exact path='account' render={() => <account></account>} /> */}
-              <Route path='grocery_list' component={grocery_list} />
-              <Route exact path='inventory' component={inventory} />
-              <Route exact path='meal_plan' component={meal_plan} />
-              <Route exact path='recipes' component={recipes} />
-              <Route exact path='account' component={account} />
-            </Routes>
-          </div>
-        </Router>
-
-      </header>
-    </div>
+    
+      <div>
+          
+            <NavbarElements></NavbarElements>
+            
+      </div>
   );
-  /*}*/
-
 }
 
 export default App;
