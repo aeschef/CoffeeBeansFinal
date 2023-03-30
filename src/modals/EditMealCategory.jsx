@@ -5,8 +5,53 @@ import { useState, useEffect } from 'react'
 const categories = ["breakfast", "lunch", "dinner"]
 
 
-const EditMealCategory = ({ open, onClose, mealCategory, updateMealCategory, quota, setQuota }) => {
+const EditMealCategory = ({ open, onClose, prevMealCategory, quota, setQuota }) => {
+    const [mealQuota, setMealQuota] = useState(0)
+    const [mealCategory, updateMealCategory] = useState(prevMealCategory)
+    useEffect(()=>{
+      quota.map((item) => {
+        if (item.id === mealCategory) {
+          setMealQuota(item.quota)
+        }})
+      }, [])
+  
     if (!open) return null
+    
+
+
+    const updateMeal = () => {
+     // 1. Make a shallow copy of the items
+     let quotas= [...quota];
+      
+
+     // 2. Make a shallow copy of the item you want to mutate
+     
+     let index = 0
+     if (mealCategory===quotas[0].id)
+       index = 0
+     else if (mealCategory === quotas[1].id)
+       index = 1
+     else if (mealCategory === quotas[2].id)
+       index = 2
+     
+     let item = {...quotas[index]};
+
+     // 3. Replace the property you're intested in
+      item.quota = mealQuota
+      item.id = mealCategory
+      // 4. Put it back into our array. N.B. we *are* mutating the array here, 
+     //    but that's why we made a copy first
+     quotas[index] = item;
+      console.log(quotas)
+     // 5. Set the state to our new copy
+     //setQuota(quotas)
+    }
+
+    const handleQuotaChange = (newQuota) => {
+      setMealQuota(newQuota)
+ 
+    
+    }
 
     return (
       <div>
@@ -19,8 +64,7 @@ const EditMealCategory = ({ open, onClose, mealCategory, updateMealCategory, quo
                       </button>
                   </div>
 
-                  <button>Choose from Recipe</button>
-                  <button>Choose from Ingredients</button>
+            
                   <form>
                     <div>
                       <h3>Category</h3>
@@ -38,11 +82,11 @@ const EditMealCategory = ({ open, onClose, mealCategory, updateMealCategory, quo
                           type="text"
                           placeholder="Meal"
                           required
-                          onChange={(e) => setQuota(e.target.value)}
-                          value={quota}
+                          onChange={(e) => handleQuotaChange(e.target.value)}
+                          value={mealQuota}
                           />
                       </div>
-                      <button type="submit">Update category</button>
+                      <button type="submit" onClick={updateMeal}>Update category</button>
                     </form>              
 
               </div>

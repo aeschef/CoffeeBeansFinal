@@ -7,12 +7,17 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import CreateMeal from "./modals/CreateMeal"
+import EditMealCategory from './modals/EditMealCategory';
 
 //import { IoClose } from "react-icons/io5"
 
 
 const MealPlanHome = () => {
-const [quotas, setQuotas] = useState([{"breakfast": 0}, {"lunch": 0}, {"dinner": 0}])
+
+const [quotas, setQuotas] = useState([
+  {id:"breakfast",quota:0}, 
+  {id:"lunch",quota:0}, 
+  {id:"dinner", quota:0}])
 const [editCategory, setEdit] = useState(false)
 
 // Used to create a new meal and store meal information
@@ -20,7 +25,7 @@ const [newMeal, setNewMeal] = useState(null)
 const [meal_category, setMealCategory] = useState("")
 const [meal, setMeal] = useState([])
 const [showMealPopup, setShowMealPopup] = useState(false)
-
+const [currentMealCategory, UpdateMealCategory] = useState("")
 // Stores meals for breakfast
 const [breakfast, addBreakfast] = useState([
   {value:"bananas", label:"bananas"},
@@ -83,7 +88,7 @@ return(
     </Row>
     <Row>
       <Col>
-        <button>---</button><div>March 1 Week</div>
+        <div>March 1 Week</div>
       </Col>
     </Row>
     
@@ -95,8 +100,20 @@ return(
       </Col>
       <Col>
           <div className="d-grid gap-2">
-            {breakfast.length} out of {quotas[0]["breakfast"]}
+            {breakfast.length} out of {quotas.map((element) => {
+                if (element.id === "breakfast")
+                return element.quota
+              }
+            )}
           </div>
+      </Col>
+      <Col>
+          <div className="d-grid gap-2">
+            <Button variant="primary" value="edit category" onClick={()=>setEdit(true)}>pencil icon</Button>
+          </div>
+
+          <EditMealCategory open={editCategory} onClose={()=>setEdit(false)} prevMealCategory={"breakfast"}
+           quota={quotas} setQuota={setQuotas} />
       </Col>
       </Row>
 
