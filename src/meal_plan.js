@@ -3,6 +3,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import './App.css';
+import './css/meal_plan.css';
 
 import { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
@@ -81,18 +83,19 @@ const [dinner, addDinner] = useState([
 
 return(
   <Container fluid="md">
-    <Row>
-        <Col xs={{span:6, offset:3}}>
+    
+    <Row className="d-flex align-iem">
+        <Col xs={{span:6, offset:5}}>
             <h1>Meal Plan</h1>
         </Col>      
     </Row>
     <Row>
-      <Col>
+      <Col xs={{span:6, offset:5}}>
         <div>March 1 Week</div>
       </Col>
     </Row>
     
-    <Row>
+    <Row className="add-space">
       <Col>
           <div className="d-grid gap-2">
               Breakfast
@@ -130,17 +133,29 @@ return(
       </Row>
       )}
 
-    <Row>
+    <Row className="add-space">
         <Col>
             <div className="d-grid gap-2">
                 Lunch
             </div>
         </Col>
         <Col>
-            <div className="d-grid gap-2">
-            {lunch.length} out of {quotas[1]["lunch"]}
-            </div>
+          <div className="d-grid gap-2">
+            {lunch.length} out of {quotas.map((element) => {
+                if (element.id === "lunch")
+                return element.quota
+              }
+            )}
+          </div>
         </Col>
+        <Col>
+          <div className="d-grid gap-2">
+            <Button variant="primary" value="edit category" onClick={()=>setEdit(true)}>pencil icon</Button>
+          </div>
+
+          <EditMealCategory open={editCategory} onClose={()=>setEdit(false)} prevMealCategory={"lunch"}
+           quota={quotas} setQuota={setQuotas} />
+      </Col>
     </Row>
 
     {/* Displays check list of meals for lunch*/}
@@ -157,8 +172,7 @@ return(
     </Row>
     )}
 
-
-    <Row>
+    <Row className="add-space">
 
         <Col>
           <div className="d-grid gap-2">
@@ -167,10 +181,21 @@ return(
         </Col>
         <Col>
           <div className="d-grid gap-2">
-            {dinner.length} out of {quotas[2]["dinner"]}
-           </div>
-            
+            {dinner.length} out of {quotas.map((element) => {
+                if (element.id === "dinner")
+                return element.quota
+              }
+            )}
+          </div>
         </Col>
+        <Col>
+          <div className="d-grid gap-2">
+            <Button variant="primary" value="edit category" onClick={()=>setEdit(true)}>pencil icon</Button>
+          </div>
+
+          <EditMealCategory open={editCategory} onClose={()=>setEdit(false)} prevMealCategory={"dinner"}
+           quota={quotas} setQuota={setQuotas} />
+      </Col>
     </Row>
     
     {/* Displays checklist of meals for dinner. */}

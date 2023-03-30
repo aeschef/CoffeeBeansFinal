@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-
-
-// Ref to firebase reports collection
-const categories = ["breakfast", "lunch", "dinner"]
-
+import Modal from "react-bootstrap/Modal"
+import Form from "react-bootstrap/Form"
+import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
 
 const EditMealCategory = ({ open, onClose, prevMealCategory, quota, setQuota }) => {
     const [mealQuota, setMealQuota] = useState(0)
@@ -54,45 +53,49 @@ const EditMealCategory = ({ open, onClose, prevMealCategory, quota, setQuota }) 
     }
 
     return (
-      <div>
-        <div className="z-10 fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div onClick={onClose} className="flex overflow-y-auto justify-center items-center z-20 absolute top-0 left-0 w-full h-full">
-                <div onClick={(e) => {e.stopPropagation()}} className="flex-col justify-center items-center bg-white w-6/12 h-auto rounded-2xl py-10 px-10">
-                  <div className="flex justify-between w-full mb-5">
-                      <button onClick={onClose} className="text-gray-800">
-                          X
-                      </button>
-                  </div>
 
+
+      <>
+
+      <Modal show={open} onHide={onClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Meal</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder=""
+                autoFocus
+              
+                required
+                onChange={(e)=>updateMealCategory(e.target.value)}
+                value={mealCategory}
+              />
+                <Form.Label>Quota</Form.Label>
             
-                  <form>
-                    <div>
-                      <h3>Category</h3>
-                      <input 
-                        id="category"
-                        type="text"
-                        placeholder="Category"
-                        required
-                        onChange={(e)=>updateMealCategory(e.target.value)}
-                        value={mealCategory}
-                      />
-                      <h3>Quota</h3>
-                      <input
-                          id="meal"
-                          type="text"
-                          placeholder="Meal"
-                          required
-                          onChange={(e) => handleQuotaChange(e.target.value)}
-                          value={mealQuota}
-                          />
-                      </div>
-                      <button type="submit" onClick={updateMeal}>Update category</button>
-                    </form>              
-
-              </div>
-          </div>
-      </div>
-    </div>
+                <Form.Control
+                size="sm"
+                type="text"
+                placeholder=""
+                autoFocus
+                onChange={(e) => handleQuotaChange(e.target.value)}
+                value={mealQuota}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+         
+          <Button variant="primary" onClick={updateMeal}>
+            Update category
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
       
     )
 
