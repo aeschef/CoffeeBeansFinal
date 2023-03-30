@@ -21,7 +21,6 @@ const [meal_category, setMealCategory] = useState("")
 const [meal, setMeal] = useState([])
 const [showMealPopup, setShowMealPopup] = useState(false)
 
-
 // Stores meals for breakfast
 const [breakfast, addBreakfast] = useState([
   {value:"bananas", label:"bananas"},
@@ -96,7 +95,7 @@ return(
       </Col>
       <Col>
           <div className="d-grid gap-2">
-              Quotas
+            {breakfast.length} out of {quotas[0]["breakfast"]}
           </div>
       </Col>
       </Row>
@@ -122,7 +121,7 @@ return(
         </Col>
         <Col>
             <div className="d-grid gap-2">
-                Quotas
+            {lunch.length} out of {quotas[1]["lunch"]}
             </div>
         </Col>
     </Row>
@@ -151,7 +150,7 @@ return(
         </Col>
         <Col>
           <div className="d-grid gap-2">
-            Quotas
+            {dinner.length} out of {quotas[2]["dinner"]}
            </div>
             
         </Col>

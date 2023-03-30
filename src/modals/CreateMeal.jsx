@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
-
-
+import Modal from "react-bootstrap/Modal";
+import Form from 'react-bootstrap/Form'
+import Button from 'react-bootstrap/Button'
+import Col from 'react-bootstrap/Col'
 // Ref to firebase reports collection
 const categories = ["breakfast", "lunch", "dinner"]
 
@@ -21,47 +23,52 @@ const CreateMeal = ({ open, onClose, newMeal, setNewMeal, meal_category, setMeal
       }
     }
     return (
-      <div>
-        <div className="z-10 fixed top-0 left-0 w-full h-full bg-black bg-opacity-50">
-            <div onClick={onClose} className="flex overflow-y-auto justify-center items-center z-20 absolute top-0 left-0 w-full h-full">
-                <div onClick={(e) => {e.stopPropagation()}} className="flex-col justify-center items-center bg-white w-6/12 h-auto rounded-2xl py-10 px-10">
-                  <div className="flex justify-between w-full mb-5">
-                      <button onClick={onClose} className="text-gray-800">
-                          X
-                      </button>
-                  </div>
 
-                  <button>Choose from Recipe</button>
-                  <button>Choose from Ingredients</button>
-                  <form  onSubmit={handleNewMeal}>
-                    <div>
-                      <h3>Category</h3>
-                      <input 
-                        id="category"
-                        type="text"
-                        placeholder="Category"
-                        required
-                        onChange={(e)=>setMealCategory(e.target.value)}
-                        value={meal_category}
-                      />
-                      <h3>Ingredients</h3>
-                      <input
-                          id="meal"
-                          type="text"
-                          placeholder="Meal"
-                          required
-                          onChange={(e) => setMeal(e.target.value)}
-                          value={meal}
-                          />
-                      </div>
-                      <button type="submit">Create meal</button>
-                    </form>              
 
-              </div>
-          </div>
-      </div>
-    </div>
-      
+
+      <>
+
+      <Modal show={open} onHide={onClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Meal</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Category</Form.Label>
+              <Form.Control
+                size="sm"
+                type="text"
+                placeholder=""
+                autoFocus
+                onChange={(e)=>setMealCategory(e.target.value)}
+                value={meal_category}
+              />
+                <Form.Label>Meal</Form.Label>
+                <Col>
+                <Button variant="secondary" onClick={onClose}>Choose Meal from Ingredients</Button></Col>
+                <Col><Button variant="secondary" onClick={onClose}>Choose Meal from Recipes</Button></Col>
+
+                <Form.Control
+                size="sm"
+                type="text"
+                placeholder=""
+                autoFocus
+                onChange={(e) => setMeal(e.target.value)}
+                value={meal}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+         
+          <Button variant="primary" onClick={handleNewMeal}>
+            Add meal
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+
     )
 
 }
