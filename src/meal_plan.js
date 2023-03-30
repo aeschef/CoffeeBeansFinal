@@ -11,7 +11,7 @@ import CreateMeal from "./modals/CreateMeal"
 //import { IoClose } from "react-icons/io5"
 
 
-const Meal_Plan = () => {
+const MealPlanHome = () => {
 const [quotas, setQuotas] = useState([{"breakfast": 0}, {"lunch": 0}, {"dinner": 0}])
 const [editCategory, setEdit] = useState(false)
 
@@ -189,3 +189,4 @@ return(
   );
 };
 
+export default MealPlanHome;
