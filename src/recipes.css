@@ -1,0 +1,53 @@
+h1 {
+    text-align: center;
+}
+
+#header {
+    align-items: center;
+    justify-items: center;
+    margin: 20px;
+}
+
+.search-bar {
+    text-align: center;
+}
+
+input {
+    width: 80%;
+}
+
+#recipe-card {
+    background-color: lightgray;
+    margin-bottom: 20px;
+}
+
+#image {
+    background-color: gray;
+    height: 125px;
+    width: 125px;
+    margin: 5%;
+}
+
+.recipe-cards {
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-top: 7%;
+}
+
+.tags {
+    text-align: left;
+}
+
+#recipe-info {
+    margin-top: 5%;
+}
+
+#add-button {
+    position: absolute;
+    top: 80%;
+    left: 80%;
+    height: 60px;
+    width: 60px;
+    border-radius: 100%;
+}
