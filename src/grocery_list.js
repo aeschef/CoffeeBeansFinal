@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import React, { useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import './grocery_list.css';
+
 
 /** popup for editing the Categorys */
 function CategorysPopup() {
@@ -94,7 +96,7 @@ function ListCategory (){
 const AddItem = () => {
     return (
         <>
-            <Button className="add-btn">Add</Button>        
+            <Button className="fixedbutton">Add</Button>        
         </>
     );
 };
