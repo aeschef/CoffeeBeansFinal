@@ -6,6 +6,33 @@ import React, { useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
+function IncDec() {
+    let [num, setNum] = useState(0);
+    let inc_num = () => {
+        setNum(Number(num) + 1);
+    }
+    let dec_num = () => {
+        setNum(Number(num) - 1);
+    }
+    let handleChange = (e) => {
+        setNum(e.target.value);
+    }
+    return (
+        <>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button type="button" onClick={dec_num}>-</button>
+                </div>
+                <input class="form-control input-sm" size="2" value={num} onChange={handleChange} />
+                <div class="input-group-prepend">
+                    <button type="button" onClick={inc_num}>+</button>
+                </div>
+            </div>
+        </>
+
+    );
+
+}
 
 function FilterPopup() {
     const [show, setShow] = useState(false);
@@ -21,7 +48,7 @@ function FilterPopup() {
                     <Modal.Title>Filter Options</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <Button variant="secondary" onClick={handleExit}>Filter out checked off buttons</Button>
+                    <Button variant="secondary" onClick={handleExit}>Filter out checked off buttons</Button>
                 </Modal.Body>
             </Modal>
         </>
@@ -83,7 +110,7 @@ function ItemList() {
                 <p>item name</p>
             </div>
             <div className="col">
-                -  #  +
+                <IncDec></IncDec>
             </div>
         </div>
     );
