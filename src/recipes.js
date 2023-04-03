@@ -20,11 +20,19 @@ export default function RecipesHome() {
     const [showViewPopup, setShowViewPopup] = useState(false);
     const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
     const handleOpenViewPopup = (index) => {
-        console.log(index);
         setIndexOfRecipeToView(index);
         setShowViewPopup(true);
     }
     const handleCloseViewPopup = () => setShowViewPopup(false);
+
+    // variables and functions for Edit Recipe popup
+    const [showEditPopup, setShowEditPopup] = useState(false);
+    const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(0);
+    const handleOpenEditPopup = (index) => {
+        setIndexOfRecipeToEdit(index);
+        setShowEditPopup(true);
+    }
+    const handleCloseEditPopup = () => setShowEditPopup(false);
     
     // mock database of recipes - TODO: make the pictures actual pictures!
     let [recipes, setRecipes] = useState([{title: "R1 Title", picture: "R1 Picture", energyRequired: "R1Energy", timeRequired: "R1Time", tags: ["R1Tag1", "R1Tag2", "R1Tag3"], ingredients: ["R1 Ingredient 1", "R1 Ingredient 2", "R1 Ingredient 3"], steps: ["R1 Step 1", "R1 Step 2", "R1 Step 3"], notes: "R1 Notes"},
@@ -77,7 +85,8 @@ export default function RecipesHome() {
 
             {/* popups */}
             <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView}> </ViewRecipePopup>
+            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} handleOpenEditPopup={handleOpenEditPopup}> </ViewRecipePopup>
+            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
         </>
     )
 }
@@ -227,7 +236,7 @@ function ViewRecipePopup(props) {
                 {/* modal header with title, edit button, and close button */}
                 <Modal.Header closeButton>
                     <Modal.Title>Recipe Title</Modal.Title>
-                    <button>Edit</button>
+                    <button onClick={() => props.handleOpenEditPopup(props.indexOfRecipeToView)}>Edit</button>
                 </Modal.Header>
                 
                 {/* modal body with recipe info - NEXT */}
@@ -273,22 +282,72 @@ function ViewRecipePopup(props) {
     )
 }
 
-function EditPopup(show, handleClose) {
+// popup for editing a recipe
+function EditRecipePopup(props) {
+
+    const currentRecipe = props.recipes[props.indexOfRecipeToEdit];
+
+    // form inputs, default to the data about the recipe before the 'edit' popup was opened
+    const [inputs, setInputs] = useState(currentRecipe);
+
+    // handler for change to a form element (https://www.w3schools.com/react/react_forms.asp)
+    const handleChange = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setInputs(values => ({...values, [name]: value}))
+    }
+
+    const handleSubmit = () => {
+        const nextRecipes = [props.recipes.slice(0, props.indexOfRecipeToEdit), inputs, props.recipes.slice(props.indexOfRecipeToEdit)]; // TODO: check out of bounds w array
+        props.setRecipes(nextRecipes);
+        props.handleCloseEditPopup();
+    }
+
     return (
         <>
-            <Modal show={false}>
+            {/* edit popup modal */}
+            <Modal show={props.showEditPopup} onHide={props.handleCloseEditPopup}>
+                
+                {/* modal header with title and close button */}
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Recipe</Modal.Title>
                 </Modal.Header>
+                
+                {/* modal body with recipe details */}
                 <Modal.Body>
                     <Form.Group>
+                        
+                        {/* picture input */}
                         <Form.Label>Picture:</Form.Label>
+                        <Form.Control 
+                            type="text" 
+                            name="picture"
+                            value={inputs.picture || ""}
+                            onChange={handleChange}
+                        />
+                        {/* TODO: turn back to actual photo upload
                         <button>Upload new picture</button>
-                        <br></br>
+                        <br></br> */}
+
+                        {/* title input */}
                         <Form.Label>Title:</Form.Label>
-                        <Form.Control placeholder="Old Title" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="title"
+                            value={inputs.title || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* energy input */}
                         <Form.Label>Energy Required:</Form.Label>
-                        <Dropdown>
+                        <Form.Control 
+                            type="text" 
+                            name="energyRequired"
+                            value={inputs.energyRequired || ""}
+                            onChange={handleChange}
+                        />
+                        {/* TODO: change back to dropdown
+                            <Dropdown>
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                                 Old Energy Level
                             </Dropdown.Toggle>   
@@ -299,21 +358,58 @@ function EditPopup(show, handleClose) {
                                 <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
                                 <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
                             </Dropdown.Menu>
-                        </Dropdown> 
+                        </Dropdown>  */}
+                        
+                        {/* time input */}
                         <Form.Label>Time Required:</Form.Label>
-                        <Form.Control placeholder="Old Time Required" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="timeRequired"
+                            value={inputs.timeRequired || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* tags input */}
                         <Form.Label>Tags:</Form.Label>
-                        <Form.Control placeholder="Old Tags" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="tags"
+                            value={inputs.tags || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* tags input */}
                         <Form.Label>Ingredients:</Form.Label>
-                        <Form.Control placeholder="Old Ingredients" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="ingredients"
+                            value={inputs.ingredients || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* steps input */}
                         <Form.Label>Steps:</Form.Label>
-                        <Form.Control placeholder="Old Steps" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="steps"
+                            value={inputs.steps || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* notes input */}
                         <Form.Label>Notes:</Form.Label>
-                        <Form.Control placeholder="Old Notes" type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="notes"
+                            value={inputs.notes || ""}
+                            onChange={handleChange}
+                        />
                     </Form.Group>
                 </Modal.Body>
+                
+                {/* modal footer with submit button */}
                 <Modal.Footer>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
                     </Button>
                 </Modal.Footer>
