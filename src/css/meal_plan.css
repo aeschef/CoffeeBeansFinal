@@ -11,5 +11,22 @@
 
 .left-spacing {
   padding-left: 1rem;
+}
 
+.pencil-icon {
+  width: 60%;
+  padding-bottom:.25rem;
+}
+
+.tag {
+  border: none;
+  color: black;
+  text-align: center;
+  display: inline-block;
+  margin: 4px 2px;
+  border-radius: 16px;
+
+  background-color: #EFDACF;
+  width: auto;
+  font-size: 13px;
 }
