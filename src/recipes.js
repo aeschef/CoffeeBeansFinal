@@ -11,6 +11,21 @@ import "./recipes.css";
 // home page of the recipes screen
 export default function RecipesHome() {
 
+    // variables and functions for Add Recipe popup
+    const [showAddPopup, setShowAddPopup] = useState(false);
+    const handleOpenAddPopup = () => setShowAddPopup(true);
+    const handleCloseAddPopup = () => setShowAddPopup(false);
+
+    // variables and functions for View Recipe popup
+    const [showViewPopup, setShowViewPopup] = useState(false);
+    const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
+    const handleOpenViewPopup = (index) => {
+        console.log(index);
+        setIndexOfRecipeToView(index);
+        setShowViewPopup(true);
+    }
+    const handleCloseViewPopup = () => setShowViewPopup(false);
+    
     // mock database of recipes - TODO: make the pictures actual pictures!
     let [recipes, setRecipes] = useState([{title: "R1 Title", picture: "R1 Picture", energyRequired: "R1Energy", timeRequired: "R1Time", tags: ["R1Tag1", "R1Tag2", "R1Tag3"], ingredients: ["R1 Ingredient 1", "R1 Ingredient 2", "R1 Ingredient 3"], steps: ["R1 Step 1", "R1 Step 2", "R1 Step 3"], notes: "R1 Notes"},
                    {title: "R2 Title", picture: "R2 Picture", energyRequired: "R2Energy", timeRequired: "R2Time", tags: ["R2Tag1", "R2Tag2", "R2Tag3"], ingredients: ["R2 Ingredient 1", "R2 Ingredient 2", "R2 Ingredient 3"], steps: ["R2 Step 1", "R2 Step 2", "R2 Step 3"], notes: "R2 Notes"},
@@ -19,7 +34,7 @@ export default function RecipesHome() {
     // recipe cards formed from database of recipes
     const recipeCards = recipes.map((recipe, index) => {
     return (
-        <div className='row' id='recipe-card' key={index}>
+        <div className='row' id='recipe-card' onClick={() => handleOpenViewPopup(index)} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
@@ -57,22 +72,18 @@ export default function RecipesHome() {
                 <div>{recipeCards}</div>
             </div>
 
-            {/* popups */}
-            <AddRecipePopup recipes={recipes} setRecipes={setRecipes}></AddRecipePopup>
+            {/* the add button that appears on the home page */}
+            <button id='add-button' onClick={handleOpenAddPopup}>add</button>
 
+            {/* popups */}
+            <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
+            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView}> </ViewRecipePopup>
         </>
     )
 }
 
-// popup for adding a recipe
+// popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
-
-    // variable that controls whether popup is shown
-    const [showAddPopup, setShowAddPopup] = useState(false);
-
-    // handlers for opening and closing the popup
-    const handleOpenAddPopup = () => setShowAddPopup(true);
-    const handleCloseAddPopup = () => setShowAddPopup(false);
 
     // form inputs
     const [inputs, setInputs] = useState({});
@@ -86,7 +97,7 @@ function AddRecipePopup(props) {
 
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
-        handleCloseAddPopup();
+        props.handleCloseAddPopup();
         const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, timeRequired: inputs.timeRequired, tags: inputs.tags, ingredients: inputs.ingredients, notes: inputs.notes}];
         props.setRecipes(nextRecipes);
     }
@@ -94,7 +105,7 @@ function AddRecipePopup(props) {
     return (
         <>
             {/* add popup modal */}
-            <Modal show={showAddPopup} onHide={handleCloseAddPopup}>
+            <Modal show={props.showAddPopup} onHide={props.handleCloseAddPopup}>
                 
                 {/* modal header with title and close button */}
                 <Modal.Header closeButton>
@@ -198,9 +209,66 @@ function AddRecipePopup(props) {
                     </Button>
                 </Modal.Footer>
             </Modal>
+        </>
+    )
+}
 
-            {/* the add button that appears on the home page */}
-            <button id='add-button' onClick={handleOpenAddPopup}>add</button>
+// popup for viewing a recipe
+function ViewRecipePopup(props) {
+
+    // saving a reference to the current recipe being viewed
+    const currentRecipe = props.recipes[props.indexOfRecipeToView];
+
+    return (
+        <>
+            {/* view popup modal */}
+            <Modal show={props.showViewPopup} onHide={props.handleCloseViewPopup}>
+                
+                {/* modal header with title, edit button, and close button */}
+                <Modal.Header closeButton>
+                    <Modal.Title>Recipe Title</Modal.Title>
+                    <button>Edit</button>
+                </Modal.Header>
+                
+                {/* modal body with recipe info - NEXT */}
+                <Modal.Body>
+                    <div className="row">
+                        
+                        {/* recipe image */}
+                        <div className='col-6'>
+                            <div id="image">{currentRecipe.picture}</div>
+                        </div>
+                        
+                        {/* energy and time required for this recipe */}
+                        <div className='col-6'>
+                            <h6>Energy Required</h6>
+                            <p>{currentRecipe.energyRequired}</p>
+                            <h6>Time Required</h6>
+                            <p>{currentRecipe.timeRequired}</p>
+                        </div>
+                    </div>
+
+                    {/* recipe tags */}
+                    <h6>Tags</h6>
+                    <p>{currentRecipe.tags}</p>
+                    
+                    {/* recipe ingredients */}
+                    <h6>Ingredients</h6>
+                    <ul>
+                        <li>{currentRecipe.ingredients}</li>
+                    </ul>
+                    
+                    {/* recipes steps */}
+                    <h6>Steps</h6>
+                    <ol>
+                        <li>{currentRecipe.steps}</li>
+                    </ol>
+                    
+                    {/* recipe notes */}
+                    <h6>Notes</h6>
+                    <p>{currentRecipe.notes}</p>
+                </Modal.Body>
+            </Modal>
         </>
     )
 }
@@ -254,60 +322,3 @@ function EditPopup(show, handleClose) {
     )
 }
 
-function ViewPopup(show, handleClose) {
-    return (
-        <>
-            <Modal show="true">
-                <Modal.Header closeButton>
-                    <Modal.Title>Recipe Title</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <div className="row">
-                        <div className='col-6'>
-                            <div id="image"></div>
-                        </div>
-                        <div className='col-6'>
-                            <p>Energy Level</p>
-                            <p>Time Required</p>
-                        </div>
-                    </div>
-
-                    <p>tag 1 tag 2 tag 3</p>
-                    <h6>Ingredients</h6>
-                    <ul>
-                        <li>Ingredient 1</li>
-                        <li>Ingredient 2</li>
-                        <li>Ingredient 3</li>
-                        <li>Ingredient 4</li>
-                        <li>Ingredient 5</li>
-                        <li>Ingredient 6</li>
-                        <li>Ingredient 7</li>
-                        <li>Ingredient 8</li>
-                        <li>Ingredient 9</li>
-                        <li>Ingredient 10</li>
-                    </ul>
-                    <h6>Instructions</h6>
-                    <ol>
-                        <li>Step 1</li>
-                        <li>Step 2</li>
-                        <li>Step 3</li>
-                        <li>Step 4</li>
-                        <li>Step 5</li>
-                        <li>Step 6</li>
-                        <li>Step 7</li>
-                        <li>Step 8</li>
-                        <li>Step 9</li>
-                        <li>Step 10</li>
-                    </ol>
-                    <h6>Notes</h6>
-                    <p>Notes will appear here</p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" type="submit">
-                        Submit
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    )
-}
