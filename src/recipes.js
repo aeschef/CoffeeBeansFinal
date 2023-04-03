@@ -27,9 +27,9 @@ export default function RecipesHome() {
 
     // variables and functions for Edit Recipe popup
     const [showEditPopup, setShowEditPopup] = useState(false);
-    const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(0);
+    const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
     const handleOpenEditPopup = (index) => {
-        setIndexOfRecipeToEdit(index);
+        setInputs(recipes[index]);
         setShowEditPopup(true);
     }
     const handleCloseEditPopup = () => setShowEditPopup(false);
@@ -86,7 +86,7 @@ export default function RecipesHome() {
             {/* popups */}
             <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} handleOpenEditPopup={handleOpenEditPopup}> </ViewRecipePopup>
-            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
+            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs}></EditRecipePopup>
         </>
     )
 }
@@ -285,20 +285,15 @@ function ViewRecipePopup(props) {
 // popup for editing a recipe
 function EditRecipePopup(props) {
 
-    const currentRecipe = props.recipes[props.indexOfRecipeToEdit];
-
-    // form inputs, default to the data about the recipe before the 'edit' popup was opened
-    const [inputs, setInputs] = useState(currentRecipe);
-
     // handler for change to a form element (https://www.w3schools.com/react/react_forms.asp)
     const handleChange = (event) => {
         const name = event.target.name;
         const value = event.target.value;
-        setInputs(values => ({...values, [name]: value}))
+        props.setInputs(values => ({...values, [name]: value}))
     }
 
     const handleSubmit = () => {
-        const nextRecipes = [props.recipes.slice(0, props.indexOfRecipeToEdit), inputs, props.recipes.slice(props.indexOfRecipeToEdit)]; // TODO: check out of bounds w array
+        const nextRecipes = [props.recipes.slice(0, props.indexOfRecipeToEdit), props.inputs, props.recipes.slice(props.indexOfRecipeToEdit)]; // TODO: this is ur last prob!!
         props.setRecipes(nextRecipes);
         props.handleCloseEditPopup();
     }
@@ -322,7 +317,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="picture"
-                            value={inputs.picture || ""}
+                            value={props.inputs?.picture || ""}
                             onChange={handleChange}
                         />
                         {/* TODO: turn back to actual photo upload
@@ -334,7 +329,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="title"
-                            value={inputs.title || ""}
+                            value={props.inputs?.title || ""}
                             onChange={handleChange}
                         />
 
@@ -343,7 +338,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="energyRequired"
-                            value={inputs.energyRequired || ""}
+                            value={props.inputs?.energyRequired || ""}
                             onChange={handleChange}
                         />
                         {/* TODO: change back to dropdown
@@ -365,7 +360,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="timeRequired"
-                            value={inputs.timeRequired || ""}
+                            value={props.inputs?.timeRequired || ""}
                             onChange={handleChange}
                         />
 
@@ -374,7 +369,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="tags"
-                            value={inputs.tags || ""}
+                            value={props.inputs?.tags || ""}
                             onChange={handleChange}
                         />
 
@@ -383,7 +378,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="ingredients"
-                            value={inputs.ingredients || ""}
+                            value={props.inputs?.ingredients || ""}
                             onChange={handleChange}
                         />
 
@@ -392,7 +387,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="steps"
-                            value={inputs.steps || ""}
+                            value={props.inputs?.steps || ""}
                             onChange={handleChange}
                         />
 
@@ -401,7 +396,7 @@ function EditRecipePopup(props) {
                         <Form.Control 
                             type="text" 
                             name="notes"
-                            value={inputs.notes || ""}
+                            value={props.inputs?.notes || ""}
                             onChange={handleChange}
                         />
                     </Form.Group>
