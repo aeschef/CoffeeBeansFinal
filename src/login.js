@@ -19,12 +19,18 @@ import {
   BrowserRouter
 } from "react-router-dom";
 
-const LoginHome = () => {
+const LoginHome = ({login, setLogin}) => {
+  console.log(login)
+  // TODO: Verify if account is valid before logging in. 
+  function handleSubmit() {
+    setLogin(true)
+  }
+
   return (
     <div>
     <div className="d-flex justify-content-center align-items-center"><h3>Sign In</h3></div>
     <div className="d-flex justify-content-center align-items-center">
-    <Form>
+    <Form onSubmit={()=>setLogin(true)}>
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" placeholder="Enter email" />
@@ -51,7 +57,7 @@ const LoginHome = () => {
                 <SignupHome/> 
             } />
         </Routes>
-        <Link to="/signup.js">List</Link>
+        <Link to="/signup.js">Sign up</Link>
     </BrowserRouter>
 
       </h5></div>

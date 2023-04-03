@@ -19,7 +19,7 @@ import {
 
 function App() {
 
-const [login, setLogin] = useState(false)
+  const [login, setLogin] = useState(false)
 
 
 {/*export default class App extends React.Component{*/}
@@ -29,7 +29,7 @@ const [login, setLogin] = useState(false)
       <div>
             {login ? 
             <NavbarElements></NavbarElements> :
-            <LoginHome/>
+            <LoginHome login={login} setLogin={setLogin}/>
             }
             
             
