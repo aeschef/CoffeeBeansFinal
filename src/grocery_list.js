@@ -5,7 +5,10 @@ import Button from 'react-bootstrap/Button';
 import React, { useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import ToggleButton from 'react-bootstrap/ToggleButton';
 import './css/grocery_list.css';
+
+
 
 function FilterPopup() {
     const [show, setShow] = useState(false);
@@ -70,30 +73,49 @@ function CategorysPopup() {
     );
 }
 
+const ShowTab = () => {
+    // Stores items
+    const [itemsInPersonal, addPersonalItem] = useState([
+        {value:"hummus", label:"hummus"},
+        {value:"strawberries", label: "Stawberries"}
+        ]);
+    
+    const [itemsInShared, addSharedItem] = useState([
+        {value:"almond milk", label:"almond milk"},
+        {value:"flour", label: "flour"}
+        ]);
+    
+ 
+    // stores if we should be showing the personal or shared tab
+    const [showPersonal, setPersonal] = useState(true);
+    const handlePersonal = () => setPersonal(true);
+    const handleShared = () => setPersonal(false);
 
-/**
- * actually displays items in the grocery list
- */
-function ItemList() {
-    return (
-        <div className="row">
-            <div className="col">
-                <button>checkbox</button>
-            </div>
-            <div className="col">
-                <p>item name</p>
-            </div>
-            <div className="col">
-                -  #  +
-            </div>
-        </div>
+    return ( 
+        <Container>
+            <Row>
+                <Col>
+                    <div className="d-grid gap-2">
+                        <Button onClick={() => handlePersonal}>personal</Button>
+                    </div>
+                </Col>
+                <Col>
+                    <div className="d-grid gap-2">
+                        <Button onClick={() => handleShared}>shared</Button>
+                    </div>
+                </Col>
+            </Row>
+            <ListCategory list={showPersonal ? itemsInPersonal : itemsInShared}></ListCategory>
+            <AddItem  list={showPersonal ? itemsInPersonal : itemsInShared} addToList={showPersonal ? addPersonalItem : addSharedItem}></AddItem>
+        </Container>
     );
+
 }
 
 /**
  * container for list categories and their items
  */
-function ListCategory() {
+function ListCategory({ list}) {
     return (
         <div className="category-rectangle">
             <Row>
@@ -104,21 +126,62 @@ function ListCategory() {
                 <Col>
                     <CategorysPopup></CategorysPopup>
                 </Col>
-
-                <ItemList></ItemList>
-                <ItemList></ItemList>
-                <ItemList></ItemList>
-                <ItemList></ItemList>
+                    
+                </Row>
+                    {list.map((x, i) =>
+                    <Row> 
+                        <label key={i}>
+                        <input
+                        type="checkbox"
+                        name="lang"
+                        value={x.value}
+                        /> {x.label}
+                        </label>
+                    </Row>
+                    )}
+                    <Col>
+                        -  #  +
+                    </Col>
+                <Row>
+                    
             </Row>
         </div>
     );
 }
 
-const AddItem = () => {
-    const [show, setShow] = useState(false);
+/**
+ * 
+ * Component contains the add item button and the popup 
+ * that allows item to be added to grocery list
+ */
+const AddItem = ({list, addToList}) => {
 
-    const handleClose = () => setShow(false);
+    /** constants storing state for this page until we have a database */
+    const [show, setShow] = useState(false);
+    const [checked, setChecked] = useState(false);
+    const [itemName, setName] = useState(null);
+    const [categoryName, setCategory] = useState(null);
+        
+    /* Closes the modal and saves the state to the list*/
+    const handleClose = () => {
+        setShow(false)
+        const item = {value:itemName, label:itemName}
+        console.log(item)
+        addToList([
+          ...list,
+          {value:itemName, label:itemName}]) 
+    };
+    
     const handleShow = () => setShow(true);
+    
+    const setItemName = (event)=>{
+        setName(event.target.value);
+    };
+
+    const setCategoryName = (event)=>{
+        setCategory(event.target.value);
+    };
+
 
     return (
         <>
@@ -135,17 +198,30 @@ const AddItem = () => {
                                     size="sm"
                                     type="text"
                                     placeholder="Item Name"
+                                    onChange={setItemName}
                                     autoFocus
                                 />
                                 <Form.Control
                                     size="sm"
                                     type="text"
                                     placeholder="Category Name"
+                                    onChange={setCategoryName}
                                     autoFocus
                                 />
                             </Form.Group>
                     </Form>
-                    <Button variant="secondary" onClick={handleClose}>Filter out checked off buttons</Button>
+                    <ToggleButton
+                        className="mb-2"
+                        id="toggle-check"
+                        type="checkbox"
+                        variant="outline-secondary"
+                        checked={checked}
+                        value="1"
+                        onChange={(e) => setChecked(e.currentTarget.checked)}
+                    >
+                        Filter out checked off buttons
+                    </ToggleButton>
+                    <Button variant="primary" onClick={handleClose}>Save</Button>
                 </Modal.Body>
             </Modal>       
         </>
@@ -154,7 +230,13 @@ const AddItem = () => {
 
 
 export default class GroceryListHome extends Component {
+    
+  
+
+    
     render() {
+        
+
         return (
             <Container fluid="md">
                 <Row>
@@ -165,25 +247,8 @@ export default class GroceryListHome extends Component {
                         <FilterPopup></FilterPopup>
                     </Col>
                 </Row>
-
-                <Row>
-                    <Col>
-                        <div className="d-grid gap-2">
-                            <Button>personal</Button>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className="d-grid gap-2">
-                            <Button>shared</Button>
-                        </div>
-
-                    </Col>
-                </Row>
-                <ListCategory></ListCategory>
-                <ListCategory></ListCategory>
-                <ListCategory></ListCategory>
-                <ListCategory></ListCategory>
-                <AddItem></AddItem>
+                <ShowTab></ShowTab>
+             
 
             </Container>
         )
