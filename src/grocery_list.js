@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import React, { useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-
+import './css/grocery_list.css';
 
 function FilterPopup() {
     const [show, setShow] = useState(false);
@@ -28,7 +28,6 @@ function FilterPopup() {
 
     );
 }
-import './grocery_list.css';
 
 
 /** popup for editing the Categorys */
@@ -116,9 +115,39 @@ function ListCategory() {
 }
 
 const AddItem = () => {
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     return (
         <>
-            <Button className="fixedbutton">Add</Button>        
+            <Button className="fixedbutton" value="Add item" onClick={handleShow}>Add</Button> 
+
+            <Modal show={show} onHide={handleClose} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Item</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                                <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    placeholder="Item Name"
+                                    autoFocus
+                                />
+                                <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    placeholder="Category Name"
+                                    autoFocus
+                                />
+                            </Form.Group>
+                    </Form>
+                    <Button variant="secondary" onClick={handleClose}>Filter out checked off buttons</Button>
+                </Modal.Body>
+            </Modal>       
         </>
     );
 };
