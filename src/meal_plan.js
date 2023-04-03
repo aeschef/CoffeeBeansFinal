@@ -60,43 +60,14 @@ const [quotas, setQuotas] = useState([
     setEdit(true)
   }
 
-  // Updates meals on meal plan if there is a new meal to be displayed
-  useEffect(() => {
+  function addMealToCategory(category) {
 
-    // If a new meal was successfully submitted via the popup:
-    if (newMeal) {  
-      console.log(addedMeal)
-      // If meal category is the first in the categories list, adds meal to breakfast state array
-      if (addedMeal.id === quotas[0].id) {
-        console.log("here")
-        const item = {value:meal, label:meal}
-        console.log(addedMeal)
-        addBreakfast([
-          ...breakfast,
-          {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day}]) 
-        console.log(breakfast)
-      
-      // If meal category is lunch, adds meal to the lunch state array
-      } else if (addedMeal.id  === quotas[1].id) {
-        console.log("here")
-        console.log(addedMeal)
-        addLunch([
-          ...lunch,
-          {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day}]) 
-        console.log(lunch)
-      
-      // If meal category is dinner, adds meal to the dinner state array
-      } else if (addedMeal[0].id  === quotas[2].id) {
-        addDinner([
-          ...dinner,
-          {value:addedMeal[0].description, label:addedMeal[0].description, day:addedMeal[0].day}]) 
-        
-      } 
-      setNewMeal(false)
-    }
-  }, [newMeal])
+  }
 
-
+  useEffect(()=> {
+    console.log(breakfast)
+    console.log(quotas[0].items)
+  }, [breakfast])
 
 return(
   <Container fluid="md" className="p-0">
