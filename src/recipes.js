@@ -35,6 +35,10 @@ export default function RecipesHome() {
         setShowEditPopup(true);
     }
     const handleCloseEditPopup = () => setShowEditPopup(false);
+
+    const [showFilterPopup, setShowFilterPopup] = useState(false);
+    const handleOpenFilterPopup = () => setShowFilterPopup(true);
+    const handleCloseFilterPopup = () => setShowFilterPopup(false);
     
     // mock database of recipes - TODO: make the pictures actual pictures!
     let [recipes, setRecipes] = useState([{title: "R1 Title", picture: "R1 Picture", energyRequired: "R1Energy", timeRequired: "R1Time", tags: ["R1Tag1", "R1Tag2", "R1Tag3"], ingredients: ["R1 Ingredient 1", "R1 Ingredient 2", "R1 Ingredient 3"], steps: ["R1 Step 1", "R1 Step 2", "R1 Step 3"], notes: "R1 Notes"},
@@ -68,7 +72,7 @@ export default function RecipesHome() {
                     <h1>Recipes</h1>
                 </div>
                 <div className='col-3'>
-                    <button>filter</button>
+                    <button onClick={handleOpenFilterPopup}>filter</button>
                 </div>
             </div>
             
@@ -89,6 +93,7 @@ export default function RecipesHome() {
             <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} handleOpenEditPopup={handleOpenEditPopup}> </ViewRecipePopup>
             <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
+            <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
         </>
     )
 }
@@ -279,6 +284,7 @@ function ViewRecipePopup(props) {
                     <h6>Notes</h6>
                     <p>{currentRecipe.notes}</p>
 
+                    <button>Add Recipe to Meal Plan</button>
                     <button>Recipe Complete</button>
                 </Modal.Body>
             </Modal>
@@ -418,3 +424,50 @@ function EditRecipePopup(props) {
     )
 }
 
+// popup for filtering all recipes
+function FilterPopup(props) {
+    return (
+        <>
+            {/* filter popup modal */}
+            <Modal show={props.showFilterPopup} onHide={props.handleCloseFilterPopup}>
+                
+                {/* modal header with title and close button */}
+                <Modal.Header closeButton>
+                    <Modal.Title>Filter Recipes</Modal.Title>
+                </Modal.Header>
+
+                <Modal.Body>
+                    <h6>Sort By:</h6>
+                    <select class="form-select">
+                        <option>Title (Default)</option>
+                        <option>Energy Required</option>
+                        <option>Time Required</option>
+                        <option>Percent of Ingredients in Inventory</option>
+                    </select>
+                    <br></br>
+                    <h6>Filter:</h6>
+                    <p>Energy Required</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            low
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            medium
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            high
+                        </label>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
+        </>
+    )
+}
