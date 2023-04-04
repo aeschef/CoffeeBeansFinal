@@ -120,27 +120,28 @@ function ChangePassword(){
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            
-                            <p>Username: Mirya@gmail.com</p>
-                            <Form.Control
-                                size="sm"
-                                type="text"
-                                placeholder="Old Password"
-                                onChange={setOldPassword}
-                                autoFocus
-                            />
-                            <Form.Control
-                                size="sm"
-                                type="text"
-                                placeholder="New Password"
-                                onChange={setFirst}
-                            />
-                             <Form.Control
-                                size="sm"
-                                type="text"
-                                placeholder="Confirm"
-                                onChange={setSecond}
-                            />
+                            <Stack gap={4}>
+                                <p>Username: Mirya@gmail.com</p>
+                                <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    placeholder="Old Password"
+                                    onChange={setOldPassword}
+                                    autoFocus
+                                />
+                                <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    placeholder="New Password"
+                                    onChange={setFirst}
+                                />
+                                <Form.Control
+                                    size="sm"
+                                    type="text"
+                                    placeholder="Confirm"
+                                    onChange={setSecond}
+                                />
+                            </Stack>
                         </Form.Group>
                     </Form>
 
