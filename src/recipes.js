@@ -28,7 +28,9 @@ export default function RecipesHome() {
     // variables and functions for Edit Recipe popup
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
+    const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(0);
     const handleOpenEditPopup = (index) => {
+        setIndexOfRecipeToEdit(index);
         setInputs(recipes[index]);
         setShowEditPopup(true);
     }
@@ -86,7 +88,7 @@ export default function RecipesHome() {
             {/* popups */}
             <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} handleOpenEditPopup={handleOpenEditPopup}> </ViewRecipePopup>
-            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs}></EditRecipePopup>
+            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
         </>
     )
 }
@@ -292,8 +294,9 @@ function EditRecipePopup(props) {
         props.setInputs(values => ({...values, [name]: value}))
     }
 
-    const handleSubmit = () => {
-        const nextRecipes = [props.recipes.slice(0, props.indexOfRecipeToEdit), props.inputs, props.recipes.slice(props.indexOfRecipeToEdit)]; // TODO: this is ur last prob!!
+    const handleSubmit = () => { // indexOfRecipeToEdit is correct here
+        const nextRecipes = props.recipes;
+        nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
         props.setRecipes(nextRecipes);
         props.handleCloseEditPopup();
     }
