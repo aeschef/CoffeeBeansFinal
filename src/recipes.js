@@ -278,6 +278,8 @@ function ViewRecipePopup(props) {
                     {/* recipe notes */}
                     <h6>Notes</h6>
                     <p>{currentRecipe.notes}</p>
+
+                    <button>Recipe Complete</button>
                 </Modal.Body>
             </Modal>
         </>
