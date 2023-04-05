@@ -3,18 +3,11 @@ import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
-import Dropdown from 'react-bootstrap/Dropdown'
 
 
 const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex}) => {
   
   // Saves category selected when planning a meal
-  console.log("category" + quota)
-  console.log("meal details" + currentMealDetails.day)
-  console.log("meal details" + currentMealDetails.id)
-  console.log("meal details" + quota[currentCategoryIndex].id)
-
-
   const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
 
   // Saves the day selected when planning a meal
@@ -156,9 +149,6 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
   const handleUpdate = async (e) => {
     e.preventDefault()
-    console.log(mealDetails)
-    console.log(selectedDay)
-    console.log(selectedCategory)
 
     if (categoryChanged || tagChanged || mealDetailsChanged) {
       setUpdatedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, type: currentMealDetails.type})

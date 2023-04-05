@@ -22,10 +22,10 @@ export default function ViewRecipePopup(props) {
   // saving a reference to the current recipe being viewed
   const currentRecipe = props.recipes[props.indexOfRecipeToView];
 
-  const recipeIngredients = currentRecipe.ingredients.map(
+  const recipeIngredients = currentRecipe.ingredients?.map(
           (ingredient, index) => <li key={index}>{ingredient}</li>);
 
-  const recipeSteps = currentRecipe.steps.map(
+  const recipeSteps = currentRecipe.steps?.map(
           (step, index) => <li key={index}>{step}</li>);
 
   return (
@@ -59,7 +59,7 @@ export default function ViewRecipePopup(props) {
 
                   {/* recipe tags */}
                   <h6>Tags</h6>
-                  <p>{currentRecipe.tags.join(", ")}</p>
+                  <p>{currentRecipe.tags?.join(", ")}</p>
                   
                   {/* recipe ingredients */}
                   <h6>Ingredients</h6>

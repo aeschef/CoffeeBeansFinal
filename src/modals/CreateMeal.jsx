@@ -3,7 +3,6 @@ import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
-import Dropdown from 'react-bootstrap/Dropdown'
 import '../css/meal_plan.css'
 
 const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal, meal_category, setMealCategory, meal, setMeal }) => {
