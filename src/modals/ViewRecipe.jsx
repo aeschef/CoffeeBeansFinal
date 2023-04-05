@@ -11,7 +11,7 @@ export default function ViewRecipePopup(props) {
   // variables and functions for Edit Recipe popup
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
-  const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(0);
+  const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
   const handleOpenEditPopup = (index) => {
       setIndexOfRecipeToEdit(index);
       setInputs(props.recipes[index]);
@@ -29,6 +29,7 @@ export default function ViewRecipePopup(props) {
           (step, index) => <li key={index}>{step}</li>);
 
   return (
+    
       <>
           {/* view popup modal */}
           <Modal show={props.showViewPopup} onHide={props.handleCloseViewPopup}>

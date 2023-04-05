@@ -6,9 +6,13 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import ViewRecipePopup from './ViewRecipe';
 
+import EditMeal from './EditMeal'
 
-const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes}) => {
-  
+
+const ViewMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes}) => {
+  // Passed as varialbe to editing category popup so we know which category to edit
+  const [quotaIndex, setQuotaIndex] = useState(0)
+
   // Saves category selected when planning a meal
   const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
 
@@ -22,13 +26,19 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
   const [newMeal, setNewMeal] = useState(false)
 
-  const [viewRecipe, setViewRecipe] = useState(false)
-
   const [mealDetails, setMealDetails] = useState(currentMealDetails.id)
   const [updatedMeal, setUpdatedMeal] = useState(null)
 
+  // Used to indicate when a popup should open to view recipe
+  const [viewRecipe, setViewRecipe] = useState(false)
+
+  // Indicates when modal should appear to edit the meal details
+  const [editMeal, setEditMeal] = useState(false)
+
+
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
 
   function addNewMeal(categoryIndex) {
     // TODO:  ERROR CHECKING - Check if category name already exists
@@ -81,7 +91,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
       
       let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type: updatedMeal.type}, 
+        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day}, 
         ...oldItems.slice(currentMealIndex + 1)
       ]
 
@@ -174,78 +184,35 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
     <Modal show={open} onHide={onClose} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Edit Meal</Modal.Title>
+        <Modal.Title>View Meal</Modal.Title>
       </Modal.Header>
       <Modal.Body>
       
         <Form>
           <Form.Group className="mb-3">
             <Form.Label className="edit-modal-header">Meal Name</Form.Label>
-            {/* Shows meal title if meal type is Ingredients*/}
-            {currentMealDetails.type === "Ingredients" && 
-                  <Form.Control
-                  size="sm"
-                  type="text"
-                  placeholder="Title"
-                  autoFocus
-                  onChange={(e) => setMealDetails(e.target.value)}
-                  value={mealDetails}
-                />
-                }
-
-              {/* Shows title of recipe */}
-              {currentMealDetails.type === "Recipe" && 
-              <Row>
-                <Form.Label>
-                  {recipes[mealDetails].title}
-                </Form.Label>
-              </Row> }
+            {/* Shows meal title */}
+            <Row>
+              <Form.Label>
+                {currentMealDetails.type === "Ingredients" ? mealDetails : recipes[mealDetails].title}
+              </Form.Label>
+            </Row> 
           
+                
 
             <Form.Label className="edit-modal-header">Category</Form.Label>
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedCategory}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setCategory(e.target.value);
-              }}
-                >
-                {quota.map(option => (
-                      <option
-                        value={option.id}>
-                        {option.id}
-                      </option>
-                    ))}
-            </Form.Select>
+            
+            <Row><Form.Label>{selectedCategory}</Form.Label></Row>
+        
             
             <Form.Label className="edit-modal-header">Day</Form.Label>
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedDay}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setDay(e.target.value);
-              }}
-                
-              >
-                {days.map(day => (
-                      <option
-                        key={day}
-                        value={day}>
-                        {day}
-                      </option>
-                    ))}
-                <option value="None">None</option>
-            </Form.Select>
+            <Row><Form.Label>{selectedDay}</Form.Label></Row>
 
- 
+    
             {currentMealDetails.type === "Recipe" && 
-                  <Row className="my-3">
+                  <Row>
                     <Button onClick={()=>setViewRecipe(true)}>
-                     View/Edit Recipe
+                     View Recipe
                     </Button>
                     <ViewRecipePopup 
                     recipes={recipes} showViewPopup={viewRecipe} 
@@ -256,8 +223,11 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                   </Row>
                 
             }
-                  
 
+                  
+          {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} quota={quota} setQuota={setQuota} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}/>}
+        
           </Form.Group>
         </Form> 
 
@@ -266,8 +236,8 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
       </Modal.Body>
       <Modal.Footer>
         
-        <Button variant="primary" onClick={handleUpdate}>
-          Update meal
+        <Button variant="primary" onClick={()=>setEditMeal(true)} data-dismiss="modal">
+          Edit meal
         </Button>
       </Modal.Footer>
     </Modal>
@@ -275,4 +245,4 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   )
 }
 
-export default EditMeal
+export default ViewMeal
