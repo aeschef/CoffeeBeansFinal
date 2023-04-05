@@ -1,80 +1,57 @@
+/** imports  */
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useState, Component } from 'react';
+import React, {useEffect, useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
+
+//Import Style Sheet
 import './css/grocery_list.css';
 
+//Import modals
+import FilterPopup from './modals/FilterItems';
+import CategorysPopup from './modals/EditGLICategories';
 
+function IncDec() {
+    let [num, setNum] = useState(0);
+    let inc_num = () => {
+        setNum(Number(num) + 1);
+    }
 
-function FilterPopup() {
-    const [show, setShow] = useState(false);
+    let dec_num = () => {
+        setNum(Number(num) - 1);
+    }
 
-    const handleExit = () => setShow(false);
-    const handleAppear = () => setShow(true);
-
-    return (
-        <>
-            <Button variant="primary" value="filtering" onClick={handleAppear}>filter</Button>
-            <Modal show={show} onHide={handleExit} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Filter Options</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Button variant="secondary" onClick={handleExit}>Filter out checked off buttons</Button>
-                </Modal.Body>
-            </Modal>
-        </>
-
-    );
-}
-
-
-/** popup for editing the Categorys */
-function CategorysPopup() {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    let handleChange = (e) => {
+        setNum(e.target.value);
+    }
 
     return (
         <>
-            <Button variant="primary" value="edit category" onClick={handleShow}>pencil icon</Button>
-            <Modal show={show} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                    <Modal.Title>Edit Category</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                            <Form.Label>Category Title</Form.Label>
-                            <Form.Control
-                                size="sm"
-                                type="text"
-                                placeholder=""
-                                autoFocus
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Delete Category
-                    </Button>
-                    <Button variant="primary" onClick={handleClose}>
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <button type="button" onClick={dec_num}>-</button>
+                </div>
+                <input class="form-control input-sm" size="2" value={num} onChange={handleChange} />
+                <div class="input-group-prepend">
+                    <button type="button" onClick={inc_num}>+</button>
+                </div>
+            </div>
         </>
+    
     );
-}
+    
+    }
 
+/**
+ * Component controls what is shown in content from top level. Primary 
+ * job is determining if shared or personal content is displayed 
+ */
 const ShowTab = () => {
-    // Stores items
+    // Dummy items for now lol
     const [itemsInPersonal, addPersonalItem] = useState([
         {value:"hummus", label:"hummus"},
         {value:"strawberries", label: "Stawberries"}
@@ -86,22 +63,28 @@ const ShowTab = () => {
         ]);
     
  
-    // stores if we should be showing the personal or shared tab
+    // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
-    const handlePersonal = () => setPersonal(true);
-    const handleShared = () => setPersonal(false);
+    const handlePersonal = () => {
+        console.log("personal button pressed");
+        setPersonal(true)
+    };
+    const handleShared = () => {
+        console.log("shared button pressed");
+        setPersonal(false)
+    };
 
     return ( 
         <Container>
             <Row>
                 <Col>
                     <div className="d-grid gap-2">
-                        <Button onClick={() => handlePersonal}>personal</Button>
+                        <Button onClick={handlePersonal}>personal</Button>
                     </div>
                 </Col>
                 <Col>
                     <div className="d-grid gap-2">
-                        <Button onClick={() => handleShared}>shared</Button>
+                        <Button onClick={handleShared}>shared</Button>
                     </div>
                 </Col>
             </Row>
@@ -113,7 +96,8 @@ const ShowTab = () => {
 }
 
 /**
- * container for list categories and their items
+ * displays the category name and the elements it contains
+ * takes in the list of items in the gorcery list currently
  */
 function ListCategory({ list}) {
     return (
@@ -130,18 +114,22 @@ function ListCategory({ list}) {
                 </Row>
                     {list.map((x, i) =>
                     <Row> 
-                        <label key={i}>
-                        <input
-                        type="checkbox"
-                        name="lang"
-                        value={x.value}
-                        /> {x.label}
-                        </label>
+                        <Col>
+                            <label key={i}>
+                                <input
+                                type="checkbox"
+                                name="lang"
+                                value={x.value}
+                                /> {x.label}
+                            </label>
+                        </Col>
+                        <Col>
+                            <IncDec></IncDec>
+                        </Col>
                     </Row>
+                    
                     )}
-                    <Col>
-                        -  #  +
-                    </Col>
+                    
                 <Row>
                     
             </Row>
@@ -150,10 +138,27 @@ function ListCategory({ list}) {
 }
 
 /**
- * 
- * Component contains the add item button and the popup 
- * that allows item to be added to grocery list
+ * Remove item from inventory
  */
+const RemoveItem = () => {
+    // TODO find swipe library? 
+    //button?
+    //get event info then simply remove from the list
+  
+    return(
+      <></>
+    );
+  }
+
+/**
+ * 
+ * Component contains the add item button and the modal 
+ * that allows item to be added to grocery list
+ * 
+ * list -> list of items to add to
+ * addToList -> function that allows altering of state variable
+ */
+
 const AddItem = ({list, addToList}) => {
 
     /** constants storing state for this page until we have a database */
@@ -164,12 +169,17 @@ const AddItem = ({list, addToList}) => {
         
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
-        setShow(false)
+        setShow(false);
+         
+    };
+
+    const handleSave = () => {
+        setShow(false);
         const item = {value:itemName, label:itemName}
         console.log(item)
         addToList([
           ...list,
-          {value:itemName, label:itemName}]) 
+          {value:itemName, label:itemName}]);
     };
     
     const handleShow = () => setShow(true);
@@ -221,19 +231,18 @@ const AddItem = ({list, addToList}) => {
                     >
                         Filter out checked off buttons
                     </ToggleButton>
-                    <Button variant="primary" onClick={handleClose}>Save</Button>
+                    <Button variant="primary" onClick={handleSave}>Save</Button>
                 </Modal.Body>
             </Modal>       
         </>
     );
 };
 
-
+/**
+ * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
+ */
 export default class GroceryListHome extends Component {
-    
-  
-
-    
+        
     render() {
         
 
