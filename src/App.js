@@ -26,7 +26,7 @@ function App() {
   {/*render(){*/}
   return (
     
-      <div>
+      <div contextMenu=''>
             {login ? 
             <NavbarElements></NavbarElements> :
             <LoginHome login={login} setLogin={setLogin}/>
