@@ -1,12 +1,9 @@
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import Dropdown from 'react-bootstrap/Dropdown'
 import "./recipes.css";
+import ViewRecipePopup from './modals/ViewRecipe'
 
 // home page of the recipes screen
 export default function RecipesHome() {
@@ -24,17 +21,6 @@ export default function RecipesHome() {
         setShowViewPopup(true);
     }
     const handleCloseViewPopup = () => setShowViewPopup(false);
-
-    // variables and functions for Edit Recipe popup
-    const [showEditPopup, setShowEditPopup] = useState(false);
-    const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
-    const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(0);
-    const handleOpenEditPopup = (index) => {
-        setIndexOfRecipeToEdit(index);
-        setInputs(recipes[index]);
-        setShowEditPopup(true);
-    }
-    const handleCloseEditPopup = () => setShowEditPopup(false);
 
     const [showFilterPopup, setShowFilterPopup] = useState(false);
     const handleOpenFilterPopup = () => setShowFilterPopup(true);
@@ -91,8 +77,7 @@ export default function RecipesHome() {
 
             {/* popups */}
             <AddRecipePopup recipes={recipes} setRecipes={setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} handleOpenEditPopup={handleOpenEditPopup}> </ViewRecipePopup>
-            <EditRecipePopup recipes={recipes} setRecipes={setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
+            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={setRecipes}> </ViewRecipePopup>
             <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
         </>
     )
@@ -219,203 +204,6 @@ function AddRecipePopup(props) {
                 </Modal.Body>
                 
                 {/* footer with submit button */}
-                <Modal.Footer>
-                    <Button variant="primary" type="submit" onClick={handleSubmit}>
-                        Submit
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    )
-}
-
-// popup for viewing a recipe
-function ViewRecipePopup(props) {
-
-    // saving a reference to the current recipe being viewed
-    const currentRecipe = props.recipes[props.indexOfRecipeToView];
-
-    const recipeIngredients = currentRecipe.ingredients.map(
-            (ingredient, index) => <li key={index}>{ingredient}</li>);
-
-    const recipeSteps = currentRecipe.steps.map(
-            (step, index) => <li key={index}>{step}</li>);
-
-    return (
-        <>
-            {/* view popup modal */}
-            <Modal show={props.showViewPopup} onHide={props.handleCloseViewPopup}>
-                
-                {/* modal header with title, edit button, and close button */}
-                <Modal.Header closeButton>
-                    <Modal.Title>Recipe Title</Modal.Title>
-                    <button onClick={() => props.handleOpenEditPopup(props.indexOfRecipeToView)}>Edit</button>
-                </Modal.Header>
-                
-                {/* modal body with recipe info - NEXT */}
-                <Modal.Body>
-                    <div className="row">
-                        
-                        {/* recipe image */}
-                        <div className='col-6'>
-                            <div id="image">{currentRecipe.picture}</div>
-                        </div>
-                        
-                        {/* energy and time required for this recipe */}
-                        <div className='col-6'>
-                            <h6>Energy Required</h6>
-                            <p>{currentRecipe.energyRequired}</p>
-                            <h6>Time Required</h6>
-                            <p>{currentRecipe.timeRequired}</p>
-                        </div>
-                    </div>
-
-                    {/* recipe tags */}
-                    <h6>Tags</h6>
-                    <p>{currentRecipe.tags.join(", ")}</p>
-                    
-                    {/* recipe ingredients */}
-                    <h6>Ingredients</h6>
-                    <ul>{recipeIngredients}</ul>
-                    
-                    {/* recipes steps */}
-                    <h6>Steps</h6>
-                    <ol>{recipeSteps}</ol>
-                    
-                    {/* recipe notes */}
-                    <h6>Notes</h6>
-                    <p>{currentRecipe.notes}</p>
-
-                    <button>Add Recipe to Meal Plan</button>
-                    <button>Recipe Complete</button>
-                </Modal.Body>
-            </Modal>
-        </>
-    )
-}
-
-// popup for editing a recipe
-function EditRecipePopup(props) {
-
-    // handler for change to a form element (https://www.w3schools.com/react/react_forms.asp)
-    const handleChange = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        props.setInputs(values => ({...values, [name]: value}))
-    }
-
-    const handleSubmit = () => { // indexOfRecipeToEdit is correct here
-        const nextRecipes = props.recipes;
-        nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
-        props.setRecipes(nextRecipes);
-        props.handleCloseEditPopup();
-    }
-
-    return (
-        <>
-            {/* edit popup modal */}
-            <Modal show={props.showEditPopup} onHide={props.handleCloseEditPopup}>
-                
-                {/* modal header with title and close button */}
-                <Modal.Header closeButton>
-                    <Modal.Title>Edit Recipe</Modal.Title>
-                </Modal.Header>
-                
-                {/* modal body with recipe details */}
-                <Modal.Body>
-                    <Form.Group>
-                        
-                        {/* picture input */}
-                        <Form.Label>Picture:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="picture"
-                            value={props.inputs?.picture || ""}
-                            onChange={handleChange}
-                        />
-                        {/* TODO: turn back to actual photo upload
-                        <button>Upload new picture</button>
-                        <br></br> */}
-
-                        {/* title input */}
-                        <Form.Label>Title:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="title"
-                            value={props.inputs?.title || ""}
-                            onChange={handleChange}
-                        />
-
-                        {/* energy input */}
-                        <Form.Label>Energy Required:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="energyRequired"
-                            value={props.inputs?.energyRequired || ""}
-                            onChange={handleChange}
-                        />
-                        {/* TODO: change back to dropdown
-                            <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                Old Energy Level
-                            </Dropdown.Toggle>   
-                            <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">Energy Level 1</Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">Energy Level 2</Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">Energy Level 3</Dropdown.Item>
-                                <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
-                                <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>  */}
-                        
-                        {/* time input */}
-                        <Form.Label>Time Required:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="timeRequired"
-                            value={props.inputs?.timeRequired || ""}
-                            onChange={handleChange}
-                        />
-
-                        {/* tags input */}
-                        <Form.Label>Tags:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="tags"
-                            value={props.inputs?.tags || ""}
-                            onChange={handleChange}
-                        />
-
-                        {/* tags input */}
-                        <Form.Label>Ingredients:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="ingredients"
-                            value={props.inputs?.ingredients || ""}
-                            onChange={handleChange}
-                        />
-
-                        {/* steps input */}
-                        <Form.Label>Steps:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="steps"
-                            value={props.inputs?.steps || ""}
-                            onChange={handleChange}
-                        />
-
-                        {/* notes input */}
-                        <Form.Label>Notes:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="notes"
-                            value={props.inputs?.notes || ""}
-                            onChange={handleChange}
-                        />
-                    </Form.Group>
-                </Modal.Body>
-                
-                {/* modal footer with submit button */}
                 <Modal.Footer>
                     <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
