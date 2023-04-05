@@ -97,17 +97,9 @@ const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addS
  * takes in the list of items in the gorcery list currently
  */
 function ListCategory({groceryList, inventoryList, addtoInventory}) {
-    const [isChecked, changeCheck] = useState(false);
 
     const handleCheck = (event) => {
-        if(!isChecked){
-            /*
-            const item = {value:itemName, label:itemName}
-        console.log(item)
-        addToList([
-          ...list,
-          {value:itemName, label:itemName}]) 
-            */
+        if(event.target.checked){
            const itemName = event.target.value;
            const item = {value:itemName, label:itemName};
            console.log(item + "added to inventory");
@@ -119,7 +111,6 @@ function ListCategory({groceryList, inventoryList, addtoInventory}) {
         } else{
             //TODO remove from inventory
         }
-        changeCheck(!isChecked);
     }
 
     return (
