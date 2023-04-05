@@ -3,9 +3,14 @@ import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 import '../css/meal_plan.css'
+import '../recipes.css'
+import RecipeCards from '../RecipeCards';
+import ChooseRecipe from './ChooseRecipe';
 
-const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal, meal_category, setMealCategory, meal, setMeal }) => {
+
+const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal, meal_category, setMealCategory, meal, setMeal, recipes, setRecipes }) => {
   
   // Saves category selected when planning a meal
   const [selectedCategory, setCategory] = useState(quota[0].id)
@@ -15,12 +20,21 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
   const [mealDetails, setMealDetails] = useState("")
 
+  const [showRecipeModal, setShowRecipeModal] = useState(true)
 
 
+  const [addedRecipe, setAddedRecipe] = useState(0)
 
   const [tab, setTab] = useState(0)
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+  useEffect(() => {
+    if (tab === 2) {
+      setShowRecipeModal(true)
+      
+    }
+  }, [tab])
   function addNewMeal(categoryIndex) {
 
     // Based off which tab the user is on, determines if the created meal is a recipe or ingredients page
@@ -42,7 +56,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
      let item = {...quotas[categoryIndex]};
 
     // 3. Update the current category's array of meals so that it stores the new meal
-    
+ 
     let copyMeals = [...item.items, 
       {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, type:typeOfMeal}]
     item.items = copyMeals
@@ -69,6 +83,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   useEffect(()=> {
     console.log(selectedDay)
   }, [selectedDay])
+
 
   useEffect(()=> {
     if (newMeal) {
@@ -103,9 +118,13 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
       console.log("error creating meal")
       return null
     }
-    else {
+    else if (tab === 1){
       setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails})
-      console.log("added meal")
+      console.log("added ingredients")
+      setNewMeal(true)
+    } else if (tab === 2) {
+      setAddedMeal({id: selectedCategory, day:selectedDay, description: addedRecipe})
+      console.log("added recipe")
       setNewMeal(true)
     }
   }
@@ -163,9 +182,15 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                     ))}
                 <option value="None">None</option>
             </Form.Select>
-
-              <Form.Label className="edit-modal-header">Meal Details</Form.Label>
               
+              <Form.Label className="edit-modal-header">Meal Details</Form.Label>
+              {tab === 2 && addedMeal && !showRecipeModal && 
+               <Row>
+               <Form.Label>
+                {recipes[addedRecipe].title}
+               </Form.Label>
+              </Row>
+              }
               
               {tab === 0 && 
                 <div>
@@ -178,10 +203,10 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                 </div> }
           </Form.Group>
         </Form> 
-
+        
+   
         {tab === 1 && 
         
-          
           <Form.Control
           size="sm"
           type="text"
@@ -193,8 +218,16 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
         
         }
 
-
+        {tab === 2 && <ChooseRecipe 
+          showRecipeModal={showRecipeModal} 
+          setShowRecipeModal={setShowRecipeModal} 
+          recipes={recipes} setRecipes={setRecipes}
+          addedRecipe={addedRecipe} setAddedRecipe={setAddedRecipe}/>}
+        
       </Modal.Body>
+
+
+        
       <Modal.Footer>
         
         <Button variant="primary" onClick={handleNewMeal}>

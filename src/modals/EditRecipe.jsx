@@ -33,7 +33,7 @@ export default function EditRecipePopup(props) {
               
               {/* modal body with recipe details */}
               <Modal.Body>
-                  <Form.Group>
+                  <Form.Group className="recipe-input">
                       
                       {/* picture input */}
                       <Form.Label>Picture:</Form.Label>
