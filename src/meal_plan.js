@@ -10,11 +10,10 @@ import { useEffect, useState } from 'react';
 import CreateMeal from "./modals/CreateMeal"
 import EditMealCategory from './modals/EditMealCategory';
 import EditMeal from './modals/EditMeal'
-import ViewMeal from './modals/ViewMeal'
 //import { IoClose } from "react-icons/io5"
 
 
-const MealPlanHome = (props) => {
+const MealPlanHome = () => {
 
 
 const [editCategory, setEdit] = useState(false)
@@ -109,7 +108,7 @@ return(
             <div className="d-flex justify-content-end pr-1">
                 {category.items.length} out of {category.quota}
 
-              <a href="#" onClick={()=>handleEditCategory(category.value)} className="pe-auto left-spacing">
+              <a href="#" onClick={()=>3(category.value)} className="pe-auto left-spacing">
                 <img src={PencilIcon} alt="Edit Pencil Icon" className="pencil-icon"/>
               </a>          
             </div>
@@ -127,8 +126,7 @@ return(
         /> 
         
         <a href="#" className="m-1" onClick={()=> handleEditMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
-        {x.type === "Ingredients" ? x.label : props.recipes[x.label]?.title}
-        
+        {x.label}
         </a>
         </label>
         </Row>
@@ -142,9 +140,8 @@ return(
 
       </div>
       ))}
-      {showEditMealPopup &&
-       <ViewMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
+      {showEditMealPopup && <EditMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex}/>}
         
 
   {/* Displays modal to create a meal if the add button is pressed */}
@@ -165,8 +162,6 @@ return(
     setMealCategory={setMealCategory}
     meal={meal}
     setMeal={setMeal}
-    recipes={props.recipes}
-    setRecipes={props.setRecipes}
   />
 
 

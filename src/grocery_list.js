@@ -116,13 +116,17 @@ function ListCategory({groceryList, inventoryList, addtoInventory}) {
     return (
         <div className="category-rectangle">
             <Row>
-                <Col>
-                    <span>category name</span>
-                </Col>
-                <Col>
+                 <div className="d-flex justify-between category-header">
+                    <Col>
+                        <div className="mr-auto">
+                            Produce
+                        </div>
+                    </Col> 
                     <CategorysPopup></CategorysPopup>
-                </Col>
+                </div>
+                
             </Row>
+
             
                 {groceryList.map((x, i) =>
                 <div className="left-spacing">
@@ -135,7 +139,7 @@ function ListCategory({groceryList, inventoryList, addtoInventory}) {
                                 value={x.value}
                                 onChange={handleCheck}
                                 />
-                                {x.label}
+                                  {x.label}
                         </label>
                         </Col>
                         <Col xs ={{span:4}}>

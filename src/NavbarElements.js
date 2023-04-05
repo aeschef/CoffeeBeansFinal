@@ -15,7 +15,6 @@ import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
-import { useState } from 'react';
 
 
 function NavbarElements() {
@@ -70,10 +69,10 @@ function NavbarElements() {
                  addSharedItemGL={addSharedItemGL}>  </InventoryHome>
             } />
             <Route path="/meal_plan.js" element={
-                <MealPlanHome recipes={recipes} setRecipes={setRecipes} /> 
+                <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL}/> 
             } />
             <Route path="/recipes.js" element={
-                <RecipesHome recipes={recipes} setRecipes={setRecipes} /> 
+                <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} /> 
             } />
             <Route path="/account.js" element={
                 <AccountHome /> 
