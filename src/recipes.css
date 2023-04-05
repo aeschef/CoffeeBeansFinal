@@ -44,7 +44,7 @@ input {
 }
 
 #add-button {
-    position: absolute;
+    position: fixed;
     top: 80%;
     left: 80%;
     height: 60px;
