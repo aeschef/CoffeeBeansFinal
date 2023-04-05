@@ -14,7 +14,12 @@ import './css/grocery_list.css';
 //Import modals
 import FilterPopup from './modals/FilterItems';
 import CategorysPopup from './modals/EditGLICategories';
+import addItemToList from './intev'
 
+/**
+ * Handles incrementing and decrementing the number of items 
+ * needed from the grocery store
+ */
 function IncDec() {
     let [num, setNum] = useState(0);
     let inc_num = () => {
@@ -31,12 +36,12 @@ function IncDec() {
 
     return (
         <>
-            <div class="input-group">
-                <div class="input-group-prepend">
+            <div className="input-group">
+                <div className="input-group-prepend">
                     <button type="button" onClick={dec_num}>-</button>
                 </div>
-                <input class="form-control input-sm" size="2" value={num} onChange={handleChange} />
-                <div class="input-group-prepend">
+                <input className="form-control input-sm" size="2" value={num} onChange={handleChange} />
+                <div className="input-group-prepend">
                     <button type="button" onClick={inc_num}>+</button>
                 </div>
             </div>
@@ -99,41 +104,44 @@ const ShowTab = () => {
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({ list}) {
+function ListCategory({showPersonal, list}) {
+
     return (
         <div className="category-rectangle">
             <Row>
-
                 <Col>
                     <span>category name</span>
                 </Col>
                 <Col>
                     <CategorysPopup></CategorysPopup>
                 </Col>
-                    
-                </Row>
-                    {list.map((x, i) =>
-                    <Row> 
+            </Row>
+            
+                {list.map((x, i) =>
+                <div className="left-spacing">
+                    <Row>
                         <Col>
                             <label key={i}>
                                 <input
                                 type="checkbox"
                                 name="lang"
                                 value={x.value}
-                                /> {x.label}
-                            </label>
+                                onChange={handleCheck}
+                                />
+                                {x.label}
+                        </label>
                         </Col>
-                        <Col>
+                        <Col xs ={{span:4}}>
                             <IncDec></IncDec>
-                        </Col>
+                        </Col> 
                     </Row>
-                    
-                    )}
-                    
-                <Row>
-                    
-            </Row>
-        </div>
+                     
+                </div>
+                
+                
+                
+                )}
+        </div>                              
     );
 }
 
