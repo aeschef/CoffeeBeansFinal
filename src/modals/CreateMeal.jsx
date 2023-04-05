@@ -4,7 +4,7 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Dropdown from 'react-bootstrap/Dropdown'
-
+import '../css/meal_plan.css'
 
 const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal, meal_category, setMealCategory, meal, setMeal }) => {
   
@@ -18,10 +18,20 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
 
 
+
   const [tab, setTab] = useState(0)
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   function addNewMeal(categoryIndex) {
+
+    // Based off which tab the user is on, determines if the created meal is a recipe or ingredients page
+    let typeOfMeal = ""
+    if (tab === 1) {
+      typeOfMeal="Ingredients"
+
+    } else {
+      typeOfMeal="Recipe"
+    }
     // TODO:  ERROR CHECKING - Check if category name already exists
     // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
       
@@ -35,7 +45,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
     // 3. Update the current category's array of meals so that it stores the new meal
     
     let copyMeals = [...item.items, 
-      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day}]
+      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, type:typeOfMeal}]
     item.items = copyMeals
 
     console.log(item.items)
@@ -47,7 +57,16 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
     
     // 5. Set the state to our new copy
     setQuota(quotas)
+    onClose(false)
   }
+
+  useEffect(()=> {
+    if (!open) {
+      setTab(0)
+      setMealDetails("")
+    }
+  }, [open])
+
   useEffect(()=> {
     console.log(selectedDay)
   }, [selectedDay])
@@ -55,6 +74,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   useEffect(()=> {
     if (newMeal) {
       console.log(addedMeal)
+
       // If meal category is the first in the categories list, adds meal to breakfast state array
       if (addedMeal.id === quota[0].id) {
         addNewMeal(0)
@@ -107,7 +127,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
       
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>Category</Form.Label>
+            <Form.Label className="edit-modal-header">Category</Form.Label>
             <Form.Select 
               aria-label="Default select example" 
               as="select"
@@ -125,7 +145,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                     ))}
             </Form.Select>
             
-            <Form.Label>Day</Form.Label>
+            <Form.Label className="edit-modal-header">Day</Form.Label>
             <Form.Select 
               aria-label="Default select example" 
               as="select"
@@ -137,7 +157,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                 
               >
                 {days.map(day => (
-                      <option
+                      <option key={day}
                         value={day}>
                         {day}
                       </option>
@@ -145,19 +165,18 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                 <option value="None">None</option>
             </Form.Select>
 
-              <Form.Label>Meal Details</Form.Label>
-              <Col>
-              <Button variant="secondary" onClick={()=>setTab(1)}>Create Meal from Ingredients</Button></Col>
-              <Col><Button variant="secondary" onClick={()=>setTab(2)}>Choose Meal from Recipes</Button></Col>
-
-              <Form.Control
-              size="sm"
-              type="text"
-              placeholder=""
-              autoFocus
-              onChange={(e) => setMeal(e.target.value)}
-              value={meal}
-            />
+              <Form.Label className="edit-modal-header">Meal Details</Form.Label>
+              
+              
+              {tab === 0 && 
+                <div>
+                <Col>
+                  <Button variant="secondary" className="my-2" onClick={()=>setTab(1)}>Create Meal from Ingredients</Button>
+                </Col>
+                <Col>
+                  <Button variant="secondary" className="my-2" onClick={()=>setTab(2)}>Choose Meal from Recipes</Button>
+                  </Col>
+                </div> }
           </Form.Group>
         </Form> 
 

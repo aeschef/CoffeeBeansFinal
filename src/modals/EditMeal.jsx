@@ -187,7 +187,20 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
       
         <Form>
           <Form.Group className="mb-3">
-            <Form.Label>Category</Form.Label>
+            <Form.Label className="edit-modal-header">Meal Name</Form.Label>
+            {/* Shows meal title if meal type is Ingredients*/}
+            {currentMealDetails.type === "Ingredients" && 
+                  <Form.Control
+                  size="sm"
+                  type="text"
+                  placeholder="Title"
+                  autoFocus
+                  onChange={(e) => setMealDetails(e.target.value)}
+                  value={mealDetails}
+                />
+                }
+
+            <Form.Label className="edit-modal-header">Category</Form.Label>
             <Form.Select 
               aria-label="Default select example" 
               as="select"
@@ -205,7 +218,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                     ))}
             </Form.Select>
             
-            <Form.Label>Day</Form.Label>
+            <Form.Label className="edit-modal-header">Day</Form.Label>
             <Form.Select 
               aria-label="Default select example" 
               as="select"
@@ -226,24 +239,13 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                 <option value="None">None</option>
             </Form.Select>
 
-              <Form.Label>Meal Details</Form.Label>
-              
+            <Form.Label>Meal Details</Form.Label>
+
+                  
+
           </Form.Group>
         </Form> 
 
-        {currentMealDetails.type === "Ingredients" && 
-        
-          
-          <Form.Control
-          size="sm"
-          type="text"
-          placeholder="Enter ingredients"
-          autoFocus
-          onChange={(e) => setMealDetails(e.target.value)}
-          value={mealDetails}
-        />
-        
-        }
 
 
       </Modal.Body>

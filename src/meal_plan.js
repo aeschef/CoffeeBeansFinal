@@ -9,7 +9,7 @@ import PencilIcon from "./pencil_icon.svg";
 import { useEffect, useState } from 'react';
 import CreateMeal from "./modals/CreateMeal"
 import EditMealCategory from './modals/EditMealCategory';
-
+import EditMeal from './modals/EditMeal'
 //import { IoClose } from "react-icons/io5"
 
 
@@ -24,6 +24,15 @@ const [meal_category, setMealCategory] = useState("")
 const [meal, setMeal] = useState([])
 const [showMealPopup, setShowMealPopup] = useState(false)
 
+const [showEditMealPopup, setShowEditMealPopup] = useState(false)
+
+const [currentMealIndex, setCurrentMealIndex] = useState(0)
+const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0)
+const [currentMealDetails, setCurrentMealDetails] = useState(null)
+
+const [openMeal, setOpenMeal] = useState(null)
+
+
 // Passed as varialbe to editing category popup so we know which category to edit
 const [quotaIndex, setQuotaIndex] = useState(0)
 
@@ -32,20 +41,20 @@ const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealD
 
 // Stores meals for breakfast
 const [breakfast, addBreakfast] = useState([
-  {value:"bananas", label:"bananas", day:"Monday"},
-  {value:"soup", label: "soup", day:"Monday"}
+  {value:"bananas", label:"bananas", day:"Monday", type:"Ingredients"},
+  {value:"soup", label: "soup", day:"Monday", type:"Ingredients"}
   ])
 
 // Stores meals for lunch
 const [lunch, addLunch] = useState([
-  {value:"bananas", label:"bananas", day:"Tuesday"},
-  {value:"soup", label: "soup", day:"Tuesday"}
+  {value:"bananas", label:"bananas", day:"Tuesday", type:"Ingredients"},
+  {value:"soup", label: "soup", day:"Tuesday", type:"Ingredients"}
   ])
 
 // Stores meals for dinner
 const [dinner, addDinner] = useState([
-  {value:"bananas", label:"bananas", day:"Wednesday"},
-  {value:"soup", label: "soup", day:"Wednesday"}
+  {value:"bananas", label:"bananas", day:"Wednesday", type:"Ingredients"},
+  {value:"soup", label: "soup", day:"Wednesday", type:"Ingredients"}
   ])
 
 const [quotas, setQuotas] = useState([
@@ -59,8 +68,11 @@ const [quotas, setQuotas] = useState([
     setEdit(true)
   }
 
-  function addMealToCategory(category) {
-
+  function handleEditMealPopup(categoryIndex, mealInfo, mealIndex) {
+    setCurrentCategoryIndex(categoryIndex)
+    setCurrentMealDetails(mealInfo)
+    setCurrentMealIndex(mealIndex)
+    setShowEditMealPopup(true)
   }
 
   useEffect(()=> {
@@ -71,19 +83,19 @@ const [quotas, setQuotas] = useState([
 return(
   <Container fluid="md" className="p-0">
     
-    <Row className="d-flex align-center">
-        <Col xs={{span:6, offset:5}}>
+    <div className="title">
+        <Row>
             <h1>Meal Plan</h1>
-        </Col>      
-    </Row>
-    <Row>
-      <Col xs={{span:6, offset:5}}>
+        </Row>      
+    
+   
+      <Row>
         <div>March 1 Week</div>
-      </Col>
-    </Row>
+      </Row>
+    </div>
       {console.log(quotas.length)}
 
-      {quotas.map((category) =>  (
+      {quotas.map((category, j) =>  (
       <div>
       <div className="d-flex justify-between category-header">
         <Col>
@@ -107,28 +119,36 @@ return(
         <div className="left-spacing">
         <Row> 
         <label key={i}>
-  
         <input
         type="checkbox"
         name="lang"
         value={x.value}
-        /> {x.label}
+        /> 
+        
+        <a href="#" className="m-1" onClick={()=> handleEditMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
+        {x.label}
+        </a>
         </label>
         </Row>
         <Row className="left-spacing">
           <div className="tag">{x.day}</div>
         </Row>
+        
+
         </div>
         )}
-        
+
       </div>
       ))}
-    
+      {showEditMealPopup && <EditMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex}/>}
+        
 
-  {/* Displays modal to create a meal if the addbutton is pressed*/}
+  {/* Displays modal to create a meal if the add button is pressed */}
   <a class="fixedButton" href="#" onClick={()=>setShowMealPopup(true)}>
     <svg fill="#729701" height="70px" width="70px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 300.003 300.003" xmlSpace="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M150,0C67.159,0,0.001,67.159,0.001,150c0,82.838,67.157,150.003,149.997,150.003S300.002,232.838,300.002,150 C300.002,67.159,232.839,0,150,0z M213.281,166.501h-48.27v50.469c-0.003,8.463-6.863,15.323-15.328,15.323 c-8.468,0-15.328-6.86-15.328-15.328v-50.464H87.37c-8.466-0.003-15.323-6.863-15.328-15.328c0-8.463,6.863-15.326,15.328-15.328 l46.984,0.003V91.057c0-8.466,6.863-15.328,15.326-15.328c8.468,0,15.331,6.863,15.328,15.328l0.003,44.787l48.265,0.005 c8.466-0.005,15.331,6.86,15.328,15.328C228.607,159.643,221.742,166.501,213.281,166.501z"></path> </g> </g> </g></svg>
   </a>
+
   <CreateMeal
     open={showMealPopup}
     onClose={() => setShowMealPopup(false)}
