@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { useState, Component } from 'react'
 import { Navbar, Nav } from 'react'
 import './nav_bar.css';
 import {
@@ -9,6 +9,7 @@ import {
     BrowserRouter
 } from "react-router-dom";
 
+
 import GroceryListHome from './grocery_list.js';
 import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
@@ -16,14 +17,50 @@ import RecipesHome from './recipes';
 import AccountHome from './account';
 
 function NavbarElements() {
+    // Dummy items for now lol   
+    const [itemsInPersonalInv, addPersonalItemInv] = useState([
+        {value:"carrots", label:"carrots"},
+        {value:"fruit snacks", label: "fruit snacks"}
+        ]);
+    
+    const [itemsInSharedInv, addSharedItemInv] = useState([
+        {value:"oat milk", label:"oat milk"},
+        {value:"rice", label: "rice"}
+        ]);
+
+            // Dummy items for now lol
+    const [itemsInPersonalGL, addPersonalItemGL] = useState([
+        {value:"hummus", label:"hummus"},
+        {value:"strawberries", label: "Stawberries"}
+        ]);
+    
+    const [itemsInSharedGL, addSharedItemGL] = useState([
+        {value:"almond milk", label:"almond milk"},
+        {value:"flour", label: "flour"}
+        ]);
+    
     return (
         <BrowserRouter>
         <Routes>
             <Route path="/grocery_list.js" element={
-                <GroceryListHome /> 
+                <GroceryListHome itemsInPersonalGL={itemsInPersonalGL}
+                itemsInSharedGL={itemsInSharedGL}
+                addPersonalItemGL={addPersonalItemGL}
+                 addSharedItemGL={addSharedItemGL}
+                 itemsInPersonalInv={itemsInPersonalInv}
+                itemsInSharedInv={itemsInSharedInv}
+                 addPersonalItemInv={addPersonalItemInv}
+                  addSharedItemInv={addSharedItemInv}> </GroceryListHome>
             } />
             <Route path="/inventory.js" element={
-                <InventoryHome /> 
+                <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
+                itemsInSharedInv={itemsInSharedInv}
+                 addPersonalItemInv={addPersonalItemInv}
+                  addSharedItemInv={addSharedItemInv}
+                  itemsInPersonalGL={itemsInPersonalGL}
+                itemsInSharedGL={itemsInSharedGL}
+                addPersonalItemGL={addPersonalItemGL}
+                 addSharedItemGL={addSharedItemGL}>  </InventoryHome>
             } />
             <Route path="/meal_plan.js" element={
                 <MealPlanHome /> 

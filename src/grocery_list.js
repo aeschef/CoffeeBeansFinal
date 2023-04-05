@@ -14,7 +14,6 @@ import './css/grocery_list.css';
 //Import modals
 import FilterPopup from './modals/FilterItems';
 import CategorysPopup from './modals/EditGLICategories';
-import addItemToList from './intev'
 
 /**
  * Handles incrementing and decrementing the number of items 
@@ -55,18 +54,8 @@ function IncDec() {
  * Component controls what is shown in content from top level. Primary 
  * job is determining if shared or personal content is displayed 
  */
-const ShowTab = () => {
-    // Dummy items for now lol
-    const [itemsInPersonal, addPersonalItem] = useState([
-        {value:"hummus", label:"hummus"},
-        {value:"strawberries", label: "Stawberries"}
-        ]);
-    
-    const [itemsInShared, addSharedItem] = useState([
-        {value:"almond milk", label:"almond milk"},
-        {value:"flour", label: "flour"}
-        ]);
-    
+const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
+
  
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
@@ -93,8 +82,11 @@ const ShowTab = () => {
                     </div>
                 </Col>
             </Row>
-            <ListCategory list={showPersonal ? itemsInPersonal : itemsInShared}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonal : itemsInShared} addToList={showPersonal ? addPersonalItem : addSharedItem}></AddItem>
+            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL} 
+                inventoryList={showPersonal ? itemsInPersonalInv: itemsInSharedInv}
+                addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
+            <AddItem  list={showPersonal ? itemsInPersonalGL : itemsInSharedGL} 
+                addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}></AddItem>
         </Container>
     );
 
@@ -104,7 +96,31 @@ const ShowTab = () => {
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({showPersonal, list}) {
+function ListCategory({groceryList, inventoryList, addtoInventory}) {
+    const [isChecked, changeCheck] = useState(false);
+
+    const handleCheck = (event) => {
+        if(!isChecked){
+            /*
+            const item = {value:itemName, label:itemName}
+        console.log(item)
+        addToList([
+          ...list,
+          {value:itemName, label:itemName}]) 
+            */
+           const itemName = event.target.value;
+           const item = {value:itemName, label:itemName};
+           console.log(item + "added to inventory");
+           addtoInventory([
+            ...inventoryList,
+            {value:itemName, label:itemName}
+           ]);
+
+        } else{
+            //TODO remove from inventory
+        }
+        changeCheck(!isChecked);
+    }
 
     return (
         <div className="category-rectangle">
@@ -117,7 +133,7 @@ function ListCategory({showPersonal, list}) {
                 </Col>
             </Row>
             
-                {list.map((x, i) =>
+                {groceryList.map((x, i) =>
                 <div className="left-spacing">
                     <Row>
                         <Col>
@@ -203,7 +219,7 @@ const AddItem = ({list, addToList}) => {
 
     return (
         <>
-            <Button className="fixedbutton" value="Add item" onClick={handleShow}>Add</Button> 
+            <Button className="fixedbutton" id="add-button" value="Add item" onClick={handleShow}>Add</Button> 
 
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
@@ -249,11 +265,7 @@ const AddItem = ({list, addToList}) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-export default class GroceryListHome extends Component {
-        
-    render() {
-        
-
+const GroceryListHome = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
         return (
             <Container fluid="md">
                 <Row>
@@ -264,10 +276,17 @@ export default class GroceryListHome extends Component {
                         <FilterPopup></FilterPopup>
                     </Col>
                 </Row>
-                <ShowTab></ShowTab>
+                <ShowTab itemsInPersonalGL={itemsInPersonalGL}
+                    itemsInSharedGL={itemsInSharedGL}
+                    addPersonalItemGL={addPersonalItemGL}
+                    addSharedItemGL={addSharedItemGL}
+                    itemsInPersonalInv={itemsInPersonalInv}
+                    itemsInSharedInv={itemsInSharedInv}
+                    addPersonalItemInv={addPersonalItemInv}
+                     addSharedItemInv={addSharedItemInv}></ShowTab>
              
 
             </Container>
-        )
-    }
+        );
 }
+export default GroceryListHome

@@ -19,18 +19,7 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = () => {
-  // Dummy items for now lol   
-  const [itemsInPersonal, addPersonalItem] = useState([
-        {value:"carrots", label:"carrots"},
-        {value:"fruit snacks", label: "fruit snacks"}
-        ]);
-    
-    const [itemsInShared, addSharedItem] = useState([
-        {value:"oat milk", label:"oat milk"},
-        {value:"rice", label: "rice"}
-        ]);
-    
+const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
  
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
@@ -51,8 +40,9 @@ const ShowTab = () => {
                     </div>
                 </Col>
             </Row>
-            <ListCategory list={showPersonal ? itemsInPersonal : itemsInShared}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonal : itemsInShared} addToList={showPersonal ? addPersonalItem : addSharedItem}></AddItem>
+            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}></ListCategory>
+            <AddItem  list={showPersonal ? itemsInPersonalInv : itemsInSharedInv} 
+                addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}></AddItem>
         </Container>
     );
 
@@ -181,9 +171,9 @@ const AddItem = ({list, addToList}) => {
 };
 
 
-export default class InventoryHome extends Component {
+const InventoryHome = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
         
-    render() {
+   
         
 
         return (
@@ -196,10 +186,18 @@ export default class InventoryHome extends Component {
                         <FilterPopup></FilterPopup>
                     </Col>
                 </Row>
-                <ShowTab></ShowTab>
+                <ShowTab itemsInPersonalGL={itemsInPersonalGL}
+                    itemsInSharedGL={itemsInSharedGL}
+                    addPersonalItemGL={addPersonalItemGL}
+                    addSharedItemGL={addSharedItemGL}
+                    itemsInPersonalInv={itemsInPersonalInv}
+                    itemsInSharedInv={itemsInSharedInv}
+                    addPersonalItemInv={addPersonalItemInv}
+                    addSharedItemInv={addSharedItemInv}></ShowTab>
              
 
             </Container>
         )
-    }
 }
+
+export default InventoryHome
