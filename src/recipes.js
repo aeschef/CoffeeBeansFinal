@@ -48,7 +48,7 @@ export default function RecipesHome(props) {
             
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup}/>
+                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
@@ -56,7 +56,7 @@ export default function RecipesHome(props) {
 
             {/* popups */}
             <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes}> </ViewRecipePopup>
+            <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} > </ViewRecipePopup>
             <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
         </>
     )
