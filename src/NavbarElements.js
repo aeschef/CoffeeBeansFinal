@@ -32,7 +32,9 @@ function NavbarElements() {
             // Dummy items for now lol
     const [itemsInPersonalGL, addPersonalItemGL] = useState([
         {value:"hummus", label:"hummus"},
-        {value:"strawberries", label: "Stawberries"}
+        {value:"strawberries", label: "Stawberries"},
+        {value:"raspberries", label: "raspberries"},
+        {value:"milk", label: "milk"}
         ]);
     
     const [itemsInSharedGL, addSharedItemGL] = useState([

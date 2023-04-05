@@ -13,7 +13,7 @@ import EditMeal from './modals/EditMeal'
 //import { IoClose } from "react-icons/io5"
 
 
-const MealPlanHome = () => {
+const MealPlanHome = (props) => {
 
 
 const [editCategory, setEdit] = useState(false)
@@ -141,7 +141,7 @@ return(
       </div>
       ))}
       {showEditMealPopup && <EditMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex}/>}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} groceryList={props.personalGroceryList} addToGL={props.addToGL}/>}
         
 
   {/* Displays modal to create a meal if the add button is pressed */}

@@ -140,7 +140,7 @@ function ListCategory({groceryList, inventoryList, addtoInventory}) {
                                 onChange={handleCheck}
                                 />
                                   {x.label}
-                        </label>
+                            </label>
                         </Col>
                         <Col xs ={{span:4}}>
                             <IncDec></IncDec>

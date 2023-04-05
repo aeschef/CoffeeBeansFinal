@@ -44,7 +44,7 @@ export default function RecipeCards(props) {
             </div>
         </div>
       ))}
-      {props.view && <ViewRecipePopup recipes={props.recipes} showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes}> </ViewRecipePopup>}
+      {props.view && <ViewRecipePopup recipes={props.recipes} showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
 
       </div>
   )
