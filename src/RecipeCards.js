@@ -22,7 +22,7 @@ export default function RecipeCards(props) {
   const handleClick = (index) => {
     if (props.view === true) {
       handleOpenViewPopup(index)
-    } else {
+    } else  {
       props.setAddedRecipe(index)
       props.setShowPopup(false)
     }
