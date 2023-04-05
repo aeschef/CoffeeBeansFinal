@@ -10,10 +10,11 @@ import { useEffect, useState } from 'react';
 import CreateMeal from "./modals/CreateMeal"
 import EditMealCategory from './modals/EditMealCategory';
 import EditMeal from './modals/EditMeal'
+import ViewMeal from './modals/ViewMeal'
 //import { IoClose } from "react-icons/io5"
 
 
-const MealPlanHome = () => {
+const MealPlanHome = (props) => {
 
 
 const [editCategory, setEdit] = useState(false)
@@ -126,7 +127,8 @@ return(
         /> 
         
         <a href="#" className="m-1" onClick={()=> handleEditMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
-        {x.label}
+        {x.type === "Ingredients" ? x.label : props.recipes[x.label]?.title}
+        
         </a>
         </label>
         </Row>
@@ -140,8 +142,9 @@ return(
 
       </div>
       ))}
-      {showEditMealPopup && <EditMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex}/>}
+      {showEditMealPopup &&
+       <ViewMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
         
 
   {/* Displays modal to create a meal if the add button is pressed */}
@@ -162,6 +165,8 @@ return(
     setMealCategory={setMealCategory}
     meal={meal}
     setMeal={setMeal}
+    recipes={props.recipes}
+    setRecipes={props.setRecipes}
   />
 
 
