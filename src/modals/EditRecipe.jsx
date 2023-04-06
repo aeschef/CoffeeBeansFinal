@@ -13,7 +13,7 @@ function DeleteAlert() {
 
     return (
         <>
-            <Modal show={show} onClick={handleShow}>
+            <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Warning!</Modal.Title>
                 </Modal.Header>
@@ -23,9 +23,20 @@ function DeleteAlert() {
                         Do you mean to delete this?
                     </p>
                 </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={() => setShow(false)}>
+                        No
+                    </Button>
+                    <Button class="float-right" id="delete" variant="secondary" type="delete" onClick={() => setShow(false)}>
+                        Yes
+                    </Button>
+                </Modal.Footer>
 
 
             </Modal>
+            <Button variant="secondary" type="submit" onClick={handleShow}>
+                        Delete
+                    </Button>
             {/*<Alert show={show} variant="success" onClose={() => setShow(false)} dismissible>
                 <Alert.Heading>Warning!</Alert.Heading>
                 <p>You are about to delete a recipe from the database!
