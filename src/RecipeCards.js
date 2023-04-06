@@ -7,7 +7,9 @@ import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe'
 
 export default function RecipeCards(props) {
-  console.log(props.recipes)
+  
+  // TODO: add a "no recipes to show" message if needed
+  
   // variables and functions for View Recipe popup
   const [showPopup, setShowPopup] = useState(false);
   const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
