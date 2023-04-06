@@ -155,10 +155,10 @@ export default function ViewRecipePopup(props) {
   // saving a reference to the current recipe being viewed
   const currentRecipe = props.recipes[props.indexOfRecipeToView];
 
-  const recipeIngredients = currentRecipe.ingredients?.map(
+  const recipeIngredients = currentRecipe?.ingredients?.map(
           (ingredient, index) => <li key={index}>{ingredient}</li>);
 
-  const recipeSteps = currentRecipe.steps?.map(
+  const recipeSteps = currentRecipe?.steps?.map(
           (step, index) => <li key={index}>{step}</li>);
 
   return (
@@ -179,21 +179,21 @@ export default function ViewRecipePopup(props) {
                       
                       {/* recipe image */}
                       <div className='col-6'>
-                          <div id="image">{currentRecipe.picture}</div>
+                          <div id="image">{currentRecipe?.picture}</div>
                       </div>
                       
                       {/* energy and time required for this recipe */}
                       <div className='col-6'>
                           <h6>Energy Required</h6>
-                          <p>{currentRecipe.energyRequired}</p>
+                          <p>{currentRecipe?.energyRequired}</p>
                           <h6>Time Required</h6>
-                          <p>{currentRecipe.timeRequired}</p>
+                          <p>{currentRecipe?.timeRequired}</p>
                       </div>
                   </div>
 
                   {/* recipe tags */}
                   <h6>Tags</h6>
-                  <p>{currentRecipe.tags?.join(", ")}</p>
+                  <p>{currentRecipe?.tags?.join(", ")}</p>
                   
                   {/* recipe ingredients */}
                   <h6>Ingredients</h6>
@@ -205,7 +205,7 @@ export default function ViewRecipePopup(props) {
                   
                   {/* recipe notes */}
                   <h6>Notes</h6>
-                  <p>{currentRecipe.notes}</p>
+                  <p>{currentRecipe?.notes}</p>
                     <HandleAddtoMealPlan groceryList={props.groceryList} addToGL={props.addToGL}></HandleAddtoMealPlan>
                   <button>Recipe Complete</button>
               </Modal.Body>
