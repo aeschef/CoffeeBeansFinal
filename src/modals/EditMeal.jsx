@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row'
 import ViewRecipePopup from './ViewRecipe';
 
 
-const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes}) => {
+const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
   
   // Saves category selected when planning a meal
   const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
@@ -251,7 +251,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                     recipes={recipes} showViewPopup={viewRecipe} 
                     handleCloseViewPopup={()=>setViewRecipe(false)} 
                     indexOfRecipeToView={mealDetails} 
-                    setRecipes={setRecipes}> </ViewRecipePopup>
+                    setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
 
                   </Row>
                 
