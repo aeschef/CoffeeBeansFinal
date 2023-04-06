@@ -48,6 +48,7 @@ export default function RecipesHome(props) {
             
             {/* recipe cards */}
             <div className='recipe-cards'>
+
                 <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
