@@ -8,9 +8,25 @@ import "../recipes.css";
 function DeleteAlert() {
     const [show, setShow] = useState(false);
 
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+
     return (
         <>
-            <Alert show={show} variant="success" onClose={() => setShow(false)} dismissible>
+            <Modal show={show} onClick={handleShow}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Warning!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        You are about to delete a recipe from the database!
+                        Do you mean to delete this?
+                    </p>
+                </Modal.Body>
+
+
+            </Modal>
+            {/*<Alert show={show} variant="success" onClose={() => setShow(false)} dismissible>
                 <Alert.Heading>Warning!</Alert.Heading>
                 <p>You are about to delete a recipe from the database!
                     Do you mean to delete this?
@@ -20,13 +36,13 @@ function DeleteAlert() {
                     <Button variant="secondary" onClick={() => setShow(false)}>
                         No
                     </Button>
-                    <Button class= "float-right" id = "delete" variant="secondary" type="delete">
+                    <Button class="float-right" id="delete" variant="secondary" type="delete">
                         Yes
                     </Button>
                 </div>
             </Alert>
 
-            {!show && <Button class = "float-right" onClick={() => setShow(true)}>Delete</Button>}
+    {!show && <Button class="float-right" onClick={() => setShow(true)}>Delete</Button>}*/}
         </>
     );
 }
