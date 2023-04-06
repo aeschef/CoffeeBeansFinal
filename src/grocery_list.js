@@ -222,22 +222,22 @@ const AddItem = ({list, addToList}) => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
-                            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                                <Form.Control
-                                    size="sm"
-                                    type="text"
-                                    placeholder="Item Name"
-                                    onChange={setItemName}
-                                    autoFocus
-                                />
-                                <Form.Control
-                                    size="sm"
-                                    type="text"
-                                    placeholder="Category Name"
-                                    onChange={setCategoryName}
-                                    autoFocus
-                                />
-                            </Form.Group>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            <Form.Control
+                                size="sm"
+                                type="text"
+                                placeholder="Item Name"
+                                onChange={setItemName}
+                                autoFocus
+                            />
+                            <Form.Control
+                                size="sm"
+                                type="text"
+                                placeholder="Category Name"
+                                onChange={setCategoryName}
+                                autoFocus
+                            />
+                        </Form.Group>
                     </Form>
                     <ToggleButton
                         className="mb-2"
