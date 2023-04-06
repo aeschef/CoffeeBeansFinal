@@ -11,3 +11,8 @@
     color: #525252;
     padding:3%
 }
+
+.navbar-icon {
+    width: 55%;
+    padding-bottom:.25rem;
+}
