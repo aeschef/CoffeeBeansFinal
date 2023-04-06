@@ -32,7 +32,7 @@ export default function RecipeCards(props) {
       <div>
       {props.recipes.map((recipe, index) => (
         
-        <div className='row' id='recipe-card' onClick={()=>handleClick(index)} key={index}>
+        <div className='row pe-auto' id='recipe-card' onClick={()=>handleClick(index)} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>

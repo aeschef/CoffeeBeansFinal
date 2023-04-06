@@ -9,7 +9,8 @@ import PencilIcon from "./pencil_icon.svg";
 import { useEffect, useState } from 'react';
 import CreateMeal from "./modals/CreateMeal"
 import EditMealCategory from './modals/EditMealCategory';
-import EditMeal from './modals/EditMeal'
+import ViewMeal from './modals/ViewMeal'
+
 //import { IoClose } from "react-icons/io5"
 
 
@@ -22,9 +23,9 @@ const [editCategory, setEdit] = useState(false)
 const [newMeal, setNewMeal] = useState(null)
 const [meal_category, setMealCategory] = useState("")
 const [meal, setMeal] = useState([])
-const [showMealPopup, setShowMealPopup] = useState(false)
+const [showCreateMealPopup, setShowCreateMealPopup] = useState(false)
 
-const [showEditMealPopup, setShowEditMealPopup] = useState(false)
+const [showViewMealPopup, setShowViewMealPopup] = useState(false)
 
 const [currentMealIndex, setCurrentMealIndex] = useState(0)
 const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0)
@@ -62,17 +63,12 @@ const [quotas, setQuotas] = useState([
   {id:"Lunch",quota:0, value:1, items:lunch}, 
   {id:"Dinner", quota:0, value:2, items:dinner}])
 
-
-  function handleEditCategory(currentCategory) {
-    setQuotaIndex(currentCategory)
-    setEdit(true)
-  }
-
-  function handleEditMealPopup(categoryIndex, mealInfo, mealIndex) {
+  // Populates state variables with needed information to display edit meal popup once the meal is selected. 
+  function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
     setCurrentMealDetails(mealInfo)
     setCurrentMealIndex(mealIndex)
-    setShowEditMealPopup(true)
+    setShowViewMealPopup(true)
   }
 
   useEffect(()=> {
@@ -95,6 +91,7 @@ return(
     </div>
       {console.log(quotas.length)}
 
+      {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
       {quotas.map((category, j) =>  (
       <div>
       <div className="d-flex justify-between category-header">
@@ -115,6 +112,7 @@ return(
         </Col>
       </div>
 
+      {/* Displays the list of meals for the current category. */}
       {category.items.map((x, i) =>
         <div className="left-spacing">
         <Row> 
@@ -125,7 +123,8 @@ return(
         value={x.value}
         /> 
         
-        <a href="#" className="m-1" onClick={()=> handleEditMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
+        <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
+        {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
         {x.type === "Ingredients" ? x.label : props.recipes[x.label].title}
         </a>
         </label>
@@ -140,18 +139,20 @@ return(
 
       </div>
       ))}
-      {showEditMealPopup && <EditMeal open={showEditMealPopup} onClose={setShowEditMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} groceryList={props.personalGroceryList} addToGL={props.addToGL}/>}
-        
 
+    {/* Shows meal details if the meal is selected. */}
+    {showViewMealPopup &&
+       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
+ 
   {/* Displays modal to create a meal if the add button is pressed */}
-  <a class="fixedButton" href="#" onClick={()=>setShowMealPopup(true)}>
+  <a class="fixedButton" href="#" onClick={()=>setShowCreateMealPopup(true)}>
     <svg fill="#729701" height="70px" width="70px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 300.003 300.003" xmlSpace="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M150,0C67.159,0,0.001,67.159,0.001,150c0,82.838,67.157,150.003,149.997,150.003S300.002,232.838,300.002,150 C300.002,67.159,232.839,0,150,0z M213.281,166.501h-48.27v50.469c-0.003,8.463-6.863,15.323-15.328,15.323 c-8.468,0-15.328-6.86-15.328-15.328v-50.464H87.37c-8.466-0.003-15.323-6.863-15.328-15.328c0-8.463,6.863-15.326,15.328-15.328 l46.984,0.003V91.057c0-8.466,6.863-15.328,15.326-15.328c8.468,0,15.331,6.863,15.328,15.328l0.003,44.787l48.265,0.005 c8.466-0.005,15.331,6.86,15.328,15.328C228.607,159.643,221.742,166.501,213.281,166.501z"></path> </g> </g> </g></svg>
   </a>
 
   <CreateMeal
-    open={showMealPopup}
-    onClose={() => setShowMealPopup(false)}
+    open={showCreateMealPopup}
+    onClose={() => setShowCreateMealPopup(false)}
     quota={quotas}
     setQuota={setQuotas}
     newMeal={newMeal}
@@ -167,6 +168,7 @@ return(
   />
 
 
+  {/* Displays popup to edit category name and quota for the selected category. */}
   {editCategory && <EditMealCategory open={editCategory} onClose={setEdit} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
            prevQuota={quotas} setQuota={setQuotas} />}
 </Container>

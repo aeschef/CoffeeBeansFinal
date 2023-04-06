@@ -21,6 +21,13 @@ h1 {
     margin-bottom: 20px;
 }
 
+
+#recipe-card:hover {
+  cursor: pointer;
+}
+
+
+
 #image {
     background-color: gray;
     height: 125px;
