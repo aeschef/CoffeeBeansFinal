@@ -48,7 +48,7 @@ export default function RecipesHome(props) {
             
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup}/>
+                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
