@@ -18,14 +18,15 @@ const CategorysPopup = () => {
     const handleShow = () => setShow(true);
 //            <Button variant="primary" value="edit category" onClick={handleShow}>pencil icon</Button>
 
-            
-    return (
-        <>
-            <Col>
+{/* <Col>
                 <a href="#" onClick={handleShow} className="pe-auto left-spacing">
                     <img src={PencilIcon} alt="Edit Pencil Icon" className="pencil-icon"/>
                 </a>          
             </Col> 
+             */}
+    return (
+        <>
+            
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Category</Modal.Title>
