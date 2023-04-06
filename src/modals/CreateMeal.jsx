@@ -97,7 +97,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
       } else if (addedMeal.id  === quota[1].id) {
         addNewMeal(1)
       // If meal category is dinner, adds meal to the dinner state array
-      } else if (addedMeal[0].id  === quota[2].id) {
+      } else if (addedMeal.id  === quota[2].id) {
         addNewMeal(2)
       }
       setNewMeal(false)

@@ -12,6 +12,7 @@ export default function ChooseRecipe(props) {
 
 const handleSubmit = () => console.log("hi")
 console.log(props.showRecipeModal)
+
 const viewOption = false;
 
 return (<Modal show={props.showRecipeModal} onHide={()=>props.setShowRecipeModal(false)}>

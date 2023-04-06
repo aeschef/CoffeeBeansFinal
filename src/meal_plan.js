@@ -126,7 +126,7 @@ return(
         /> 
         
         <a href="#" className="m-1" onClick={()=> handleEditMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
-        {x.label}
+        {x.type === "Ingredients" ? x.label : props.recipes[x.label].title}
         </a>
         </label>
         </Row>
@@ -162,6 +162,8 @@ return(
     setMealCategory={setMealCategory}
     meal={meal}
     setMeal={setMeal}
+    recipes={props.recipes}
+    setRecipes={props.setRecipes}
   />
 
 

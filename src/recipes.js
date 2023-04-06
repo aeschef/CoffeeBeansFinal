@@ -8,7 +8,6 @@ import RecipeCards from './RecipeCards'
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
-
     // variables and functions for Add Recipe popup
     const [showAddPopup, setShowAddPopup] = useState(false);
     const handleOpenAddPopup = () => setShowAddPopup(true);
