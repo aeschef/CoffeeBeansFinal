@@ -1,17 +1,35 @@
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import Dropdown from 'react-bootstrap/Dropdown'
 import "./recipes.css";
+import ViewRecipePopup from './modals/ViewRecipe'
+import RecipeCards from './RecipeCards'
 
-export default function RecipesHome() {
+// home page of the recipes screen
+export default function RecipesHome(props) {
+
+    // variables and functions for Add Recipe popup
+    const [showAddPopup, setShowAddPopup] = useState(false);
+    const handleOpenAddPopup = () => setShowAddPopup(true);
+    const handleCloseAddPopup = () => setShowAddPopup(false);
+
+    // variables and functions for View Recipe popup
+    const [showViewPopup, setShowViewPopup] = useState(false);
+    const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
+    const handleOpenViewPopup = (index) => {
+        setIndexOfRecipeToView(index);
+        setShowViewPopup(true);
+    }
+    const handleCloseViewPopup = () => setShowViewPopup(false);
+
+    const [showFilterPopup, setShowFilterPopup] = useState(false);
+    const handleOpenFilterPopup = () => setShowFilterPopup(true);
+    const handleCloseFilterPopup = () => setShowFilterPopup(false);
 
     return (
         <>
+            {/* header with title and filter button */}
             <div className='row' id='header'>
                 <div className='col-3'>
                 </div>
@@ -19,87 +37,92 @@ export default function RecipesHome() {
                     <h1>Recipes</h1>
                 </div>
                 <div className='col-3'>
-                    <button>filter</button>
+                    <button onClick={handleOpenFilterPopup}>filter</button>
                 </div>
             </div>
+            
+            {/* search bar - TODO: make functional */}
             <div className='search-bar'>
                 <input type='text' placeholder='Search'></input>
             </div>
+            
+            {/* recipe cards */}
             <div className='recipe-cards'>
-                <div className='row' id='recipe-card'>
-                    <div className='col-6' id='image'>picture</div>
-                    <div className='col-6' id='recipe-info'>
-                        <h4>Recipe Name</h4>
-                        <div className='row'>
-                            <div className='col-6'>energy</div>
-                            <div className='col-6'>time</div>
-                        </div>
-                        <p className='tags'>tags</p>
-                    </div>
-                </div>
-                <div className='row' id='recipe-card'>
-                    <div className='col-6' id='image'>picture</div>
-                    <div className='col-6' id='recipe-info'>
-                        <h4>Recipe Name</h4>
-                        <div className='row'>
-                            <div className='col-6'>energy</div>
-                            <div className='col-6'>time</div>
-                        </div>
-                        <p className='tags'>tags</p>
-                    </div>
-                </div>
-                <div className='row' id='recipe-card'>
-                    <div className='col-6' id='image'>picture</div>
-                    <div className='col-6' id='recipe-info'>
-                        <h4>Recipe Name</h4>
-                        <div className='row'>
-                            <div className='col-6'>energy</div>
-                            <div className='col-6'>time</div>
-                        </div>
-                        <p className='tags'>tags</p>
-                    </div>
-                </div>
-                <div className='row' id='recipe-card'>
-                    <div className='col-6' id='image'>picture</div>
-                    <div className='col-6' id='recipe-info'>
-                        <h4>Recipe Name</h4>
-                        <div className='row'>
-                            <div className='col-6'>energy</div>
-                            <div className='col-6'>time</div>
-                        </div>
-                        <p className='tags'>tags</p>
-                    </div>
-                </div>
+                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
-            <AddPopup></AddPopup>
+            {/* the add button that appears on the home page */}
+            <button id='add-button' onClick={handleOpenAddPopup}>add</button>
 
+            {/* popups */}
+            <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
+            <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
+            <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
         </>
     )
 }
 
-function AddPopup() {
+// popup for adding a recipe - TODO: make (all?) fields in the form required
+function AddRecipePopup(props) {
 
-    const [showAddPopup, setShowAddPopup] = useState(false);
+    // form inputs
+    const [inputs, setInputs] = useState({});
 
-    const handleOpenAddPopup = () => setShowAddPopup(true);
-    const handleCloseAddPopup = () => setShowAddPopup(false);
+    // handler for change to a form element (https://www.w3schools.com/react/react_forms.asp)
+    const handleChange = (event) => {
+        const name = event.target.name;
+        const value = event.target.value;
+        setInputs(values => ({...values, [name]: value}))
+    }
+
+    // handling submit by closing popup and updating the 'recipes' mock database
+    const handleSubmit = () => {
+        props.handleCloseAddPopup();
+        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, timeRequired: inputs.timeRequired, tags: inputs.tags, ingredients: inputs.ingredients, notes: inputs.notes}];
+        props.setRecipes(nextRecipes);
+    }
 
     return (
         <>
-            <Modal show={showAddPopup} onHide={handleCloseAddPopup}>
+            {/* add popup modal */}
+            <Modal show={props.showAddPopup} onHide={props.handleCloseAddPopup}>
+                
+                {/* modal header with title and close button */}
                 <Modal.Header closeButton>
                     <Modal.Title>Add New Recipe</Modal.Title>
                 </Modal.Header>
+                
+                {/* modal body with form */}
                 <Modal.Body>
                     <Form.Group>
+                        
+                        {/* picture entry - TODO: change to upload photo */}
                         <Form.Label>Picture:</Form.Label>
-                        <button>Upload picture</button>
-                        <br></br>
+                        <Form.Control 
+                            type="text" 
+                            name="picture"
+                            value={inputs.picture || ""}
+                            onChange={handleChange}
+                        />
+                        
+                        {/* title entry */}
                         <Form.Label>Title:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="title"
+                            value={inputs.title || ""}
+                            onChange={handleChange}
+                        />
+                        
+                        {/* energy entry - TODO: change back to dropdown */}
                         <Form.Label>Energy Required:</Form.Label>
-                        <Dropdown>
+                        <Form.Control 
+                            type="text" 
+                            name="energyRequired"
+                            value={inputs.energyRequired || ""}
+                            onChange={handleChange}
+                        />
+                        {/* <Dropdown>
                             <Dropdown.Toggle variant="success" id="dropdown-basic">
                                 Select Energy Level
                             </Dropdown.Toggle>   
@@ -110,72 +133,58 @@ function AddPopup() {
                                 <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
                                 <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
                             </Dropdown.Menu>
-                        </Dropdown> 
+                        </Dropdown>  */}
+
+                        {/* time required entry - TODO: label mins/hrs, only take number */}
                         <Form.Label>Time Required:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="timeRequired"
+                            value={inputs.timeRequired || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* tags entry - TODO: format differently */}
                         <Form.Label>Tags:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="tags"
+                            value={inputs.tags || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* ingredients entry - TODO: format differently */}
                         <Form.Label>Ingredients:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="ingredients"
+                            value={inputs.ingredients || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* steps entry - TODO: format differently */}
                         <Form.Label>Steps:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="steps"
+                            value={inputs.steps || ""}
+                            onChange={handleChange}
+                        />
+
+                        {/* notes entry */}
                         <Form.Label>Notes:</Form.Label>
-                        <Form.Control type="text"></Form.Control>
+                        <Form.Control 
+                            type="text" 
+                            name="notes"
+                            value={inputs.notes || ""}
+                            onChange={handleChange}
+                        />
                     </Form.Group>
                 </Modal.Body>
+                
+                {/* footer with submit button */}
                 <Modal.Footer>
-                    <Button variant="primary" type="submit" onClick={handleCloseAddPopup}>
-                        Submit
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-
-            <button id='add-button' onClick={handleOpenAddPopup}>add</button>
-        </>
-    )
-}
-
-function EditPopup(show, handleClose) {
-    return (
-        <>
-            <Modal show={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Edit Recipe</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group>
-                        <Form.Label>Picture:</Form.Label>
-                        <button>Upload new picture</button>
-                        <br></br>
-                        <Form.Label>Title:</Form.Label>
-                        <Form.Control placeholder="Old Title" type="text"></Form.Control>
-                        <Form.Label>Energy Required:</Form.Label>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                Old Energy Level
-                            </Dropdown.Toggle>   
-                            <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">Energy Level 1</Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">Energy Level 2</Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">Energy Level 3</Dropdown.Item>
-                                <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
-                                <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown> 
-                        <Form.Label>Time Required:</Form.Label>
-                        <Form.Control placeholder="Old Time Required" type="text"></Form.Control>
-                        <Form.Label>Tags:</Form.Label>
-                        <Form.Control placeholder="Old Tags" type="text"></Form.Control>
-                        <Form.Label>Ingredients:</Form.Label>
-                        <Form.Control placeholder="Old Ingredients" type="text"></Form.Control>
-                        <Form.Label>Steps:</Form.Label>
-                        <Form.Control placeholder="Old Steps" type="text"></Form.Control>
-                        <Form.Label>Notes:</Form.Label>
-                        <Form.Control placeholder="Old Notes" type="text"></Form.Control>
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" type="submit">
+                    <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
                     </Button>
                 </Modal.Footer>
@@ -184,60 +193,50 @@ function EditPopup(show, handleClose) {
     )
 }
 
-function ViewPopup(show, handleClose) {
+// popup for filtering all recipes
+function FilterPopup(props) {
     return (
         <>
-            <Modal show="true">
+            {/* filter popup modal */}
+            <Modal show={props.showFilterPopup} onHide={props.handleCloseFilterPopup}>
+                
+                {/* modal header with title and close button */}
                 <Modal.Header closeButton>
-                    <Modal.Title>Recipe Title</Modal.Title>
+                    <Modal.Title>Filter Recipes</Modal.Title>
                 </Modal.Header>
+
                 <Modal.Body>
-                    <div className="row">
-                        <div className='col-6'>
-                            <div id="image"></div>
-                        </div>
-                        <div className='col-6'>
-                            <p>Energy Level</p>
-                            <p>Time Required</p>
-                        </div>
+                    <h6>Sort By:</h6>
+                    <select class="form-select">
+                        <option>Title (Default)</option>
+                        <option>Energy Required</option>
+                        <option>Time Required</option>
+                        <option>Percent of Ingredients in Inventory</option>
+                    </select>
+                    <br></br>
+                    <h6>Filter:</h6>
+                    <p>Energy Required</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            low
+                        </label>
                     </div>
-
-                    <p>tag 1 tag 2 tag 3</p>
-                    <h6>Ingredients</h6>
-                    <ul>
-                        <li>Ingredient 1</li>
-                        <li>Ingredient 2</li>
-                        <li>Ingredient 3</li>
-                        <li>Ingredient 4</li>
-                        <li>Ingredient 5</li>
-                        <li>Ingredient 6</li>
-                        <li>Ingredient 7</li>
-                        <li>Ingredient 8</li>
-                        <li>Ingredient 9</li>
-                        <li>Ingredient 10</li>
-                    </ul>
-                    <h6>Instructions</h6>
-                    <ol>
-                        <li>Step 1</li>
-                        <li>Step 2</li>
-                        <li>Step 3</li>
-                        <li>Step 4</li>
-                        <li>Step 5</li>
-                        <li>Step 6</li>
-                        <li>Step 7</li>
-                        <li>Step 8</li>
-                        <li>Step 9</li>
-                        <li>Step 10</li>
-                    </ol>
-                    <h6>Notes</h6>
-                    <p>Notes will appear here</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            medium
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
+                        <label class="form-check-label" for="flexCheckDefault">
+                            high
+                        </label>
+                    </div>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" type="submit">
-                        Submit
-                    </Button>
-                </Modal.Footer>
             </Modal>
+
         </>
     )
 }

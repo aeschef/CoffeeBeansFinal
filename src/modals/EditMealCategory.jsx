@@ -1,55 +1,43 @@
 import { useState, useEffect } from 'react'
 import Modal from "react-bootstrap/Modal"
 import Form from "react-bootstrap/Form"
-import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 
-const EditMealCategory = ({ open, onClose, prevMealCategory, quota, setQuota }) => {
-    const [mealQuota, setMealQuota] = useState(0)
-    const [mealCategory, updateMealCategory] = useState(prevMealCategory)
-    useEffect(()=>{
-      quota.map((item) => {
-        if (item.id === mealCategory) {
-          setMealQuota(item.quota)
-        }})
-      }, [])
+const EditMealCategory = ({ open, onClose, quotaIndex, prevQuota, setQuota}) => {
+    const [mealQuota, setMealQuota] = useState(prevQuota[quotaIndex].quota)
+
+    // Stores previous category name for the category being edited
+    const [mealCategory, updateMealCategory] = useState(prevQuota[quotaIndex].id)
+
   
-    if (!open) return null
-    
-
-
     const updateMeal = () => {
+    // TODO:  ERROR CHECKING - Check if category name already exists
+    // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
+      
      // 1. Make a shallow copy of the items
-     let quotas= [...quota];
+     let quotas= [...prevQuota];
       
 
      // 2. Make a shallow copy of the item you want to mutate
-     
-     let index = 0
-     if (mealCategory===quotas[0].id)
-       index = 0
-     else if (mealCategory === quotas[1].id)
-       index = 1
-     else if (mealCategory === quotas[2].id)
-       index = 2
-     
-     let item = {...quotas[index]};
+     let item = {...quotas[quotaIndex]};
 
-     // 3. Replace the property you're intested in
-      item.quota = mealQuota
-      item.id = mealCategory
-      // 4. Put it back into our array. N.B. we *are* mutating the array here, 
-     //    but that's why we made a copy first
-     quotas[index] = item;
-      console.log(quotas)
-     // 5. Set the state to our new copy
-     //setQuota(quotas)
+    // 3. Replace the property you're intested in
+    item.quota = mealQuota
+    item.id = mealCategory
+    
+    // 4. Put it back into our array. N.B. we *are* mutating the array here, 
+    // but that's why we made a copy first
+    quotas[quotaIndex] = item;
+    console.log(quotas)
+    
+    // 5. Set the state to our new copy
+    setQuota(quotas)
+    onClose(false)
     }
 
     const handleQuotaChange = (newQuota) => {
       setMealQuota(newQuota)
- 
-    
+
     }
 
     return (
@@ -57,9 +45,9 @@ const EditMealCategory = ({ open, onClose, prevMealCategory, quota, setQuota }) 
 
       <>
 
-      <Modal show={open} onHide={onClose} centered>
+      <Modal show={open} onHide={()=>onClose(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Add Meal</Modal.Title>
+          <Modal.Title>Edit Category</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
