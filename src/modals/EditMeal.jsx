@@ -17,25 +17,30 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   
   const [categoryChanged, setCategoryChanged] = useState(false)
   const [tagChanged, setTagChanged] = useState(false)
+
+  // Determines when a meal's details were changed so we know to update it. 
   const [mealDetailsChanged, setMealDetailsChanged] = useState(false)
 
 
   const [newMeal, setNewMeal] = useState(false)
 
+  // Set to true when the user wants to view the recipe or edit it. 
   const [viewRecipe, setViewRecipe] = useState(false)
 
+  // Stores either the name of the meal if it is by ingredients or the index of the recipe. 
   const [mealDetails, setMealDetails] = useState(currentMealDetails.id)
   const [updatedMeal, setUpdatedMeal] = useState(null)
 
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+  // Reinserts the meal into the quota array with updated information 
   function addNewMeal(categoryIndex) {
     // TODO:  ERROR CHECKING - Check if category name already exists
     // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
     let quotas= [...quota];
 
-     // 1. Make a shallow copy of the items
+     // if the category was changed, we need to insert the meal into the new category's list and remove it from the old category's list
      if (categoryChanged) {
         
       // Updates previous category so that it removes the meal from its list of items
@@ -43,57 +48,57 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
       
       let oldItems = categoryList.items
 
+      // Removes the meal from old category's list
       let newCategoryList = [
         ...oldItems.slice(0, currentMealIndex),
         ...oldItems.slice(currentMealIndex + 1)
       ]
-
       categoryList.items = newCategoryList
 
+      // Updates quota so that the category contains the list of meals with the updated meal removed
       quotas[currentCategoryIndex] = categoryList
 
-      // 2. Make a shallow copy of the item you want to mutate
+      // Makes a copy of the category to which we need to add the meal
       let item = {...quotas[categoryIndex]};
 
-      // 3. Update the current category's array of meals so that it stores the new meal
-      
+      // Update the current category's array of meals so that it stores the new meal
       let copyMeals = [...item.items, 
-        {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day}]
-
+        {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type:updatedMeal.type}]
       item.items = copyMeals
 
       console.log(item.items)
 
-      // 4. Put it back into our array. N.B. we *are* mutating the array here, 
-      // but that's why we made a copy first
+      // Reinsert the category back into the copy of the quotas
       quotas[categoryIndex] = item;
       console.log(quotas)
       
-      // 5. Set the state to our new copy
+      // Set the state to our new copy
       setQuota(quotas)
     }
+
+    // If the tag or meal details were changed, then the meal just needs to be reinserted in the same category's list of meals
     else if (tagChanged || mealDetailsChanged) {
 
-      // 2. Make a shallow copy of the item you want to mutate
+      // Makes a copy of the quota array 
       let prevCategoryInfo = {...quotas[currentCategoryIndex]};
 
+      // Copies the old array of meals for the category
       let oldItems = prevCategoryInfo.items
 
-      
+      // Updates the meal so that it contains the new information      
       let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type: updatedMeal.type}, 
+        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type:updatedMeal.type}, 
         ...oldItems.slice(currentMealIndex + 1)
       ]
 
-      // 3. Update the current category's array of meals so that it stores the meal with updated information
+      // Update the current category's array of meals so that it stores the meal with updated information
       prevCategoryInfo.items = newCategoryList
 
-      // 4. Put it back into our array. N.B. we *are* mutating the array here, 
-      // but that's why we made a copy first
+      // Adds the category back into the array
       quotas[categoryIndex] = prevCategoryInfo;
       console.log(quotas)
       
-      // 5. Set the state to our new copy
+      // Set the state to our new copy
       setQuota(quotas)
     }
     onClose(false)
@@ -110,7 +115,8 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   }, [selectedDay])
 
 
-  // Keeps track if user changes the meal category
+  // Keeps track if user changes the meal category, meaning that the meal needs to be inserted into another category's list of meals
+  // and removed from old category's list
   useEffect(()=> {
     if (selectedCategory !== quota[currentCategoryIndex].id) {
       setCategoryChanged(true)
@@ -120,7 +126,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   }, [selectedCategory])
 
 
-  // Keeps track if user changed meal description
+  // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
     if (mealDetails !== currentMealDetails.description) {
       setMealDetailsChanged(true)
@@ -129,6 +135,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
     }
   }, [mealDetails])
 
+  // Executed if the user 
   useEffect(()=> {
     if (newMeal) {
       console.log(updatedMeal)
@@ -150,28 +157,28 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
   if (!open) return null
 
+
+  // When user selects the update button, this handler will execute and will set the eupdated meal variable so that it
+  // contains the information needed to add the meal to the list again.
   const handleUpdate = async (e) => {
     e.preventDefault()
 
+    // If the category, tag info or meal was changed, it will be reinserted into the quota.
     if (categoryChanged || tagChanged || mealDetailsChanged) {
       setUpdatedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, type: currentMealDetails.type})
       console.log("added meal")
       setNewMeal(true)
     }
+
+    // If nothing was changed, the modal will close
     else {
       onClose(false)
     }
 
   }
 
-
-
   return (
-
-
-
     <>
-
     <Modal show={open} onHide={onClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Edit Meal</Modal.Title>
@@ -181,6 +188,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
         <Form>
           <Form.Group className="mb-3">
             <Form.Label className="edit-modal-header">Meal Name</Form.Label>
+            
             {/* Shows meal title if meal type is Ingredients*/}
             {currentMealDetails.type === "Ingredients" && 
                   <Form.Control
@@ -221,6 +229,8 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
             </Form.Select>
             
             <Form.Label className="edit-modal-header">Day</Form.Label>
+            
+            {/* Displays the dropdown of tag sfo rhte user to choose from. */}
             <Form.Select 
               aria-label="Default select example" 
               as="select"
@@ -229,8 +239,8 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                 console.log("e.target.value", e.target.value);
                 setDay(e.target.value);
               }}
-                
               >
+                {/* Displays the tags listed in the days array */ }
                 {days.map(day => (
                       <option
                         key={day}
@@ -238,21 +248,24 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                         {day}
                       </option>
                     ))}
+                {/* Allows user to not select tag */}
                 <option value="None">None</option>
             </Form.Select>
 
- 
+            {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
             {currentMealDetails.type === "Recipe" && 
                   <Row className="my-3">
                     <Button onClick={()=>setViewRecipe(true)}>
                      View/Edit Recipe
                     </Button>
+
+                    {/* Modal that appears if the user selects the view button recipe. 
+                        Displays recipe information. */}
                     <ViewRecipePopup 
                     recipes={recipes} showViewPopup={viewRecipe} 
                     handleCloseViewPopup={()=>setViewRecipe(false)} 
                     indexOfRecipeToView={mealDetails} 
                     setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
-
                   </Row>
                 
             }

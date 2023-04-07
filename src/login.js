@@ -19,8 +19,10 @@ import {
   BrowserRouter
 } from "react-router-dom";
 
+// Screen that is displayed when user is first logging in
 const LoginHome = ({login, setLogin}) => {
   console.log(login)
+  
   // TODO: Verify if account is valid before logging in. 
   function handleSubmit() {
     setLogin(true)

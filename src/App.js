@@ -4,29 +4,18 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarElements from './NavbarElements';
 import LoginHome from './login';
-import GroceryListHome from './grocery_list';
-import inventory from './inventory';
-import meal_plan from './meal_plan';
-import recipes from './recipes';
-import account from './account';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  BrowserRouter
-} from "react-router-dom";
 
 function App() {
 
+  // determines if user is logged in or not.
   const [login, setLogin] = useState(false)
-
 
 {/*export default class App extends React.Component{*/}
   {/*render(){*/}
   return (
     
       <div contextMenu=''>
+            {/* If user is logged in, display home screen, otherwise user will be prompted to log in/sign up. */}
             {login ? 
             <NavbarElements></NavbarElements> :
             <LoginHome login={login} setLogin={setLogin}/>

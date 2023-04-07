@@ -8,12 +8,11 @@ import ViewRecipePopup from './ViewRecipe'
 import RecipeCards from '../RecipeCards'
 
 
+// Modal that displays a list of recipes for the user to choose from when adding a meal by recipe to meal plan
 export default function ChooseRecipe(props) {
 
 const handleSubmit = () => console.log("hi")
 console.log(props.showRecipeModal)
-
-const viewOption = false;
 
 return (<Modal show={props.showRecipeModal} onHide={()=>props.setShowRecipeModal(false)}>
                 
