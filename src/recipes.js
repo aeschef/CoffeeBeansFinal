@@ -3,11 +3,16 @@ import React, { useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import "./recipes.css";
-import ViewRecipePopup from './modals/ViewRecipe'
-import RecipeCards from './RecipeCards'
+import ViewRecipePopup from './modals/ViewRecipe';
+import RecipeCards from './RecipeCards';
+import RecipeSearchBar from './RecipeSearchBar';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
+    
+    // searchInput for the search bar
+    const [searchInput, setSearchInput] = useState("");
+    
     // variables and functions for Add Recipe popup
     const [showAddPopup, setShowAddPopup] = useState(false);
     const handleOpenAddPopup = () => setShowAddPopup(true);
@@ -40,15 +45,12 @@ export default function RecipesHome(props) {
                 </div>
             </div>
             
-            {/* search bar - TODO: make functional */}
-            <div className='search-bar'>
-                <input type='text' placeholder='Search'></input>
-            </div>
-            
+            {/* search bar */}
+            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput}></RecipeSearchBar>
+
             {/* recipe cards */}
             <div className='recipe-cards'>
-
-                <RecipeCards recipes={props.recipes} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
@@ -195,6 +197,55 @@ function AddRecipePopup(props) {
 
 // popup for filtering all recipes
 function FilterPopup(props) {
+
+    // energy levels mapped to checkboxes
+    const energyLevels = ["low", "medium", "high"];
+    const energyLevelCheckboxes = energyLevels.map((energyLevel, index) => 
+    {
+        const id = "energyCheck" + index;
+        
+        return (
+            <div class="form-check" key={index}>
+                <input class="form-check-input" type="checkbox" value="" id={id}></input>
+                <label class="form-check-label" for={id}>
+                    {energyLevel}
+                </label>
+            </div>
+        )
+    })
+
+    // time levels mapped to checkboxes
+    const timeLevels = ["< 10 mins", "10-20 mins", "20-40 mins", "40-60 mins", "> 1 hour"];
+    const timeLevelCheckboxes = timeLevels.map((timeLevel, index) => 
+    {
+        const id = "timeCheck" + index;
+        
+        return (
+            <div class="form-check" key={index}>
+                <input class="form-check-input" type="checkbox" value="" id={id}></input>
+                <label class="form-check-label" for={id}>
+                    {timeLevel}
+                </label>
+            </div>
+        )
+    })
+
+    // inventory levels mapped to checkboxes
+    const inventoryLevels = ["100%", "75%-100%", "50%-75%", "25%-50%", "0%-25%"];
+    const inventoryLevelCheckboxes = inventoryLevels.map((inventoryLevel, index) => 
+    {
+        const id = "inventoryCheck" + index;
+        
+        return (
+            <div class="form-check" key={index}>
+                <input class="form-check-input" type="checkbox" value="" id={id}></input>
+                <label class="form-check-label" for={id}>
+                    {inventoryLevel}
+                </label>
+            </div>
+        )
+    })
+
     return (
         <>
             {/* filter popup modal */}
@@ -205,36 +256,37 @@ function FilterPopup(props) {
                     <Modal.Title>Filter Recipes</Modal.Title>
                 </Modal.Header>
 
+                {/* modal body with sort and filter options */}
                 <Modal.Body>
+                    
+                    {/* sorting options */}
                     <h6>Sort By:</h6>
                     <select class="form-select">
-                        <option>Title (Default)</option>
-                        <option>Energy Required</option>
-                        <option>Time Required</option>
-                        <option>Percent of Ingredients in Inventory</option>
+                        <option>Title (A to Z)</option>
+                        <option>Energy Required (Low to High)</option>
+                        <option>Time Required (Low to High)</option>
+                        <option>Percent of Owned Ingredients (High to Low)</option>
                     </select>
                     <br></br>
+                    
+                    {/* filtering options */}
                     <h6>Filter:</h6>
                     <p>Energy Required</p>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            low
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            medium
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault"></input>
-                        <label class="form-check-label" for="flexCheckDefault">
-                            high
-                        </label>
-                    </div>
+                    <div>{energyLevelCheckboxes}</div>
+                    <p>Time Required</p>
+                    <div>{timeLevelCheckboxes}</div>
+                    <p>Ingredients Already Owned</p>
+                    <div>{inventoryLevelCheckboxes}</div>
                 </Modal.Body>
+
+                <Modal.Footer>
+                    <Button variant="secondary" type="submit" onClick={props.handleCloseFilterPopup}>
+                        Reset
+                    </Button>
+                    <Button variant="primary" type="submit" onClick={props.handleCloseFilterPopup}>
+                        Submit
+                    </Button>
+                </Modal.Footer>
             </Modal>
 
         </>

@@ -1,17 +1,17 @@
 
-import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import Modal from 'react-bootstrap/Modal';
 import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe'
 
 export default function RecipeCards(props) {
-  console.log(props.recipes)
+  
+  // TODO: add a "no recipes to show" message if needed
+  
   // variables and functions for View Recipe popup
   const [showPopup, setShowPopup] = useState(false);
   const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
-   
+  
+  // Sets the needed information in order to open the view recipe modal of the selected recipe
   const handleOpenViewPopup = (index) => {
       setIndexOfRecipeToView(index);
       setShowPopup(true);
@@ -19,9 +19,15 @@ export default function RecipeCards(props) {
 
   const handleCloseViewPopup = () => setShowPopup(false);
 
+  // When user clicks a recipe, this handler determines the action that should be taken next.
   const handleClick = (index) => {
+    
+    // If view is true, this means that the view modal of the recipe should be displayed
     if (props.view === true) {
       handleOpenViewPopup(index)
+
+    // Otherwise, if view is false, this means that the recipe is just selected to be added to the meal plan.
+    // And therefore its index is being saved.
     } else  {
       props.setAddedRecipe(index)
       props.setShowPopup(false)
