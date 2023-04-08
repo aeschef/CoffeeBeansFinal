@@ -134,7 +134,7 @@ return(
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, notes: x.notes, type: x.type}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
               {x.type === "Ingredients" ? x.label : props.recipes[x.label].title}

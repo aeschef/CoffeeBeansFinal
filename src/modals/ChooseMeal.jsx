@@ -7,7 +7,6 @@ import Row from 'react-bootstrap/Row'
 import '../css/meal_plan.css'
 import '../recipes.css'
 import RecipeCards from '../RecipeCards';
-import ChooseRecipe from './ChooseRecipe';
 import ViewRecipePopup from './ViewRecipe';
 import RecipeSearchBar from '../RecipeSearchBar';
 import FilterPopup from './FilterItems';

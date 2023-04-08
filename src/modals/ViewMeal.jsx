@@ -78,6 +78,12 @@ const ViewMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                 
             }
 
+            {currentMealDetails.type === "Ingredients" && currentMealDetails.notes &&
+            <>
+              {/* Displays the note information associated with the user's inputted meal idea */} 
+              <Row><Form.Label className="edit-modal-header">Notes</Form.Label></Row>
+              <Row><Form.Label>{currentMealDetails.notes}</Form.Label></Row>
+            </>}
           {/* Modal that will appear if the user wants to edit a meal's information. */}   
           {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} quota={quota} setQuota={setQuota} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
           currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}/>}
