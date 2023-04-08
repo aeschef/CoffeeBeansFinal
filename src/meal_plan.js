@@ -96,7 +96,7 @@ return(
         <div>March 1 Week</div>
       </Row>
     </div>
-    
+
     {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
     {quotas.map((category, j) =>  (
     <div>
@@ -177,6 +177,8 @@ return(
     setMeal={setMeal}
     recipes={props.recipes}
     setRecipes={props.setRecipes}
+    personalGroceryList={props.itemsInPersonalGL} 
+    addToGL={props.addPersonalItemGL}
   />
 
   {/* Displays popup to edit category name and quota for the selected category. */}
