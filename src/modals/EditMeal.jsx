@@ -5,8 +5,9 @@ import Button from 'react-bootstrap/Button'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import ViewRecipePopup from './ViewRecipe';
+import RecipeCards from '../RecipeCards'
 
-
+// Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
   
   // Saves category selected when planning a meal
@@ -255,10 +256,11 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
             {currentMealDetails.type === "Recipe" && 
                   <Row className="my-3">
-                    <Button onClick={()=>setViewRecipe(true)}>
-                     View/Edit Recipe
-                    </Button>
 
+                    {/* Displays card for the recipe associated with the meal*/}
+                    <RecipeCards recipes={recipes.filter((recipe, index) => (index === mealDetails))} 
+                    setRecipes={setRecipes} onClickFunction={()=>setViewRecipe(true)} groceryList={groceryList} addToGL={addToGL} view={true}/>
+                  
                     {/* Modal that appears if the user selects the view button recipe. 
                         Displays recipe information. */}
                     <ViewRecipePopup 
@@ -267,14 +269,11 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                     indexOfRecipeToView={mealDetails} 
                     setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
                   </Row>
-                
             }
                   
 
           </Form.Group>
         </Form> 
-
-
 
       </Modal.Body>
       <Modal.Footer>

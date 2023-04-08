@@ -29,16 +29,25 @@ export default function RecipeCards(props) {
     // Otherwise, if view is false, this means that the recipe is just selected to be added to the meal plan.
     // And therefore its index is being saved.
     } else  {
-      props.setAddedRecipe(index)
-      props.setShowPopup(false)
+      // If the user had alreayd selected the recipe but clicked it again, the recipe will be deselected.
+      if (props.addedRecipe === index ) {
+        props.setAddedRecipe(-1)
+      
+      // Otherwise, added recipe will be set to store the index of the selected recipe
+      } else {
+        props.setAddedRecipe(index)
+
+        // Sets custom to false to no longer select the custom meal option
+        props.setCustom(false)
+      }     
     }
   }
+  {/* If the recipes are being shown on the meal plan page, the selected recipe will appear green. */}
 
   return (
       <div>
       {props.recipes.map((recipe, index) => (
-        
-        <div className='row pe-auto' id='recipe-card' onClick={()=>handleClick(index)} key={index}>
+        <div className={props.addedRecipe === index ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(index)} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
