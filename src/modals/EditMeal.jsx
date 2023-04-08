@@ -8,7 +8,7 @@ import ViewRecipePopup from './ViewRecipe';
 import RecipeCards from '../RecipeCards'
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
-const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
+const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
   
   // Saves category selected when planning a meal
   const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
@@ -22,6 +22,9 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   // Determines when a meal's details were changed so we know to update it. 
   const [mealDetailsChanged, setMealDetailsChanged] = useState(false)
 
+  // Stores notes information for meal ideas and determines when the user has changed the entry
+  const [notes, setNotes] = useState(currentMealDetails.notes)
+  const [notesChanged, setNotesChanged] = useState(false)
 
   const [newMeal, setNewMeal] = useState(false)
 
@@ -64,7 +67,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
       // Update the current category's array of meals so that it stores the new meal
       let copyMeals = [...item.items, 
-        {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type:updatedMeal.type}]
+        {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, notes: updatedMeal.notes, type:updatedMeal.type}]
       item.items = copyMeals
 
       console.log(item.items)
@@ -88,7 +91,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
 
       // Updates the meal so that it contains the new information      
       let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, type:updatedMeal.type}, 
+        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, notes:updatedMeal.notes, type:updatedMeal.type}, 
         ...oldItems.slice(currentMealIndex + 1)
       ]
 
@@ -103,6 +106,7 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
       setQuota(quotas)
     }
     onClose(false)
+    closeViewPopup()
   }
 
   // Keeps track if user changed tag. 
@@ -125,6 +129,15 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
       setCategoryChanged(false)
     }
   }, [selectedCategory])
+
+
+  // Keeps track when user changes the notes section for a meal idea so that we know to update its old entry in a meal category's list
+  useEffect(()=> {
+    if (notes && notes !== currentMealDetails.notes) {
+      setNotesChanged(true)
+    }
+  }, [notes])
+
 
 
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
@@ -165,8 +178,8 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
     e.preventDefault()
 
     // If the category, tag info or meal was changed, it will be reinserted into the quota.
-    if (categoryChanged || tagChanged || mealDetailsChanged) {
-      setUpdatedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, type: currentMealDetails.type})
+    if (categoryChanged || tagChanged || mealDetailsChanged || notesChanged) {
+      setUpdatedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, notes: notes, type: currentMealDetails.type})
       console.log("added meal")
       setNewMeal(true)
     }
@@ -270,6 +283,16 @@ const EditMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
                     setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
                   </Row>
             }
+
+            {currentMealDetails.type === "Ingredients" && 
+            <>
+              {/* Displays the note information associated with the user's inputted meal idea */} 
+              <Form.Label className="edit-modal-header">Notes</Form.Label>
+              <div class="input-group">
+                <textarea class="form-control" aria-label="With textarea" value={notes} 
+                onChange={(e)=>setNotes(e.target.value)}></textarea>
+              </div>
+            </>}
                   
 
           </Form.Group>

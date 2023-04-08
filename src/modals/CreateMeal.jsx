@@ -6,6 +6,8 @@ import '../css/meal_plan.css'
 import '../recipes.css'
 import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
+import React from 'react'
+
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
 const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal,
@@ -38,7 +40,8 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   // Determines which screen of creating meal the user is viewing
   const [tab, setTab] = useState(0)
 
-  // Days of the week used for tag names
+  // Days of the week used for tag names, but users can also add their own 
+  const [tags, setTags] = useState([{value: "Monday", label: "Monday"}, {value: "Tuesday", label:"Tuesday"}, {value:"Wednesday", label: "Wednesday"}])
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   // Once the user is done entering the information to create a meal, this function is called to then add the meal 
@@ -56,7 +59,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
     // Update the current category's array of meals so that it stores the new meal
     let copyMeals = [...item.items, 
-      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, type:type}]
+      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, notes: addedMeal.notes, type:type}]
     item.items = copyMeals
     console.log(item.items)
 
@@ -142,7 +145,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails})
+      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, notes:""})
       console.log("added recipe")
       setNewMeal(true)
     }
