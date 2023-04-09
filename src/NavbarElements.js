@@ -13,6 +13,7 @@ import InventoryIcon from './svg/inventory.svg'
 import MealPlanIcon from './svg/meal_plan.svg'
 import RecipeIcon from './svg/recipes.svg'
 import GroceryListIcon from './svg/grocery_list.svg'
+import AccountIcon from './svg/account.svg'
 
 import GroceryListHome from './grocery_list.js';
 import InventoryHome from './inventory.js';
@@ -101,19 +102,22 @@ function NavbarElements() {
                 </span>
                 <span className="navbar-text">
                     <a href="#" className="">
-                        <img src={MealPlanIcon} alt="Edit Pencil Icon" className="navbar-icon" />
+                        <img src={MealPlanIcon} alt="Meal Plan Page Icon" className="navbar-icon" />
                     </a>
                     <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
                     { }
                 </span>
                 <span className="navbar-text">
                     <a href="#" className="">
-                        <img src={RecipeIcon} alt="Edit Pencil Icon" className="navbar-icon" />
+                        <img src={RecipeIcon} alt="Recipe Page Icon" className="navbar-icon" />
                     </a>
                     <Link to="/recipes.js" className='nav-link'>Recipes</Link>
                     { }
                 </span>
                 <span className="navbar-text">
+                    <a href="#" className="">
+                        <img src={AccountIcon} alt="Account Page Icon" className="navbar-icon" />
+                    </a>
                     <Link to="/account.js" className='nav-link'>Account</Link>
                     { }
                 </span>
