@@ -9,6 +9,42 @@ import './css/account.css';
 import Stack from 'react-bootstrap/Stack'
 import Alert from 'react-bootstrap/Alert';
 
+function ViewHelpPage() {
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+
+    return (
+        <Row>
+            <Button onClick={handleShow}>Frequently Asked Questions</Button>
+            <Modal show={show} fullscreen={true} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Frequently Asked Questions</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                        <ol>
+                            <li class="questions">What does the energy stand for?
+                                <ul>
+                                    <li class="answers">Answer</li>
+                                </ul>
+                            </li>
+                            <li class="questions">Can I edit the categories?
+                                <ul>
+                                    <li class="answers">Answer</li>
+                                </ul>
+                            </li>
+                            <li class="questions">How do I add a new recipe?
+                                <ul>
+                                    <li class="answers">Answer</li>
+                                </ul>
+                            </li>
+                        </ol>
+                </Modal.Body>
+            </Modal>
+        </Row>
+    );
+}
+
 /**
  * renders button to view roommates 
  */
@@ -16,7 +52,7 @@ function ViewRoommates() {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
- 
+
     /** TODO starting next week roommate information will be retrieved through the database 
      * via a randomly generated access code BUT for now I will simply use dummy information*/
     const roommieList = ["Annabelle", "Luis", "Mirya", "Jane"];
@@ -31,17 +67,17 @@ function ViewRoommates() {
                 <Modal.Body>
                     <Container>
                         <Row>
-                        <ol>
-                            <Stack gap={5}>
-                                {roommieList.map(reptile => (
-                                    <li key={reptile}>{reptile}</li>
-                                ))}
-                            </Stack>
-                        </ol>
+                            <ol>
+                                <Stack gap={5}>
+                                    {roommieList.map(reptile => (
+                                        <li key={reptile}>{reptile}</li>
+                                    ))}
+                                </Stack>
+                            </ol>
                         </Row>
                     </Container>
 
-                    
+
                     <Button onClick={handleClose}>Leave</Button>
                 </Modal.Body>
             </Modal>
@@ -50,19 +86,19 @@ function ViewRoommates() {
 }
 
 /*render's signoutbutton and ability */
-function SignOut(){
+function SignOut() {
     return (
         <Row className="justify-content-md-center">
             <Col>
                 <Button>Sign Out</Button>
             </Col>
-            
+
         </Row>
     );
 }
 
-function ChangePassword(){
-    
+function ChangePassword() {
+
     const placeholderPassword = "abc123";
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
@@ -77,12 +113,12 @@ function ChangePassword(){
 
     /* checks to see if password change is valid and handles that */
     const handlePassChange = () => {
-        if(oldPass !== placeholderPassword){
+        if (oldPass !== placeholderPassword) {
             alert("not valid login");
-        } else if(pass1 === pass2){
+        } else if (pass1 === pass2) {
             setNew(pass1);
             handleClose();
-        } else{
+        } else {
             alert("passwords don't match");
         }
     };
@@ -95,20 +131,17 @@ function ChangePassword(){
         setShow(false);
     };
 
-    const setOldPassword = (event)=>{
+    const setOldPassword = (event) => {
         setOld(event.target.value);
     };
 
-    const setFirst = (event)=>{
+    const setFirst = (event) => {
         setPass1(event.target.value);
     };
 
-    const setSecond = (event)=>{
+    const setSecond = (event) => {
         setPass2(event.target.value);
     };
-
-
-    
 
     return (
         <Row>
@@ -149,7 +182,7 @@ function ChangePassword(){
                 </Modal.Body>
             </Modal>
 
-            
+
         </Row>
     );
 }
@@ -176,26 +209,27 @@ export default class AccountHome extends Component {
                         <h1>Hi Mirya!</h1>
                     </Col>
                 </Row>
-                
+
                 <Row>
                     <Stack gap={4} >
                         <ViewRoommates></ViewRoommates>
                         <Profile></Profile>
                         <ChangePassword></ChangePassword>
+                        <ViewHelpPage></ViewHelpPage>
                     </Stack>
                 </Row>
-            
+
                 <Row>
-                <Alert key='success' variant='success'>
-                    Access Code: 
-                </Alert>
+                    <Alert key='success' variant='success'>
+                        Access Code:
+                    </Alert>
                 </Row>
                 <SignOut></SignOut>
-                
-               
-        
+
+
+
             </Container>
         );
-        
+
     }
 }
