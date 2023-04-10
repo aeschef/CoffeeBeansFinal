@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react'
+import React, { useState, Component, useEffect } from 'react'
 import { Navbar, Nav } from 'react'
 import './nav_bar.css';
 import {
@@ -15,9 +15,60 @@ import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
+import { getDatabase,  ref, set, child, get, update, getReference, push  } from "firebase/database";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
-function NavbarElements() {
+function NavbarElements(props) {
+    const db = getDatabase(props.app)
+    console.log(db)
+    const auth = getAuth(props.app)
+    
+    // method called when user first signs up for our app in order to populate database with their collection
+    function writeUserData() {
+      
+      // contains default structure to store data
+      let dataStructure = require('./newUser.json');
+      console.log("database")
+      console.log(dataStructure)
+      // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
+     
+       // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
+       get(child(ref(db), `users/`+auth.currentUser.uid)).then((snapshot) => {
+        
+        // If a collection exists for the specified user UID:
+        if (snapshot.exists()) {
+          console.log(snapshot.val());
+          // addFavorites(snapshot.val().favorites);
+        
+        // If a collection does not exist for the user, create one. 
+        }   
+        })
+    }
+
+
+    // Populates pages with data for the current user
+    useEffect(()=> {
+      const dbRef = ref(db);
+
+      // Uses the current user's UID to retrieve their associated data in firebase. 
+      get(child(dbRef, `users/`+auth.currentUser.uid)).then((snapshot) => {
+        
+        // If a collection exists for the specified user UID:
+        if (snapshot.exists()) {
+          console.log(snapshot.val());
+          // addFavorites(snapshot.val().favorites);
+        
+        // If a collection does not exist for the user, create one. 
+        } else {
+
+          // Creates empty data structure for new user.
+          // writeUserData()
+          console.log("user does not yet have information")
+        }
+      })
+    }, [])
+
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
         {value:"carrots", label:"carrots"},

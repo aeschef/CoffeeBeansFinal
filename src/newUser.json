@@ -1,0 +1,47 @@
+{
+  "account" : {
+    "groupID": "",
+    "name": {
+      "first": "",
+      "last": ""
+    },
+    "roommates": {
+
+    }
+  },
+  "grocery_list": {
+    "personal": {
+
+    },
+    "shared" : {
+
+    }
+  },
+  "inventory": {
+    "personal": {
+
+    },
+    "shared" : {
+
+    }
+  },
+  "meal_plan": {
+    "categories": {
+
+    },
+    "tags": {
+
+    }, 
+    "meals": {
+
+    }
+  },
+  "recipes": {
+    "tags": {
+
+    },
+    "recipes_list": {
+
+    }
+  }
+}
