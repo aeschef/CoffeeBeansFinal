@@ -205,9 +205,9 @@ function FilterPopup(props) {
         const id = "energyCheck" + index;
         
         return (
-            <div class="form-check" key={index}>
-                <input class="form-check-input" type="checkbox" value="" id={id}></input>
-                <label class="form-check-label" for={id}>
+            <div className="form-check" key={index}>
+                <input className="form-check-input" type="checkbox" value="" id={id}></input>
+                <label className="form-check-label" htmlFor={id}>
                     {energyLevel}
                 </label>
             </div>
@@ -221,9 +221,9 @@ function FilterPopup(props) {
         const id = "timeCheck" + index;
         
         return (
-            <div class="form-check" key={index}>
-                <input class="form-check-input" type="checkbox" value="" id={id}></input>
-                <label class="form-check-label" for={id}>
+            <div className="form-check" key={index}>
+                <input className="form-check-input" type="checkbox" value="" id={id}></input>
+                <label className="form-check-label" htmlFor={id}>
                     {timeLevel}
                 </label>
             </div>
@@ -237,9 +237,9 @@ function FilterPopup(props) {
         const id = "inventoryCheck" + index;
         
         return (
-            <div class="form-check" key={index}>
-                <input class="form-check-input" type="checkbox" value="" id={id}></input>
-                <label class="form-check-label" for={id}>
+            <div className="form-check" key={index}>
+                <input className="form-check-input" type="checkbox" value="" id={id}></input>
+                <label className="form-check-label" htmlFor={id}>
                     {inventoryLevel}
                 </label>
             </div>
@@ -261,7 +261,7 @@ function FilterPopup(props) {
                     
                     {/* sorting options */}
                     <h6>Sort By:</h6>
-                    <select class="form-select">
+                    <select className="form-select">
                         <option>Title (A to Z)</option>
                         <option>Energy Required (Low to High)</option>
                         <option>Time Required (Low to High)</option>
