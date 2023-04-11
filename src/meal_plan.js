@@ -90,11 +90,6 @@ return(
         <Row>
             <h1>Meal Plan</h1>
         </Row>      
-    
-   
-      <Row>
-        <div>March 1 Week</div>
-      </Row>
     </div>
 
     {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
