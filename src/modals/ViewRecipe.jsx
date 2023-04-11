@@ -188,7 +188,7 @@ export default function ViewRecipePopup(props) {
                           <h6>Energy Required</h6>
                           <p>{currentRecipe?.energyRequired !== "" ? currentRecipe?.energyRequired + " Energy" : ""}</p>
                           <h6>Time Required</h6>
-                          <p>{currentRecipe?.timeRequired}</p>
+                          <p>{currentRecipe?.hoursRequired !== "0" ? currentRecipe?.hoursRequired + " hours " : ""}{currentRecipe?.minsRequired !== "0" ? currentRecipe?.minsRequired + " mins" : ""}</p>
                       </div>
                   </div>
 

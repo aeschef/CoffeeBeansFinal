@@ -53,7 +53,9 @@ export default function RecipeCards(props) {
                 <h4>{recipe.title}</h4>
                 <div className='row'>
                     <div className='col-6'>{recipe.energyRequired + " Energy"}</div>
-                    <div className='col-6'>{recipe.timeRequired}</div>
+                    <div className='col-6'>
+                      {recipe.hoursRequired !== "0" ? recipe.hoursRequired + " hours " : ""}{recipe.minsRequired !== "0" ? recipe.minsRequired + " mins" : ""}
+                    </div>
                 </div>
                 <p className='tags'>{recipe.tags?.join(", ")}</p>
             </div>

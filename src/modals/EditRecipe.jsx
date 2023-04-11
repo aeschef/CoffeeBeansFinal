@@ -121,14 +121,32 @@ export default function EditRecipePopup(props) {
                         </select>
                         <br></br>
 
-                        {/* time input */}
+                        {/* time required input - TODO: only take number */}
                         <Form.Label>Time Required:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="timeRequired"
-                            value={props.inputs?.timeRequired || ""}
-                            onChange={handleChange}
-                        />
+                        <div className='row'>
+                            <div className="col-3">
+                                <Form.Control 
+                                    type="text" 
+                                    name="hoursRequired"
+                                    value={props.inputs?.hoursRequired}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-2">
+                                <p>hours</p>
+                            </div>
+                            <div className="col-3">
+                                <Form.Control 
+                                    type="text" 
+                                    name="minsRequired"
+                                    value={props.inputs?.minsRequired}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-2">
+                                <p>mins</p>
+                            </div>
+                        </div>
 
                         {/* tags input */}
                         <Form.Label>Tags:</Form.Label>

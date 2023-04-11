@@ -80,7 +80,13 @@ function AddRecipePopup(props) {
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
         props.handleCloseAddPopup();
-        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, timeRequired: inputs.timeRequired, tags: inputs.tags, ingredients: inputs.ingredients, notes: inputs.notes}];
+        if (!("minsRequired" in inputs)) {
+            setInputs(values => ({...values, ["minsRequired"]: 0}))
+        }
+        if (!("hoursRequired" in inputs)) {
+            setInputs(values => ({...values, ["hoursRequired"]: 0}))
+        }
+        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags, ingredients: inputs.ingredients, notes: inputs.notes}];
         props.setRecipes(nextRecipes);
     }
 
@@ -127,14 +133,33 @@ function AddRecipePopup(props) {
                         </select>
                         <br></br>
 
-                        {/* time required entry - TODO: label mins/hrs, only take number */}
+                        {/* time required entry - TODO: only take number */}
                         <Form.Label>Time Required:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="timeRequired"
-                            value={inputs.timeRequired || ""}
-                            onChange={handleChange}
-                        />
+                        <div className='row'>
+                            <div className="col-3">
+                                <Form.Control 
+                                    type="text" 
+                                    name="hoursRequired"
+                                    value={inputs.hoursRequired || ""}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-2">
+                                <p>hours</p>
+                            </div>
+                            <div className="col-3">
+                                <Form.Control 
+                                    type="text" 
+                                    name="minsRequired"
+                                    value={inputs.minsRequired || ""}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <div className="col-2">
+                                <p>mins</p>
+                            </div>
+                        </div>
+                        
 
                         {/* tags entry - TODO: format differently */}
                         <Form.Label>Tags:</Form.Label>
