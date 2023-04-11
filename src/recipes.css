@@ -67,4 +67,7 @@ h1 {
     border-radius: 100%;
 }
 
+#select-energy-level {
+    display: none;
+}
 

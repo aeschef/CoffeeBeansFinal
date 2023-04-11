@@ -186,7 +186,7 @@ export default function ViewRecipePopup(props) {
                       {/* energy and time required for this recipe */}
                       <div className='col-6'>
                           <h6>Energy Required</h6>
-                          <p>{currentRecipe?.energyRequired}</p>
+                          <p>{currentRecipe?.energyRequired !== "" ? currentRecipe?.energyRequired + " Energy" : ""}</p>
                           <h6>Time Required</h6>
                           <p>{currentRecipe?.timeRequired}</p>
                       </div>

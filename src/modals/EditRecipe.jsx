@@ -112,25 +112,14 @@ export default function EditRecipePopup(props) {
 
                         {/* energy input */}
                         <Form.Label>Energy Required:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="energyRequired"
-                            value={props.inputs?.energyRequired || ""}
-                            onChange={handleChange}
-                        />
-                        {/* TODO: change back to dropdown
-                          <Dropdown>
-                          <Dropdown.Toggle variant="success" id="dropdown-basic">
-                              Old Energy Level
-                          </Dropdown.Toggle>   
-                          <Dropdown.Menu>
-                              <Dropdown.Item href="#/action-1">Energy Level 1</Dropdown.Item>
-                              <Dropdown.Item href="#/action-2">Energy Level 2</Dropdown.Item>
-                              <Dropdown.Item href="#/action-3">Energy Level 3</Dropdown.Item>
-                              <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
-                              <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
-                          </Dropdown.Menu>
-                      </Dropdown>  */}
+                        <br></br>
+                        <select name="energyRequired" onChange={handleChange} defaultValue={props.inputs?.energyRequired || ""}>
+                            <option value="" id="select-energy-level">Select an Energy Level</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                        <br></br>
 
                         {/* time input */}
                         <Form.Label>Time Required:</Form.Label>

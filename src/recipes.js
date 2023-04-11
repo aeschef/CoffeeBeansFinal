@@ -50,7 +50,7 @@ export default function RecipesHome(props) {
 
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
@@ -116,26 +116,16 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
                         
-                        {/* energy entry - TODO: change back to dropdown */}
+                        {/* energy entry */}
                         <Form.Label>Energy Required:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="energyRequired"
-                            value={inputs.energyRequired || ""}
-                            onChange={handleChange}
-                        />
-                        {/* <Dropdown>
-                            <Dropdown.Toggle variant="success" id="dropdown-basic">
-                                Select Energy Level
-                            </Dropdown.Toggle>   
-                            <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1">Energy Level 1</Dropdown.Item>
-                                <Dropdown.Item href="#/action-2">Energy Level 2</Dropdown.Item>
-                                <Dropdown.Item href="#/action-3">Energy Level 3</Dropdown.Item>
-                                <Dropdown.Item href="#/action-4">Energy Level 4</Dropdown.Item>
-                                <Dropdown.Item href="#/action-5">Energy Level 5</Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>  */}
+                        <br></br>
+                        <select name="energyRequired" onChange={handleChange}>
+                            <option id="select-energy-level">Select an Energy Level</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                        <br></br>
 
                         {/* time required entry - TODO: label mins/hrs, only take number */}
                         <Form.Label>Time Required:</Form.Label>
