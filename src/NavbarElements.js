@@ -31,7 +31,7 @@ function NavbarElements(props) {
       let dataStructure = require('./newUser.json');
       console.log("database")
       console.log(dataStructure)
-      // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
+      // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)
      
        // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
        get(child(ref(db), `users/`+auth.currentUser.uid)).then((snapshot) => {
@@ -52,21 +52,21 @@ function NavbarElements(props) {
       const dbRef = ref(db);
 
       // Uses the current user's UID to retrieve their associated data in firebase. 
-      get(child(dbRef, `users/`+auth.currentUser.uid)).then((snapshot) => {
+      //get(child(dbRef, `users/`+auth.currentUser.uid)).then((snapshot) => {
         
         // If a collection exists for the specified user UID:
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
+        //if (snapshot.exists()) {
+          // console.log(snapshot.val());
           // addFavorites(snapshot.val().favorites);
         
         // If a collection does not exist for the user, create one. 
-        } else {
+        //} else {
 
           // Creates empty data structure for new user.
           // writeUserData()
-          console.log("user does not yet have information")
-        }
-      })
+        //  console.log("user does not yet have information")
+        //}
+      // })
     }, [])
 
     // Dummy items for now lol   

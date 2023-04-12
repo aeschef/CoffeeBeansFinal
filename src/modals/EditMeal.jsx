@@ -6,6 +6,7 @@ import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import ViewRecipePopup from './ViewRecipe';
 import RecipeCards from '../RecipeCards'
+import TagsInput from '../TagsInput';
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
@@ -13,8 +14,8 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   // Saves category selected when planning a meal
   const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
 
-  // Saves the day selected when planning a meal
-  const [selectedDay, setDay] = useState(currentMealDetails.day)
+  // Saves the tags selected when planning a meal
+  const [selectedTags, setSelectedTags] = useState(currentMealDetails.tags)
   
   const [categoryChanged, setCategoryChanged] = useState(false)
   const [tagChanged, setTagChanged] = useState(false)
@@ -37,7 +38,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-
+  const [tags, setTags] = useState(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
   // Reinserts the meal into the quota array with updated information 
   function addNewMeal(categoryIndex) {
     // TODO:  ERROR CHECKING - Check if category name already exists
@@ -67,7 +68,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
       // Update the current category's array of meals so that it stores the new meal
       let copyMeals = [...item.items, 
-        {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, notes: updatedMeal.notes, type:updatedMeal.type}]
+        {value:updatedMeal.description, label:updatedMeal.description, tags:updatedMeal.tags, notes: updatedMeal.notes, type:updatedMeal.type}]
       item.items = copyMeals
 
       console.log(item.items)
@@ -91,7 +92,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
       // Updates the meal so that it contains the new information      
       let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, day:updatedMeal.day, notes:updatedMeal.notes, type:updatedMeal.type}, 
+        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, tags:updatedMeal.tags, notes:updatedMeal.notes, type:updatedMeal.type}, 
         ...oldItems.slice(currentMealIndex + 1)
       ]
 
@@ -111,13 +112,13 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
   // Keeps track if user changed tag. 
   useEffect(()=> {
-    console.log(selectedDay)
-    if (selectedDay !== currentMealDetails.day) {
+    console.log(selectedTags)
+    if (selectedTags !== currentMealDetails.tags) {
       setTagChanged(true)
     } else {
       setTagChanged(false)
     }
-  }, [selectedDay])
+  }, [selectedTags])
 
 
   // Keeps track if user changes the meal category, meaning that the meal needs to be inserted into another category's list of meals
@@ -179,7 +180,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
     // If the category, tag info or meal was changed, it will be reinserted into the quota.
     if (categoryChanged || tagChanged || mealDetailsChanged || notesChanged) {
-      setUpdatedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, notes: notes, type: currentMealDetails.type})
+      setUpdatedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails, notes: notes, type: currentMealDetails.type})
       console.log("added meal")
       setNewMeal(true)
     }
@@ -248,10 +249,10 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
             <Form.Select 
               aria-label="Default select example" 
               as="select"
-              value={selectedDay}
+              value={selectedTags}
               onChange={e => {
                 console.log("e.target.value", e.target.value);
-                setDay(e.target.value);
+                setSelectedTags(e.target.value);
               }}
               >
                 {/* Displays the tags listed in the days array */ }
@@ -265,7 +266,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
                 {/* Allows user to not select tag */}
                 <option value="None">None</option>
             </Form.Select>
-
+            <TagsInput tags={tags} setTags={setTags} selectedTags={selectedTags} setSelectedTags={setSelectedTags} />
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
             {currentMealDetails.type === "Recipe" && 
                   <Row className="my-3">

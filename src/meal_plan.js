@@ -47,20 +47,20 @@ const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealD
 
 // Stores initial default list of meals for breakfast
 const breakfast = [
-  {value:"bananas", label:"bananas", day:"Monday", type:"Ingredients"},
-  {value:"soup", label: "soup", day:"Monday", type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:["Monday"], type:"Ingredients"},
+  {value:"soup", label: "soup", tags:["Monday"], type:"Ingredients"}
   ]
 
 // Stores initial default list of meals meals for lunch
 const lunch = [
-  {value:"bananas", label:"bananas", day:"Tuesday", type:"Ingredients"},
-  {value:"soup", label: "soup", day:"Tuesday", type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:["Tuesday"], type:"Ingredients"},
+  {value:"soup", label: "soup", tags:["Tuesday"], type:"Ingredients"}
   ]
 
 // Stores initial default list of meals for dinner
 const dinner = [
-  {value:"bananas", label:"bananas", day:"Wednesday", type:"Ingredients"},
-  {value:"soup", label: "soup", day:"Wednesday", type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:["Wednesday"], type:"Ingredients"},
+  {value:"soup", label: "soup", tags:["Wednesday"], type:"Ingredients"}
   ]
 
 // Stores the list of meal categories, their associated quotas and their meals
@@ -139,7 +139,10 @@ return(
           
           {/* Displays the tag for the associated meal. */}
           <Row className="left-spacing">
-            <div className="tag">{x.day}</div>
+              {x.tags.map((tag) => (
+                <div className="tag">{tag}</div>
+              ))}
+              
           </Row>
         </div>
         )}

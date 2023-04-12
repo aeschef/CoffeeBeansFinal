@@ -7,6 +7,7 @@ import '../recipes.css'
 import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
 import React from 'react'
+import TagsInput from '../TagsInput'
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
@@ -40,9 +41,13 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   // Determines which screen of creating meal the user is viewing
   const [tab, setTab] = useState(0)
 
+
   // Days of the week used for tag names, but users can also add their own 
-  const [tags, setTags] = useState([{value: "Monday", label: "Monday"}, {value: "Tuesday", label:"Tuesday"}, {value:"Wednesday", label: "Wednesday"}])
+  const [tags, setTags] = useState(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  
+  // Will store the tags that the user selects for the new meal
+  const [selectedTags, setSelectedTags] = useState([])
 
   // Once the user is done entering the information to create a meal, this function is called to then add the meal 
   // to the quota list for the specified category.
@@ -59,7 +64,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
     // Update the current category's array of meals so that it stores the new meal
     let copyMeals = [...item.items, 
-      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, notes: addedMeal.notes, type:type}]
+      {value:addedMeal.description, label:addedMeal.description, tags:addedMeal.tags, notes: addedMeal.notes, type:type}]
     item.items = copyMeals
     console.log(item.items)
 
@@ -132,20 +137,20 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
     // TODO: Check for any errors
     const allErrors = {}
-    if (mealDetails === null || selectedCategory === null || selectedDay === null) {
+    if (mealDetails === null || selectedCategory === null || selectedTags === null) {
       console.log("error creating meal")
       return null
     }
 
     // If the user is adding meal from ingredients:
     else if (type === "Ingredients"){
-      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails.mealIdea, notes: mealDetails.notes})
+      setAddedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails.mealIdea, notes: mealDetails.notes})
       console.log("added ingredients")
       setNewMeal(true)
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, notes:""})
+      setAddedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails, notes:""})
       console.log("added recipe")
       setNewMeal(true)
     }
@@ -194,14 +199,16 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
                 setDay(e.target.value);
               }}
               >
-                {days.map(day => (
-                      <option key={day}
-                        value={day}>
-                        {day}
+                {tags.map(tag => (
+                      <option key={tags.label}
+                        value={tag.value}>
+                        {tag.value}
                       </option>
                     ))}
                 <option value="None">None</option>
             </Form.Select>
+
+            <TagsInput selectedTags={selectedTags} setSelectedTags={setSelectedTags} tags={tags} setTags={setTags}/>
 
             {/* If the type of the meal is a meal idea, then the meal idea and note input will be displayed. */}
             {type === "Ingredients" && !openChooseMeal && 
