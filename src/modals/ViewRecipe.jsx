@@ -146,10 +146,12 @@ export default function ViewRecipePopup(props) {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
+  const [tagsInStringForm, setTagsInStringForm] = useState("");
   const handleOpenEditPopup = (index) => {
       setIndexOfRecipeToEdit(index);
       setInputs(props.recipes[index]);
       setShowEditPopup(true);
+      setTagsInStringForm(props.recipes[index].tags.join(", "));
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
@@ -211,7 +213,7 @@ export default function ViewRecipePopup(props) {
                   <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
-          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
+          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm}></EditRecipePopup>
 
       </>
       

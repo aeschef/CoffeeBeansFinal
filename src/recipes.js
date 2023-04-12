@@ -86,7 +86,8 @@ function AddRecipePopup(props) {
         if (!("hoursRequired" in inputs)) {
             setInputs(values => ({...values, ["hoursRequired"]: 0}))
         }
-        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags, ingredients: inputs.ingredients, notes: inputs.notes}];
+        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags.split(",").map(s => s.trim()), ingredients: inputs.ingredients, notes: inputs.notes}];
+        console.log(inputs.tags.split(",").map(s => s.trim()));
         props.setRecipes(nextRecipes);
     }
 
