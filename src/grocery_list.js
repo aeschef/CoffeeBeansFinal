@@ -3,10 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, {useEffect, useState, Component } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
+import Tab from 'react-bootstrap/Tab';
+import Tabs from 'react-bootstrap/Tabs';
+import TabPane from 'react-bootstrap/TabPane';
+import TabContainer from 'react-bootstrap/TabContainer'
 
 //Import Style Sheet
 import './css/grocery_list.css';
@@ -45,18 +49,18 @@ function IncDec() {
                 </div>
             </div>
         </>
-    
+
     );
-    
-    }
+
+}
 
 /**
  * Component controls what is shown in content from top level. Primary 
  * job is determining if shared or personal content is displayed 
  */
-const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
 
- 
+    const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
     const handlePersonal = () => {
@@ -68,24 +72,26 @@ const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addS
         setPersonal(false)
     };
 
-    return ( 
+    const handleSelect = (key) => {
+        if (key == 'personal') {
+            setPersonal(true);
+        } else if (key == 'shared') {
+            setPersonal(false);
+        }
+    };
+
+    return (
         <Container>
-            <Row>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handlePersonal}>personal</Button>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handleShared}>shared</Button>
-                    </div>
-                </Col>
-            </Row>
-            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL} 
-                inventoryList={showPersonal ? itemsInPersonalInv: itemsInSharedInv}
+            <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
+                <Tab eventKey='personal' title="personal" onSelect={handlePersonal}>
+                </Tab>
+                <Tab eventKey='shared' title="shared" onSelect={handleShared}>
+                </Tab>
+            </Tabs>
+            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
+                inventoryList={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonalGL : itemsInSharedGL} 
+            <AddItem list={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
                 addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}></AddItem>
         </Container>
     );
@@ -96,19 +102,19 @@ const ShowTab = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addS
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({groceryList, inventoryList, addtoInventory}) {
+function ListCategory({ groceryList, inventoryList, addtoInventory }) {
 
     const handleCheck = (event) => {
-        if(event.target.checked){
-           const itemName = event.target.value;
-           const item = {value:itemName, label:itemName};
-           console.log(item + "added to inventory");
-           addtoInventory([
-            ...inventoryList,
-            {value:itemName, label:itemName}
-           ]);
+        if (event.target.checked) {
+            const itemName = event.target.value;
+            const item = { value: itemName, label: itemName };
+            console.log(item + "added to inventory");
+            addtoInventory([
+                ...inventoryList,
+                { value: itemName, label: itemName }
+            ]);
 
-        } else{
+        } else {
             //TODO remove from inventory
         }
     }
@@ -116,43 +122,43 @@ function ListCategory({groceryList, inventoryList, addtoInventory}) {
     return (
         <div className="category-rectangle">
             <Row>
-                 <div className="d-flex justify-between category-header">
+                <div className="d-flex justify-between category-header">
                     <Col>
                         <div className="mr-auto">
                             Produce
                         </div>
-                    </Col> 
+                    </Col>
                     <CategorysPopup></CategorysPopup>
                 </div>
-                
+
             </Row>
 
-            
-                {groceryList.map((x, i) =>
+
+            {groceryList.map((x, i) =>
                 <div className="left-spacing">
                     <Row>
                         <Col>
                             <label key={i}>
                                 <input
-                                type="checkbox"
-                                name="lang"
-                                value={x.value}
-                                onChange={handleCheck}
+                                    type="checkbox"
+                                    name="lang"
+                                    value={x.value}
+                                    onChange={handleCheck}
                                 />
-                                  {x.label}
+                                {x.label}
                             </label>
                         </Col>
-                        <Col xs ={{span:4}}>
+                        <Col xs={{ span: 4 }}>
                             <IncDec></IncDec>
-                        </Col> 
+                        </Col>
                     </Row>
-                     
+
                 </div>
-                
-                
-                
-                )}
-        </div>                              
+
+
+
+            )}
+        </div>
     );
 }
 
@@ -163,11 +169,11 @@ const RemoveItem = () => {
     // TODO find swipe library? 
     //button?
     //get event info then simply remove from the list
-  
-    return(
-      <></>
+
+    return (
+        <></>
     );
-  }
+}
 
 /**
  * 
@@ -178,43 +184,43 @@ const RemoveItem = () => {
  * addToList -> function that allows altering of state variable
  */
 
-const AddItem = ({list, addToList}) => {
+const AddItem = ({ list, addToList }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
     const [checked, setChecked] = useState(false);
     const [itemName, setName] = useState(null);
     const [categoryName, setCategory] = useState(null);
-        
+
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
         setShow(false);
-         
+
     };
 
     const handleSave = () => {
         setShow(false);
-        const item = {value:itemName, label:itemName}
+        const item = { value: itemName, label: itemName }
         console.log(item)
         addToList([
-          ...list,
-          {value:itemName, label:itemName}]);
+            ...list,
+            { value: itemName, label: itemName }]);
     };
-    
+
     const handleShow = () => setShow(true);
-    
-    const setItemName = (event)=>{
+
+    const setItemName = (event) => {
         setName(event.target.value);
     };
 
-    const setCategoryName = (event)=>{
+    const setCategoryName = (event) => {
         setCategory(event.target.value);
     };
 
 
     return (
         <>
-            <Button className="fixedbutton" id="add-button" value="Add item" onClick={handleShow}>Add</Button> 
+            <Button className="fixedbutton" id="add-button" value="Add item" onClick={handleShow}>Add</Button>
 
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
@@ -252,7 +258,7 @@ const AddItem = ({list, addToList}) => {
                     </ToggleButton>
                     <Button variant="primary" onClick={handleSave}>Save</Button>
                 </Modal.Body>
-            </Modal>       
+            </Modal>
         </>
     );
 };
@@ -260,28 +266,28 @@ const AddItem = ({list, addToList}) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL}) => {
-        return (
-            <Container fluid="md">
-                <Row>
-                    <Col xs={{ span: 6, offset: 3 }}>
-                        <h1>Grocery List</h1>
-                    </Col>
-                    <Col xs={{ span: 2 }}>
-                        <FilterPopup></FilterPopup>
-                    </Col>
-                </Row>
-                <ShowTab itemsInPersonalGL={itemsInPersonalGL}
-                    itemsInSharedGL={itemsInSharedGL}
-                    addPersonalItemGL={addPersonalItemGL}
-                    addSharedItemGL={addSharedItemGL}
-                    itemsInPersonalInv={itemsInPersonalInv}
-                    itemsInSharedInv={itemsInSharedInv}
-                    addPersonalItemInv={addPersonalItemInv}
-                     addSharedItemInv={addSharedItemInv}></ShowTab>
-             
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
+    return (
+        <Container fluid="md">
+            <Row>
+                <Col xs={{ span: 6, offset: 3 }}>
+                    <h1>Grocery List</h1>
+                </Col>
+                <Col xs={{ span: 2 }}>
+                    <FilterPopup></FilterPopup>
+                </Col>
+            </Row>
+            <ShowTab itemsInPersonalGL={itemsInPersonalGL}
+                itemsInSharedGL={itemsInSharedGL}
+                addPersonalItemGL={addPersonalItemGL}
+                addSharedItemGL={addSharedItemGL}
+                itemsInPersonalInv={itemsInPersonalInv}
+                itemsInSharedInv={itemsInSharedInv}
+                addPersonalItemInv={addPersonalItemInv}
+                addSharedItemInv={addSharedItemInv}></ShowTab>
 
-            </Container>
-        );
+
+        </Container>
+    );
 }
 export default GroceryListHome

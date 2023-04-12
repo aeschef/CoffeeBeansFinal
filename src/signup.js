@@ -1,48 +1,92 @@
-
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import './App.css';
 import './css/meal_plan.css';
 import Form from 'react-bootstrap/Form'
 import { useEffect, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import CreateMeal from "./modals/CreateMeal"
-import EditMealCategory from './modals/EditMealCategory';
+import { getDatabase, ref, set } from "firebase/database";
 
-const SignupHome= () => {
+
+const SignupHome = ({createUser, login, setLogin, auth}) => {
+
+  // Stores the user email and password that user inputs in text fields. 
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState("");
+  const [confirmUser, setConfirmUser] = useState("");
+
+  // Keeps track of when user entered invalid login information
+  const [error, setError] = useState(false)
+
+  const handleCreateAcct = () => {
+    if(password && user) {
+      createUser(auth, user, password)
+        .then((userCredential) => {
+          //Loggedin
+          setLogin(true);
+
+          console.log("current user is " + auth.currentUser);
+          console.log(auth.currentUser.uid);
+        })
+        .catch(function(error){
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          console.log(errorMessage);
+        });
+
+      const db = getDatabase();
+      set(ref(db, 'users/' + auth.currentUser.uid), {
+        account: {
+          email:user,
+          password:password,
+          roommates: "",
+          groupID:""
+        },
+        // only needs personal.. access shared through group#
+        grocery_list: {0:""},
+        inventory:{0:""},
+        meal_plan:{
+          categories:{0:""},
+          meals: {0:""},
+          tags:{0:""}
+        },
+        recipes: {0:""}  
+      });
+
+
+    } else{
+      setError(true);
+      alert(error);
+    }
+  };
+
   return (
     <div>
-    <div className="d-flex justify-content-center align-items-center"><h3>Sign In</h3></div>
-    <div className="d-flex justify-content-center align-items-center">
-    <Form>
-    <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Name</Form.Label>
-        <Form.Control type="email" placeholder="Enter email" />
-      </Form.Group>
+      <div className="d-flex justify-content-center align-items-center"><h3>Sign Up</h3></div>
+        <div className="d-flex justify-content-center align-items-center">
+          <Form>
+            <Form.Group className="mb-3">
+                <Form.Label >Email Address</Form.Label>
+                <Form.Control type="email" placeholder="Enter email" value={user} onChange={(e)=>setUser(e.target.value)}/>
+            </Form.Group>
 
 
-      <Form.Group className="mb-3" controlId="formBasicEmail">
-        <Form.Label>Email address</Form.Label>
-        <Form.Control type="email" placeholder="Enter email" />
-        <Form.Text className="text-muted">
-          We'll never share your email with anyone else.
-        </Form.Text>
-      </Form.Group>
+            <Form.Group className="mb-3" >
+              <Form.Label>Confirm Email address</Form.Label>
+              <Form.Control type="email" placeholder="Enter email" value={confirmUser} onChange={(e)=>setConfirmUser(e.target.value)}/>
+              <Form.Text className="text-muted">
+                We'll never share your email with anyone else. Except Google because that is where our database is.
+              </Form.Text>
+            </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formBasicPassword">
-        <Form.Label>Password</Form.Label>
-        <Form.Control type="password" placeholder="Password" />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form></div>
-    <div className="d-flex justify-content-center align-items-center"><h5>Don't have an account? <a href="./meal_plan">Sign up</a></h5></div>
+            <Form.Group className="mb-3" >
+              <Form.Label>Password</Form.Label>
+              <Form.Control type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+            </Form.Group>
+            <Button variant="primary" onClick={handleCreateAcct}>
+              Submit
+            </Button>
+          </Form>
+        </div>
+      <div className="d-flex justify-content-center align-items-center"><h5>Don't have an account? <a href="./meal_plan">Sign up</a></h5></div>
     </div>
   );
 };

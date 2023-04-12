@@ -31,7 +31,7 @@ const LoginHome = ({login, setLogin, auth}) => {
         
       // Method ensures that hte entered email and password are valid. 
       // Has to concatenate fake domain name to the user's username in order to login
-        signInWithEmailAndPassword(auth, user.concat("@coffeebeans.edu"), password)
+        signInWithEmailAndPassword(auth, user, password)
         
         // If the login was valid: 
         .then(() => {
@@ -48,7 +48,7 @@ const LoginHome = ({login, setLogin, auth}) => {
         })
 
         // If the user entered the wrong email or password:
-          .catch(function(error) {
+        .catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -68,9 +68,6 @@ const LoginHome = ({login, setLogin, auth}) => {
   };
 
 
-
-  console.log(login)
-
   return (
     <div>
       {/* Modal that appears when an error occurs for user logging in. */}
@@ -81,7 +78,7 @@ const LoginHome = ({login, setLogin, auth}) => {
             <Modal.Title>Error Logging In</Modal.Title>
         </Modal.Header>
         
-        {/* modal body with recipe info - NEXT */}
+        {/* modal body with info - NEXT */}
         <Modal.Body>
           <div>An error occurred with your login. Your email or password may be incorrect. Try again! </div>
         </Modal.Body>
@@ -98,8 +95,8 @@ const LoginHome = ({login, setLogin, auth}) => {
       <Form.Group className="mb-3" controlId="formBasicEmail">
         
         {/* Field where user enters their username */}
-        <Form.Label>Username</Form.Label>
-        <Form.Control type="text" placeholder="Enter username" value={user} onChange={(e)=>setUser(e.target.value)}/>
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="text" placeholder="Enter email" value={user} onChange={(e)=>setUser(e.target.value)}/>
       </Form.Group>
 
       {/* Field where user enters password */}
@@ -118,8 +115,8 @@ const LoginHome = ({login, setLogin, auth}) => {
     <BrowserRouter>
         <Routes>
             <Route path="/signup.js" element={
-                <SignupHome/> 
-            } />
+                <SignupHome createUser={createUserWithEmailAndPassword} login={login} setLogin={setLogin} auth={auth} /> 
+            }/>
         </Routes>
         <Link to="/signup.js">Sign up</Link>
     </BrowserRouter>
