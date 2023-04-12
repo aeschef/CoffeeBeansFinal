@@ -112,6 +112,12 @@ export default function EditRecipePopup(props) {
 
                         {/* energy input */}
                         <Form.Label>Energy Required:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">how much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                            </div>
+                        </div>
                         <br></br>
                         <select name="energyRequired" onChange={handleChange} defaultValue={props.inputs?.energyRequired || ""}>
                             <option value="" id="select-energy-level">Select an Energy Level</option>
