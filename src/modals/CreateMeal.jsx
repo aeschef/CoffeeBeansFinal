@@ -8,11 +8,14 @@ import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
 import React from 'react'
 import TagsInput from '../TagsInput'
+import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
-const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal,
+const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal,
    meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL}) => {
+  const auth = getAuth(app);
   
   // Will be updated when user chooses a meal, stores either "Ingredients" or "Recipes"
   const [type, setType] = useState(null)
@@ -43,8 +46,32 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
 
   // Days of the week used for tag names, but users can also add their own 
-  const [tags, setTags] = useState(["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
+  const [tags, setTags] = useState([])
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+
+  // When page first loads, populates meals with information from user's database
+  useEffect(()=> {
+    const db = getDatabase()
+    console.log(auth.currentUser.uid)
+    // updates tags state variable so that it stores the saved tags from the user's database
+    const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+    onValue(tagRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+      setTags(data);
+
+    });
+
+    // Reference to categories in the meal plan
+    const categoryRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/categories")
+    onValue(categoryRef, (snapshot) => {
+      const dataCategories = snapshot.val();
+      console.log(dataCategories);
+    });
+
+  }, [])
+
   
   // Will store the tags that the user selects for the new meal
   const [selectedTags, setSelectedTags] = useState([])
@@ -200,15 +227,14 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
               }}
               >
                 {tags.map(tag => (
-                      <option key={tags.label}
-                        value={tag.value}>
-                        {tag.value}
+                      <option key={tag}
+                        value={tag}>
+                        {tag}
                       </option>
                     ))}
                 <option value="None">None</option>
             </Form.Select>
 
-            <TagsInput selectedTags={selectedTags} setSelectedTags={setSelectedTags} tags={tags} setTags={setTags}/>
 
             {/* If the type of the meal is a meal idea, then the meal idea and note input will be displayed. */}
             {type === "Ingredients" && !openChooseMeal && 

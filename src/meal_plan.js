@@ -161,6 +161,7 @@ return(
 
   {/* The component for modal that creates a meal. */}
   <CreateMeal
+    app={props.app}
     open={showCreateMealPopup}
     onClose={() => setShowCreateMealPopup(false)}
     quota={quotas}

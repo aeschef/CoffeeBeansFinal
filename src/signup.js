@@ -25,32 +25,33 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
 
           console.log("current user is " + auth.currentUser);
           console.log(auth.currentUser.uid);
+
+          const db = getDatabase();
+          console.log(auth.currentUser.uid)
+          set(ref(db, 'users/' + auth.currentUser.uid), {
+            account: {
+              email:user,
+              password:password,
+              roommates: "",
+              groupID:""
+            },
+            // only needs personal.. access shared through group#
+            grocery_list: {0:""},
+            inventory:{0:""},
+            meal_plan:{
+              categories:{0:""},
+              meals: {0:""},
+              tags:{0:""}
+            },
+            recipes: {0:""}  
+          });
+    
         })
         .catch(function(error){
           var errorCode = error.code;
           var errorMessage = error.message;
           console.log(errorMessage);
         });
-
-      const db = getDatabase();
-      set(ref(db, 'users/' + auth.currentUser.uid), {
-        account: {
-          email:user,
-          password:password,
-          roommates: "",
-          groupID:""
-        },
-        // only needs personal.. access shared through group#
-        grocery_list: {0:""},
-        inventory:{0:""},
-        meal_plan:{
-          categories:{0:""},
-          meals: {0:""},
-          tags:{0:""}
-        },
-        recipes: {0:""}  
-      });
-
 
     } else{
       setError(true);
