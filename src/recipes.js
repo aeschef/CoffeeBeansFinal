@@ -46,11 +46,11 @@ export default function RecipesHome(props) {
             </div>
             
             {/* search bar */}
-            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput}></RecipeSearchBar>
+            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search by title or ingredient"></RecipeSearchBar>
 
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
