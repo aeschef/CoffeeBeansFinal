@@ -4,7 +4,7 @@ import './css/meal_plan.css';
 import Form from 'react-bootstrap/Form'
 import { useEffect, useState } from 'react';
 import Modal from "react-bootstrap/Modal";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase, ref, get, set, onValue, orderByChild, update, push, child } from "firebase/database";
 
 
 const SignupHome = ({createUser, login, setLogin, auth}) => {
@@ -13,9 +13,15 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState("");
   const [confirmUser, setConfirmUser] = useState("");
+  
+  //was the account successfully created
   const [created, setAccountCreated] = useState(false);
+
+  //stores info required for group to be created/joined
   const [groupName, setGroupName] = useState("");
   const [accessCode, setAccess] = useState("");
+  const [curUser, setCurUser] = useState("");
+  const [count, setCound] = useState(0);
 
 
   // Keeps track of when user entered invalid login information
@@ -23,18 +29,46 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
 
 
   const handleGroupClose = () => {
-
+    setLogin(true);
   };
 
   //Allows this user to join groups! 
   const joinGroup =() => {
+      // let joined = false;
+      // const dbRef = ref(getDatabase(), 'groups/');
+      // onValue(dbRef, (snapshot)=>{
+      //   snapshot.forEach((childSnapshot) => {
+      //     console.log("ac" + accessCode);
+      //     console.log("cs"+childSnapshot.key);
+      //     if(childSnapshot.key === accessCode){
+      //       if(!joined){
+      //         setAccountCreated(count + 1);
+      //         //addto group
+      //         console.log("equal");
+      //         joined = true;
+      //         set(ref(getDatabase(), 'users/' + curUser + '/account/'), {
+      //           groupID: accessCode
+      //         });
+      //         const updates = {};
+      //         updates['/posts/' + accessCode + '/members/' + count] = user;
+      
+      //         update(ref(getDatabase()), updates);
+      //         setLogin(true);
+      //       }
+      //     }
+      //   });
+      //   if (!joined) {
+      //     alert("group does not exist");
+      //   } 
+      // });
 
-    //
+      
   };
 
-  // Creates a new Roommate Group in the database
+  /* Creates a new Roommate Group in the database with a semi-randoml, 
+    semi-unique Group Id*/
   const createNewGroup = () => {
-    //TODO make it unique
+    //TODO make it ACTUALLY unique
     let uniqueGroupID = Math.random().toString(6).slice(2, 7); 
     
     const db = getDatabase();
@@ -48,16 +82,36 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
     setLogin(true);
   };
   
-  //interacts with the database to authorize the current user with this email 
-  // and password 
+  /* interacts with the database to authorize the current user with this email 
+     and password  */
   const handleCreateAcct = () => {
     if(password && user) {
       // values in both boxes so create account
       createUser(auth, user, password)
         .then((userCredential) => {
           //logged in
+          setCurUser(auth.currentUser.uid);
           console.log("current user is " + auth.currentUser);
           console.log(auth.currentUser.uid);
+          // populate this user's part of the database with structure...
+          const db = getDatabase();
+          set(ref(db, 'users/' + curUser), {
+            account: {
+              email:user,
+              password:password,
+              roommates: "",
+              groupID:""
+            },
+            // only needs personal.. access shared through group#
+            grocery_list: {0:""},
+            inventory:{0:""},
+            meal_plan:{
+              categories:{0:""},
+              meals: {0:""},
+              tags:{0:""}
+            },
+            recipes: {0:""}  
+          });
         })
         .catch(function(error){
           var errorCode = error.code;
@@ -65,25 +119,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
           console.log(errorMessage);
         });
 
-      // populate this user's part of the database with structure...
-      const db = getDatabase();
-      set(ref(db, 'users/' + auth.currentUser.uid), {
-        account: {
-          email:user,
-          password:password,
-          roommates: "",
-          groupID:""
-        },
-        // only needs personal.. access shared through group#
-        grocery_list: {0:""},
-        inventory:{0:""},
-        meal_plan:{
-          categories:{0:""},
-          meals: {0:""},
-          tags:{0:""}
-        },
-        recipes: {0:""}  
-      });
+      
 
       setAccountCreated(true);
 
@@ -99,12 +135,13 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
       <div className="d-flex justify-content-center align-items-center"><h3>Sign Up</h3></div>
         <div className="d-flex justify-content-center align-items-center">
           <Form>
+            {/* Enter User Email */}
             <Form.Group className="mb-3">
                 <Form.Label >Email Address</Form.Label>
                 <Form.Control type="email" placeholder="Enter email" value={user} onChange={(e)=>setUser(e.target.value)}/>
             </Form.Group>
 
-
+            {/* Confirm User Email */}
             <Form.Group className="mb-3" >
               <Form.Label>Confirm Email address</Form.Label>
               <Form.Control type="email" placeholder="Enter email" value={confirmUser} onChange={(e)=>setConfirmUser(e.target.value)}/>
@@ -113,22 +150,26 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
               </Form.Text>
             </Form.Group>
 
+            {/* Enter Password */}
             <Form.Group className="mb-3" >
               <Form.Label>Password</Form.Label>
               <Form.Control type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
             </Form.Group>
+
             <Button variant="primary" onClick={handleCreateAcct}>
               Submit
             </Button>
           </Form>
 
-
+          {/* Join/Create Group Modal */}
           <Modal show={created} onHide={handleGroupClose} centered>
             <Modal.Header closeButton>
               <Modal.Title>Group</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>
+
+                {/* Create  a Group*/}
                 <Form.Group className="mb-3">
                   <Form.Label >Create New Group</Form.Label>
                   <Form.Control type="text" placeholder="Group Name" value={groupName} onChange={(e)=>setGroupName(e.target.value)}/>
@@ -137,6 +178,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
                   Create 
                 </Button>
 
+                {/* Join an existing Group */}
                 <Form.Group className="mb-3">
                   <Form.Label >Join Group</Form.Label>
                   <Form.Control type="text" placeholder="Access Code" value={accessCode} onChange={(e)=>setAccess(e.target.value)}/>

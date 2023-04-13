@@ -15,21 +15,23 @@ const CategorysPopup = () => {
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-//            <Button variant="primary" value="edit category" onClick={handleShow}>pencil icon</Button>
+    const handleShow = () => setShow(true);          
 
-{/* <Col>
-                <a href="#" onClick={handleShow} className="pe-auto left-spacing">
-                    <img src={PencilIcon} alt="Edit Pencil Icon" className="pencil-icon"/>
-                </a>          
-            </Col> 
-             */}
+{}
     return (
         <>
-            
+            <Col>
+                <div className="d-flex justify-content-end pr-1">
+                    <a href="#" onClick={handleShow} className="pe-auto left-spacing">
+                        <img src={PencilIcon} alt="Edit Pencil Icon" className="pencil-icon"/>
+                    </a> 
+                </div>         
+            </Col> 
+
             <Modal show={show} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Category</Modal.Title>
+  
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
