@@ -49,6 +49,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
       //         set(ref(getDatabase(), 'users/' + curUser + '/account/'), {
       //           groupID: accessCode
       //         });
+
       //         const updates = {};
       //         updates['/posts/' + accessCode + '/members/' + count] = user;
       
@@ -60,9 +61,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
       //   if (!joined) {
       //     alert("group does not exist");
       //   } 
-      // });
-
-      
+      // });  
   };
 
   /* Creates a new Roommate Group in the database with a semi-randoml, 
@@ -95,7 +94,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
           console.log(auth.currentUser.uid);
           // populate this user's part of the database with structure...
           const db = getDatabase();
-          set(ref(db, 'users/' + curUser), {
+          set(ref(db, 'users/' + auth.currentUser.uid), {
             account: {
               email:user,
               password:password,
