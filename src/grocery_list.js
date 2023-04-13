@@ -179,22 +179,34 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
         }
     }
 
-    console.log(database[0].data);
-
-
+    console.log(database);
+    const people = [
+        { id: 1, name: 'Alice', pets: ['dog', 'cat'] },
+        { id: 2, name: 'Bob', pets: ['turtle', 'rabbit'] },
+        { id: 3, name: 'Carl', pets: ['hamster', 'parrot'] },
+    ];
+    console.log(people);
 
     return (
         <div className="category-rectangle">
-            {database.map((x, i) =>
+            {database.map((category, i) =>
                 <Row>
                     <div className="d-flex justify-between category-header">
                         <Col>
                             <div className="mr-auto">
-                                {x.value}
+                                {category.value + "hi" + category.data.item_name}
                             </div>
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
+                    {/*{database.data.map((datas, index) => {
+                        return (
+                            <div key={index}>
+                                <h2>Pet: {datas}</h2>
+                            </div>
+
+                        );
+                    })}*/}
                     {groceryList.map((x, i) =>
                         <div className="left-spacing">
                             <Row>
