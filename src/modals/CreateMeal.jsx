@@ -7,8 +7,10 @@ import '../recipes.css'
 import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
 import React from 'react'
-import TagsInput from '../TagsInput'
-import { getDatabase, ref, set, onValue } from 'firebase/database';
+import Select from 'react-select';
+
+import Creatable from 'react-select/creatable'
+import { getDatabase, ref, set, onValue, push } from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -49,6 +51,8 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
   const [tags, setTags] = useState([])
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
+  // Stores list of categories so we know where to add the meal
+  const [categories, setCategories] = useState([])
 
   // When page first loads, populates meals with information from user's database
   useEffect(()=> {
@@ -65,42 +69,51 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
 
     // Reference to categories in the meal plan
     const categoryRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/categories")
+    let dataCategories = []
+    
+    // Stores all of the meal categories and pushes them to an array
     onValue(categoryRef, (snapshot) => {
-      const dataCategories = snapshot.val();
-      console.log(dataCategories);
+      snapshot.forEach((childsnapshot => {
+        
+        // pushes category name to array
+        dataCategories.push(childsnapshot.key)
+        console.log(childsnapshot.key)
+        console.log(childsnapshot.val())
+      }))
+
+      // updates state variable to store list of categories
+      setCategories(dataCategories)
     });
 
   }, [])
 
   
-  // Will store the tags that the user selects for the new meal
+  // Will store the tag that the user selects for the new meal
   const [selectedTags, setSelectedTags] = useState([])
 
   // Once the user is done entering the information to create a meal, this function is called to then add the meal 
   // to the quota list for the specified category.
-  function addNewMeal(categoryIndex) {
+  function addNewMeal(categoryName) {
 
     // TODO:  ERROR CHECKING - Check if category name already exists
     // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
-      
-     // Make a shallow copy of the items
-     let quotas= [...quota];
-      
-     // Make a shallow copy of the category that we are adding a meal to 
-     let item = {...quotas[categoryIndex]};
+    console.log(categoryName)
 
-    // Update the current category's array of meals so that it stores the new meal
-    let copyMeals = [...item.items, 
-      {value:addedMeal.description, label:addedMeal.description, tags:addedMeal.tags, notes: addedMeal.notes, type:type}]
-    item.items = copyMeals
-    console.log(item.items)
+    // const categoryListRef = ref(getDatabase(), 'users/' + auth.currentUser.uid + "meal_plan/categories/" + categoryName + "/meals");
+    // Autogenerates key to map to the new meal within the array that stores the meals for the existing
+    // const newMealRef = push(categoryListRef);
+    // set(newMealRef, {
+    //   value:addedMeal.description,
+    //   label:addedMeal.description,
+    //   tags:addedMeal.tags,
+    //   notes: addedMeal.notes,
+    //   type:type  
+    // });
 
-    // Put the copy of the category info back into the array
-    quotas[categoryIndex] = item;
-    console.log(quotas)
-    
-    // Set the state to our new copy
-    setQuota(quotas)
+    // Updates categories array in the case that a new category was added
+    if (categories.indexOf(categoryName) <= -1) {
+      setCategories([...categories, categoryName])
+    }
 
     // Closes the modal for adding a meal
     onClose(false)
@@ -115,6 +128,9 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
     }
   }, [tab])
 
+  useEffect(()=> {
+    console.log(selectedTags)
+  }, [selectedTags])
   // When the modal is closed, the fields are reset. 
   useEffect(()=> {
     if (!open) {
@@ -128,18 +144,8 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
     if (newMeal) {
       console.log(addedMeal)
 
-      // If meal category is the first in the categories list, adds meal to breakfast state array
-      if (addedMeal.id === quota[0].id) {
-        addNewMeal(0)
-      
-      // If meal category is lunch, adds meal to the lunch state array
-      } else if (addedMeal.id  === quota[1].id) {
-        addNewMeal(1)
-      
-        // If meal category is dinner, adds meal to the dinner state array
-      } else if (addedMeal.id  === quota[2].id) {
-        addNewMeal(2)
-      }
+      // Adds meal to assigned category in database
+      addNewMeal(addedMeal.id)
 
       // Sets new meal to false once the meal is added
       setNewMeal(false)
@@ -171,13 +177,13 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
 
     // If the user is adding meal from ingredients:
     else if (type === "Ingredients"){
-      setAddedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails.mealIdea, notes: mealDetails.notes})
+      setAddedMeal({id: selectedCategory, tags:selectedTags.value, description: mealDetails.mealIdea, notes: mealDetails.notes, completed: false})
       console.log("added ingredients")
       setNewMeal(true)
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails, notes:""})
+      setAddedMeal({id: selectedCategory, tags:selectedTags.value, description: mealDetails, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
     }
@@ -234,6 +240,12 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
                     ))}
                 <option value="None">None</option>
             </Form.Select>
+
+            <Creatable 
+                  options={tags.map(opt => ({ label: opt, value: opt}))}
+                  onChange={opt =>setSelectedTags(opt)}
+
+            />
 
 
             {/* If the type of the meal is a meal idea, then the meal idea and note input will be displayed. */}

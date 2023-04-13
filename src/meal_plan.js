@@ -10,6 +10,9 @@ import { useEffect, useState } from 'react';
 import CreateMeal from "./modals/CreateMeal"
 import EditMealCategory from './modals/EditMealCategory';
 import ViewMeal from './modals/ViewMeal'
+import { getDatabase, ref, set, onValue, push } from 'firebase/database';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+
 
 //import { IoClose } from "react-icons/io5"
 
@@ -47,20 +50,20 @@ const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealD
 
 // Stores initial default list of meals for breakfast
 const breakfast = [
-  {value:"bananas", label:"bananas", tags:["Monday"], type:"Ingredients"},
-  {value:"soup", label: "soup", tags:["Monday"], type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:"Monday", type:"Ingredients"},
+  {value:"soup", label: "soup", tags:"Monday", type:"Ingredients"}
   ]
 
 // Stores initial default list of meals meals for lunch
 const lunch = [
-  {value:"bananas", label:"bananas", tags:["Tuesday"], type:"Ingredients"},
-  {value:"soup", label: "soup", tags:["Tuesday"], type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:"Tuesday", type:"Ingredients"},
+  {value:"soup", label: "soup", tags:"Tuesday", type:"Ingredients"}
   ]
 
 // Stores initial default list of meals for dinner
 const dinner = [
-  {value:"bananas", label:"bananas", tags:["Wednesday"], type:"Ingredients"},
-  {value:"soup", label: "soup", tags:["Wednesday"], type:"Ingredients"}
+  {value:"bananas", label:"bananas", tags:"Wednesday", type:"Ingredients"},
+  {value:"soup", label: "soup", tags:"Wednesday", type:"Ingredients"}
   ]
 
 // Stores the list of meal categories, their associated quotas and their meals
@@ -81,6 +84,55 @@ const [quotas, setQuotas] = useState([
   function handleEditCategory(categoryIndex) {
     setEdit(true)
     setQuotaIndex(categoryIndex)
+  }
+
+  // Handles populating the meal items associated with the category by reading them from the database
+  function HandleMealItems(props) {
+    // quotas.map((category, j) =>  (console.log(category.id)))
+
+    const db = getDatabase()
+    console.log("category " + props.category)
+    // Reference to categories in the meal plan
+    const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+props.category+"/meals")
+    let dataMeals = []
+    
+    // Stores all of the meal categories and pushes them to an array
+    onValue(categoryRef, (snapshot) => {
+      snapshot.forEach((childsnapshot => {
+        
+        // pushes meal item to array
+        dataMeals.push({key: childsnapshot.key, value: childsnapshot.val()})
+        console.log("meal from category " + childsnapshot.val())
+      }))
+    });
+    
+
+    return (
+      dataMeals?.map((x, i) => (
+        <div className="left-spacing">
+          <Row> 
+            <label key={i}>
+            {/* Checkbox that keeps track of whether meal was completed or not. */}
+            <input
+            type="checkbox"
+            name="lang"
+            value={x.value.label}
+            /> 
+            
+            {/* Allows user to select the meal name in order to view additional details about the meal*/}
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, {id: x.value.label, tags: x.value.tags, notes: x.value.notes, type: x.value.type, completed: x.value.completed}, x.key)}>
+            
+              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
+              {x.value.type === "Ingredients" ? x.value.label : props.recipes[x.value.label].value.title}
+            </a>
+          </label>
+        </Row>
+        <Row className="left-spacing">
+          <div className="tag">{x.value.tags}</div>  
+        </Row>
+      </div>
+      ))
+    )
   }
 
 return(
@@ -117,35 +169,8 @@ return(
       </div>
 
       {/* Displays the list of meals for the current category. */}
-      {category.items.map((x, i) =>
-        <div className="left-spacing">
-        <Row> 
-          <label key={i}>
-            {/* Checkbox that keeps track of whether meal was completed or not. */}
-            <input
-            type="checkbox"
-            name="lang"
-            value={x.value}
-            /> 
-            
-            {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, notes: x.notes, type: x.type}, i)}>
-            
-              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.type === "Ingredients" ? x.label : props.recipes[x.label].title}
-            </a>
-          </label>
-          </Row>
-          
-          {/* Displays the tag for the associated meal. */}
-          <Row className="left-spacing">
-              {x.tags.map((tag) => (
-                <div className="tag">{tag}</div>
-              ))}
-              
-          </Row>
-        </div>
-        )}
+      <HandleMealItems category={category.id}></HandleMealItems> 
+
       </div>
       ))}
 

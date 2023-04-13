@@ -18,7 +18,7 @@ const ViewMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
   const selectedCategory = quota[currentCategoryIndex].id
 
   // Saves the day selected when planning a meal
-  const selectedDay = currentMealDetails.day
+  const selectedTag = currentMealDetails.tags
 
   // Saves either meal title or the index of the recipe
   const mealDetails = currentMealDetails.id
@@ -60,7 +60,7 @@ const ViewMeal = ({ open, onClose, quota, setQuota, currentCategoryIndex, curren
         
             {/* Displays the tag associated with the meal. */}
             <Form.Label className="edit-modal-header">Day</Form.Label>
-            <Row><Form.Label>{selectedDay}</Form.Label></Row>
+            <Row><Form.Label>{selectedTag}</Form.Label></Row>
 
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
             {currentMealDetails.type === "Recipe" && 
