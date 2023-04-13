@@ -21,47 +21,54 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
   const [groupName, setGroupName] = useState("");
   const [accessCode, setAccess] = useState("");
   const [curUser, setCurUser] = useState("");
-  const [count, setCound] = useState(0);
 
 
   // Keeps track of when user entered invalid login information
   const [error, setError] = useState(false)
 
 
-  const handleGroupClose = () => {
-    setLogin(true);
-  };
-
   //Allows this user to join groups! 
   const joinGroup =() => {
-      // let joined = false;
-      // const dbRef = ref(getDatabase(), 'groups/');
-      // onValue(dbRef, (snapshot)=>{
-      //   snapshot.forEach((childSnapshot) => {
-      //     console.log("ac" + accessCode);
-      //     console.log("cs"+childSnapshot.key);
-      //     if(childSnapshot.key === accessCode){
-      //       if(!joined){
-      //         setAccountCreated(count + 1);
-      //         //addto group
-      //         console.log("equal");
-      //         joined = true;
-      //         set(ref(getDatabase(), 'users/' + curUser + '/account/'), {
-      //           groupID: accessCode
-      //         });
+      let joined = false;
+      //find The group indicated by the access code
+      const dbRef = ref(getDatabase(), 'groups/');
+      onValue(dbRef, (snapshot)=>{
+        snapshot.forEach((childSnapshot) => {
+          console.log("ac" + accessCode);
+          console.log("cs"+childSnapshot.key);
+          if(childSnapshot.key === accessCode){
+            if(!joined){
 
-      //         const updates = {};
-      //         updates['/posts/' + accessCode + '/members/' + count] = user;
-      
-      //         update(ref(getDatabase()), updates);
-      //         setLogin(true);
-      //       }
-      //     }
-      //   });
-      //   if (!joined) {
-      //     alert("group does not exist");
-      //   } 
-      // });  
+              //add to group
+              console.log("equal");
+              joined = true;
+              set(ref(getDatabase(), 'users/' + curUser + '/account/'), {
+                groupID: accessCode
+              });
+              
+              //count number of members in group right now
+              let count = 0;
+              const dbRef = ref(getDatabase(), 'groups/' +accessCode + '/members');
+                onValue(dbRef, (snapshot)=>{
+                  snapshot.forEach((childSnapshot) => {
+                    count+=1;
+                  });
+              });
+              
+              // add this member to the group
+              let obj = {}
+              obj[count] = user;
+              update(ref(getDatabase(), 'groups/' + accessCode +'/members/'), obj);
+
+              //display normal page
+              setLogin(true);
+            }
+          }
+        });
+        if (!joined) {
+          alert("group does not exist");
+        } 
+      });  
   };
 
   /* Creates a new Roommate Group in the database with a semi-randoml, 
@@ -73,7 +80,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
     const db = getDatabase();
     set(ref(db, 'groups/' + uniqueGroupID), {
       group_name: {groupName},
-      members: {user},
+      members: {0: user},
       // only needs shared.. other in the account
       grocery_list: {0:""},
       inventory:{0:""}
@@ -160,8 +167,8 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
             </Button>
           </Form>
 
-          {/* Join/Create Group Modal */}
-          <Modal show={created} onHide={handleGroupClose} centered>
+          {/* Join/Create Group Modal onHide={handleGroupClose}*/}
+          <Modal show={created}  centered>
             <Modal.Header closeButton>
               <Modal.Title>Group</Modal.Title>
             </Modal.Header>
