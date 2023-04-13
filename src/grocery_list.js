@@ -179,8 +179,6 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
         }
     }
 
-    console.log(database[0].data);
-
 
 
     return (
