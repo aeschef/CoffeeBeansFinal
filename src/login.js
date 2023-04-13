@@ -70,7 +70,7 @@ const LoginHome = ({login, setLogin, auth}) => {
 
   return (
     <div>
-      {/* Modal that appears when an error occurs for user logging in. */}
+      {/* Modal that appears when 7 error occurs for user logging in. */}
       <Modal show={error} onHide={()=>setError(false)}>
               
         {/* modal header with title, edit button, and close button */}
