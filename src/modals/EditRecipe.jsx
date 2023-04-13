@@ -127,7 +127,7 @@ export default function EditRecipePopup(props) {
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">how much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                                <span className="info-tooltip-text">How much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
                             </div>
                         </div>
                         <br></br>
@@ -175,8 +175,14 @@ export default function EditRecipePopup(props) {
                             onChange={handleChange}
                         />
 
-                        {/* tags input */}
-                        <Form.Label>Ingredients:</Form.Label>
+                        {/* ingredients input */}
+                        <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Put the focus word or phrase in all caps (i.e. 12 TORTILLAS, flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                            </div>
+                        </div>
                         <Form.Control
                             type="text"
                             name="ingredients"
