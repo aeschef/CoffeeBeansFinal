@@ -67,10 +67,11 @@ export default function EditRecipePopup(props) {
         const value = event.target.value;
 
         if (name === "tags") {
-            console.log(value);
-            console.log(value.split(",").map(s => s.trim()));
             props.setTagsInStringForm(value);
             props.setInputs(values => ({ ...values, ["tags"]: value.split(",").map(s => s.trim()).filter((str) => str !== '') }));
+        } else if (name === "ingredients") {
+            props.setIngredientsInStringForm(value);
+            props.setInputs(values => ({ ...values, ["ingredients"]: value.split(",").map(s => s.trim()).filter((str) => str !== '').map((ingredientPhrase) => ({"phrase": ingredientPhrase, "focusWord": ingredientPhrase})) })); // TODO: parse out capitalized word
         } else {
             props.setInputs(values => ({ ...values, [name]: value }))
         }
@@ -182,7 +183,7 @@ export default function EditRecipePopup(props) {
                         <Form.Control
                             type="text"
                             name="ingredients"
-                            value={props.inputs?.ingredients || ""}
+                            value={props.ingredientsInStringForm || ""}
                             onChange={handleChange}
                         />
 

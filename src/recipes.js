@@ -98,8 +98,7 @@ function AddRecipePopup(props) {
         if (!("hoursRequired" in inputs)) {
             setInputs(values => ({...values, ["hoursRequired"]: 0}))
         }
-        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags.split(",").map(s => s.trim()), ingredients: inputs.ingredients, notes: inputs.notes}];
-        console.log(inputs.tags.split(",").map(s => s.trim()));
+        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags?.split(",").map(s => s.trim()) || null, ingredients: inputs.ingredients?.split(",").map(s => s.trim()).filter((str) => str !== '').map((ingredientPhrase) => ({"phrase": ingredientPhrase, "focusWord": ingredientPhrase})) || null, notes: inputs.notes}]; // TODO: parse out capitalized word
         props.setRecipes(nextRecipes);
     }
 
