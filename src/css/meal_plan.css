@@ -24,6 +24,20 @@
   padding-bottom:.25rem;
 }
 
+
+.modal-body {
+  max-height: calc(100vh - 143px);
+  overflow-y: auto; }
+
+.scrollable-div {
+    overflow: auto;
+    width: 100%;
+    height: 50%;
+}
+
+.input-size {
+  height: 3rem;
+}
 .tag {
   border: none;
   color: black;

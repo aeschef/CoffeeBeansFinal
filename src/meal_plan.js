@@ -90,13 +90,8 @@ return(
         <Row>
             <h1>Meal Plan</h1>
         </Row>      
-    
-   
-      <Row>
-        <div>March 1 Week</div>
-      </Row>
     </div>
-    
+
     {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
     {quotas.map((category, j) =>  (
     <div>
@@ -134,7 +129,7 @@ return(
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, type: x.type}, i)}>
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(j, {id: x.label, day: x.day, notes: x.notes, type: x.type}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
               {x.type === "Ingredients" ? x.label : props.recipes[x.label].title}
@@ -177,6 +172,8 @@ return(
     setMeal={setMeal}
     recipes={props.recipes}
     setRecipes={props.setRecipes}
+    personalGroceryList={props.itemsInPersonalGL} 
+    addToGL={props.addPersonalItemGL}
   />
 
   {/* Displays popup to edit category name and quota for the selected category. */}
