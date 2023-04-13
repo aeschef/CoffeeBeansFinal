@@ -179,34 +179,39 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
         }
     }
 
-    console.log(database);
-    const people = [
-        { id: 1, name: 'Alice', pets: ['dog', 'cat'] },
-        { id: 2, name: 'Bob', pets: ['turtle', 'rabbit'] },
-        { id: 3, name: 'Carl', pets: ['hamster', 'parrot'] },
-    ];
-    console.log(people);
-
     return (
         <div className="category-rectangle">
-            {database.map((category, i) =>
+            {database.map(category => 
                 <Row>
                     <div className="d-flex justify-between category-header">
                         <Col>
                             <div className="mr-auto">
-                                {category.value + "hi" + category.data.item_name}
+                                {category.value}
                             </div>
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
-                    {/*{database.data.map((datas, index) => {
-                        return (
-                            <div key={index}>
-                                <h2>Pet: {datas}</h2>
-                            </div>
-
-                        );
-                    })}*/}
+                        {category.data.map((cat,i) =>
+                            <div className="left-spacing">
+                            <Row>
+                                <Col>
+                                    <label key={i}>
+                                        <input
+                                            type="checkbox"
+                                            name="lang"
+                                            value={cat.item_name}
+                                            onChange={handleCheck}
+                                        />
+                                        {cat.item_name}
+                                    </label>
+                                </Col>
+                                <Col xs={{ span: 4 }}>
+                                    <IncDec></IncDec>
+                                </Col>
+                            </Row>
+                        </div>
+                        )}
+                    
                     {groceryList.map((x, i) =>
                         <div className="left-spacing">
                             <Row>
