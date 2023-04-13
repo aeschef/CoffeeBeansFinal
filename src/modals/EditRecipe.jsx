@@ -67,20 +67,16 @@ export default function EditRecipePopup(props) {
         const value = event.target.value;
 
         if (name === "tags") {
+            console.log(value);
+            console.log(value.split(",").map(s => s.trim()));
             props.setTagsInStringForm(value);
-            props.setInputs(values => ({ ...values, ["tags"]: value.split(",").map(s => s.trim()) }));
+            props.setInputs(values => ({ ...values, ["tags"]: value.split(",").map(s => s.trim()).filter((str) => str !== '') }));
         } else {
             props.setInputs(values => ({ ...values, [name]: value }))
         }
     }
 
     const handleSubmit = () => { 
-        // const tagsArray = props.inputs.tags.split(",").map(s => s.trim());
-        // props.setInputs(values => ({ ...values, ["tags"]: tagsArray }))  TODO: problem is that it doesn't change right here :((
-            // new plan: in the method that is called right before this, generate a string that is passed in as props (done!)
-            // handleChange changes both that string and the tags array in "inputs" (done!)
-            // the above two lines should be deleted (done!)
-
         const nextRecipes = props.recipes;
         nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
         props.setRecipes(nextRecipes);

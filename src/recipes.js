@@ -28,7 +28,19 @@ export default function RecipesHome(props) {
     const handleCloseViewPopup = () => setShowViewPopup(false);
 
     const [showFilterPopup, setShowFilterPopup] = useState(false);
-    const handleOpenFilterPopup = () => setShowFilterPopup(true);
+    const [tags, setTags] = useState([]);
+    const handleOpenFilterPopup = () => {
+        const newTags = tags.splice();
+        for (const recipe of props.recipes) {
+            for (const tag of recipe.tags) {
+                if (!newTags.includes(tag)) {
+                    newTags.push(tag);
+                }
+            }
+        }
+        setTags(newTags);
+        setShowFilterPopup(true);
+    }
     const handleCloseFilterPopup = () => setShowFilterPopup(false);
 
     return (
@@ -59,7 +71,7 @@ export default function RecipesHome(props) {
             {/* popups */}
             <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
-            <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
+            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags}></FilterPopup>
         </>
     )
 }
@@ -276,6 +288,21 @@ function FilterPopup(props) {
         )
     })
 
+    // tags levels mapped to checkboxes
+    const tagCheckboxes = props.tags.sort().map((tag, index) => 
+    {
+        const id = "tagCheck" + index;
+        
+        return (
+            <div className="form-check" key={index}>
+                <input className="form-check-input" type="checkbox" value="" id={id} defaultChecked></input>
+                <label className="form-check-label" htmlFor={id}>
+                    {tag}
+                </label>
+            </div>
+        )
+    })
+
     return (
         <>
             {/* filter popup modal */}
@@ -307,6 +334,10 @@ function FilterPopup(props) {
                     <div>{timeLevelCheckboxes}</div>
                     <p>Ingredients Already Owned</p>
                     <div>{inventoryLevelCheckboxes}</div>
+                    {/* TODO: 'deselect all' button */}
+                    <p>Tags</p>
+                    <div>{tagCheckboxes}</div>
+                    
                 </Modal.Body>
 
                 <Modal.Footer>
