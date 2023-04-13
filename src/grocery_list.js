@@ -9,8 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import TabPane from 'react-bootstrap/TabPane';
-import TabContainer from 'react-bootstrap/TabContainer'
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
 import './css/grocery_list.css';
@@ -18,6 +18,8 @@ import './css/grocery_list.css';
 //Import modals
 import FilterPopup from './modals/FilterItems';
 import CategorysPopup from './modals/EditGLICategories';
+
+
 
 /**
  * Handles incrementing and decrementing the number of items 
@@ -58,7 +60,7 @@ function IncDec() {
  * Component controls what is shown in content from top level. Primary 
  * job is determining if shared or personal content is displayed 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, welp }) => {
 
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
@@ -72,13 +74,69 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
         setPersonal(false)
     };
 
+    const [categories, setCategory] = useState([]);
+    const handleCategory = (name) => {
+        setCategory(categories => [
+            ...categories,
+            { value: name, label: name }
+        ]);
+    };
+
     const handleSelect = (key) => {
         if (key == 'personal') {
             setPersonal(true);
+            {/*const dbRef = ref(database, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/');
+            onValue(dbRef, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    handleCategory(childKey);
+                    console.log(childKey);
+                    console.log(categories);
+                    const childData = childSnapshot.val();
+                });
+            })*/}
+            //const dbRefQ = query(ref(database, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/'), orderByChild('categories'));
+            //console.log(dbRefQ);
+            //console.log(dbRefQ.toJSON());
+            {/*get(child(dbRef, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    console.log(snapshot.val());
+                    console.log(snapshot.val().key);
+                    console.log(snapshot.val().Dairy);
+                    console.log(snapshot.val().Dairy.zero.item_name);
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });*/}
         } else if (key == 'shared') {
             setPersonal(false);
         }
+
     };
+
+    {/*useEffect(()=> {
+        const dbRef = ref(database);
+  
+        // Uses the current user's UID to retrieve their associated data in firebase. 
+        get(child(dbRef, `users/`+authentication.currentUser.uid)).then((snapshot) => {
+          
+          // If a collection exists for the specified user UID:
+          if (snapshot.exists()) {
+            console.log(snapshot.val());
+            // addFavorites(snapshot.val().favorites);
+          
+          // If a collection does not exist for the user, create one. 
+          } else {
+  
+            // Creates empty data structure for new user.
+            // writeUserData()
+            console.log("user does not yet have information")
+          }
+        })
+      }, [])*/}
+
 
     return (
         <Container>
@@ -88,7 +146,9 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
+            <ListCategory groceryList={showPersonal ? itemsInPersonalInv : itemsInSharedGL}
+                user={authentication}
+                database={welp}
                 inventoryList={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
             <AddItem list={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
@@ -102,7 +162,7 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({ groceryList, inventoryList, addtoInventory }) {
+function ListCategory({ groceryList, user, database, inventoryList, addtoInventory }) {
 
     const handleCheck = (event) => {
         if (event.target.checked) {
@@ -119,45 +179,45 @@ function ListCategory({ groceryList, inventoryList, addtoInventory }) {
         }
     }
 
+    console.log(database[0].data);
+
+
+
     return (
         <div className="category-rectangle">
-            <Row>
-                <div className="d-flex justify-between category-header">
-                    <Col>
-                        <div className="mr-auto">
-                            Produce
-                        </div>
-                    </Col>
-                    <CategorysPopup></CategorysPopup>
-                </div>
-
-            </Row>
-
-
-            {groceryList.map((x, i) =>
-                <div className="left-spacing">
-                    <Row>
+            {database.map((x, i) =>
+                <Row>
+                    <div className="d-flex justify-between category-header">
                         <Col>
-                            <label key={i}>
-                                <input
-                                    type="checkbox"
-                                    name="lang"
-                                    value={x.value}
-                                    onChange={handleCheck}
-                                />
-                                {x.label}
-                            </label>
+                            <div className="mr-auto">
+                                {x.value}
+                            </div>
                         </Col>
-                        <Col xs={{ span: 4 }}>
-                            <IncDec></IncDec>
-                        </Col>
-                    </Row>
-
-                </div>
-
-
-
+                        <CategorysPopup></CategorysPopup>
+                    </div>
+                    {groceryList.map((x, i) =>
+                        <div className="left-spacing">
+                            <Row>
+                                <Col>
+                                    <label key={i}>
+                                        <input
+                                            type="checkbox"
+                                            name="lang"
+                                            value={x.value}
+                                            onChange={handleCheck}
+                                        />
+                                        {x.label}
+                                    </label>
+                                </Col>
+                                <Col xs={{ span: 4 }}>
+                                    <IncDec></IncDec>
+                                </Col>
+                            </Row>
+                        </div>
+                    )}
+                </Row>
             )}
+
         </div>
     );
 }
@@ -220,6 +280,7 @@ const AddItem = ({ list, addToList }) => {
 
     return (
         <>
+
             <Button className="fixedbutton" id="add-button" value="Add item" onClick={handleShow}>Add</Button>
 
             <Modal show={show} onHide={handleClose} centered>
@@ -266,7 +327,9 @@ const AddItem = ({ list, addToList }) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, welp }) => {
+    const db = getDatabase(props.app)
+    const auth = getAuth(props.app)
     return (
         <Container fluid="md">
             <Row>
@@ -274,7 +337,8 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                     <h1>Grocery List</h1>
                 </Col>
                 <Col xs={{ span: 2 }}>
-                    <FilterPopup></FilterPopup>
+                    <FilterPopup itemsInPersonalGL={itemsInPersonalGL}
+                        itemsInSharedGL={itemsInSharedGL}></FilterPopup>
                 </Col>
             </Row>
             <ShowTab itemsInPersonalGL={itemsInPersonalGL}
@@ -284,7 +348,10 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 itemsInPersonalInv={itemsInPersonalInv}
                 itemsInSharedInv={itemsInSharedInv}
                 addPersonalItemInv={addPersonalItemInv}
-                addSharedItemInv={addSharedItemInv}></ShowTab>
+                addSharedItemInv={addSharedItemInv}
+                database={db}
+                authentication={auth}
+                welp={welp}></ShowTab>
 
 
         </Container>

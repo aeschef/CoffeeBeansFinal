@@ -15,7 +15,7 @@ import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
-import { getDatabase,  ref, set, child, get, update, getReference, push  } from "firebase/database";
+import { getDatabase,  ref, set, child, get, update, getReference, push, onValue  } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -23,6 +23,8 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
+
+    let doAgain = true;
     
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
@@ -46,6 +48,14 @@ function NavbarElements(props) {
         })
     }
 
+    const [categories, setCategory] = useState([]);
+    const handleCategory = (name, data) => {
+        setCategory( categories => [
+            ...categories, 
+        {value: name, data: data}
+        ]);
+    };
+
 
     // Populates pages with data for the current user
     useEffect(()=> {
@@ -67,7 +77,22 @@ function NavbarElements(props) {
           console.log("user does not yet have information")
         }
       })
+
+      if(doAgain){
+      const dbRefC = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
+      onValue(dbRefC, (snapshot) => {
+          snapshot.forEach((childSnapshot) => {
+              const childKey = childSnapshot.key;
+              const childData = childSnapshot.val();
+              handleCategory(childKey, childData);
+          });
+      })
+      doAgain = false;
+    }
     }, [])
+
+    
+
 
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
@@ -87,6 +112,8 @@ function NavbarElements(props) {
         {value:"raspberries", label: "raspberries"},
         {value:"milk", label: "milk"}
         ]);
+
+    const PersonalGLCopy = [...itemsInPersonalGL];
     
     const [itemsInSharedGL, addSharedItemGL] = useState([
         {value:"almond milk", label:"almond milk"},
@@ -109,7 +136,9 @@ function NavbarElements(props) {
                  itemsInPersonalInv={itemsInPersonalInv}
                 itemsInSharedInv={itemsInSharedInv}
                  addPersonalItemInv={addPersonalItemInv}
-                  addSharedItemInv={addSharedItemInv}> </GroceryListHome>
+                  addSharedItemInv={addSharedItemInv}
+                  props={props}
+                  welp={categories}> </GroceryListHome>
             } />
             <Route path="/inventory.js" element={
                 <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
