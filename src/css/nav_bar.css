@@ -1,0 +1,23 @@
+.navbar{
+    background-color: #ECECEC
+}
+
+.nav-link {
+    display: inline;
+    text-align: center;
+}
+
+.navbar-text{
+    font-size: 14px;
+    color: #525252;
+    padding-top:3%
+}
+
+.navbar-icon {
+    width: 60%;
+    padding-bottom:.15rem;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+}
+

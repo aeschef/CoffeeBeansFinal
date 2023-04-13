@@ -1,6 +1,6 @@
 import React, { useState, Component, useEffect } from 'react'
 import { Navbar, Nav } from 'react'
-import './nav_bar.css';
+import './css/nav_bar.css';
 import {
     BrowserRouter as Router,
     Routes,
@@ -8,6 +8,9 @@ import {
     Link,
     BrowserRouter
 } from "react-router-dom";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 import InventoryIcon from './svg/inventory.svg'
 import MealPlanIcon from './svg/meal_plan.svg'
@@ -20,7 +23,7 @@ import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
-import { getDatabase,  ref, set, child, get, update, getReference, push  } from "firebase/database";
+import { getDatabase, ref, set, child, get, update, getReference, push } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -28,50 +31,50 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
-    
+
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
-      
-      // contains default structure to store data
-      let dataStructure = require('./newUser.json');
-      console.log("database")
-      console.log(dataStructure)
-      // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
-     
-       // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
-       get(child(ref(db), `users/`+auth.currentUser.uid)).then((snapshot) => {
-        
-        // If a collection exists for the specified user UID:
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          // addFavorites(snapshot.val().favorites);
-        
-        // If a collection does not exist for the user, create one. 
-        }   
+
+        // contains default structure to store data
+        let dataStructure = require('./newUser.json');
+        console.log("database")
+        console.log(dataStructure)
+        // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
+
+        // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
+        get(child(ref(db), `users/` + auth.currentUser.uid)).then((snapshot) => {
+
+            // If a collection exists for the specified user UID:
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                // addFavorites(snapshot.val().favorites);
+
+                // If a collection does not exist for the user, create one. 
+            }
         })
     }
 
 
     // Populates pages with data for the current user
-    useEffect(()=> {
-      const dbRef = ref(db);
+    useEffect(() => {
+        const dbRef = ref(db);
 
-      // Uses the current user's UID to retrieve their associated data in firebase. 
-      get(child(dbRef, `users/`+auth.currentUser.uid)).then((snapshot) => {
-        
-        // If a collection exists for the specified user UID:
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          // addFavorites(snapshot.val().favorites);
-        
-        // If a collection does not exist for the user, create one. 
-        } else {
+        // Uses the current user's UID to retrieve their associated data in firebase. 
+        get(child(dbRef, `users/` + auth.currentUser.uid)).then((snapshot) => {
 
-          // Creates empty data structure for new user.
-          // writeUserData()
-          console.log("user does not yet have information")
-        }
-      })
+            // If a collection exists for the specified user UID:
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                // addFavorites(snapshot.val().favorites);
+
+                // If a collection does not exist for the user, create one. 
+            } else {
+
+                // Creates empty data structure for new user.
+                // writeUserData()
+                console.log("user does not yet have information")
+            }
+        })
     }, [])
 
     // Dummy items for now lol   
@@ -139,38 +142,72 @@ function NavbarElements(props) {
 
             <nav className="navbar fixed-bottom navbar-light">
                 <span className="navbar-text">
-                    <a href="#" className="">
-                        <img src={GroceryListIcon} alt="Edit Pencil Icon" className="navbar-icon" />
-                    </a>
-                    <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                        </Row>
+
+
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <a href="#" className="">
-                        <img src={InventoryIcon} alt="Edit Pencil Icon" className="navbar-icon" />
-                    </a>
-                    <Link to="/inventory.js" className='nav-link'>Inventory</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={InventoryIcon} alt="Inventory Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/inventory.js" className='nav-link text-style'>Inventory</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <a href="#" className="">
-                        <img src={MealPlanIcon} alt="Meal Plan Page Icon" className="navbar-icon" />
-                    </a>
-                    <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <a href="#" className="">
-                        <img src={RecipeIcon} alt="Recipe Page Icon" className="navbar-icon" />
-                    </a>
-                    <Link to="/recipes.js" className='nav-link'>Recipes</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/recipes.js" className='nav-link'>Recipes</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <a href="#" className="">
-                        <img src={AccountIcon} alt="Account Page Icon" className="navbar-icon" />
-                    </a>
-                    <Link to="/account.js" className='nav-link'>Account</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/account.js" className='nav-link'>Account</Link>
+                            { }
+                        </Row>
+                    </Col>
+
+
                 </span>
             </nav>
             <div>
