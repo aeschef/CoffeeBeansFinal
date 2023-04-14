@@ -230,8 +230,6 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
     const [itemName, setName] = useState(null);
     const [categoryName, setCategory] = useState(null);
 
-
-
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
         setShow(false);
@@ -261,6 +259,8 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
 
     const addToDatabase = () => {
         setShow(false);
+        let found = false;
+        let count_c = 0;
         databaseArr.map(category => {
             let lowerCaseCategory = category.value.toLowerCase();
             if (categoryName === lowerCaseCategory) {
@@ -273,8 +273,20 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
                 const item = { item_name: itemName, item_num: 1 };
                 obj[count] = item;
                 update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + category.value), obj);
+                found = true;
             }
+            count_c += 1;
         })
+
+        if (!found) {
+            let add = {};
+            const item = { item_name: itemName, item_num: 1 };
+            add[count_c] = { value: categoryName};
+            console.log(add);
+            let itemAdd = {};
+            itemAdd[0] = item;
+            update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + categoryName), itemAdd);
+        }
     }
 
     return (
