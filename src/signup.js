@@ -7,6 +7,8 @@ import Modal from "react-bootstrap/Modal";
 import { getDatabase, ref, get, set, onValue, orderByChild, update, push, child } from "firebase/database";
 
 
+
+
 const SignupHome = ({createUser, login, setLogin, auth}) => {
 
   // Stores the user email and password that user inputs in text fields. 
@@ -26,6 +28,11 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
   // Keeps track of when user entered invalid login information
   const [error, setError] = useState(false)
 
+
+    const handleGroupClose = () => {
+      setLogin(true);
+    };
+  
 
   //Allows this user to join groups! 
   const joinGroup =() => {
