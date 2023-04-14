@@ -72,6 +72,50 @@ const [quotas, setQuotas] = useState([
   {id:"Lunch",quota:0, value:1, items:lunch}, 
   {id:"Dinner", quota:0, value:2, items:dinner}])
 
+  // Stores category names after retrieving from database
+  const [categories, setCategories] = useState([])
+  const [meals, setMeals] = useState([])
+
+
+
+  useEffect(()=> {
+    const db = getDatabase()
+
+    // Reference to categories in the meal plan
+    const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
+    const dataCategories = []
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(categoryRef, (snapshot) => {
+      snapshot.forEach((childsnapshot => {
+        
+        // pushes meal item to array        
+        const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
+        let dataMeals = []
+        
+        // Stores all of the meal categories and pushes them to an array
+        onValue(mealRef, (snapshot) => {
+
+            // pushes meal item to array
+            snapshot.forEach((childsnapshot => { 
+              dataMeals.push(childsnapshot.val())
+
+            }))
+         
+        });
+        // pushes meal item to array
+        console.log(dataCategories)
+        dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+        console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+        console.log("category meals " + dataMeals)
+        
+      }))
+    });
+    setCategories(dataCategories)
+    console.log(dataCategories)
+    
+  }, [])
+
   // Populates state variables with needed information to display view meal popup once the meal is selected. 
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
@@ -81,34 +125,17 @@ const [quotas, setQuotas] = useState([
   }
 
   // Handler that is called when a user presses the pencil icon to edit a category
-  function handleEditCategory(categoryIndex) {
+  function handleEditCategory(index) {
     setEdit(true)
-    setQuotaIndex(categoryIndex)
+    setQuotaIndex(index)
   }
 
   // Handles populating the meal items associated with the category by reading them from the database
   function HandleMealItems(props) {
     // quotas.map((category, j) =>  (console.log(category.id)))
 
-    const db = getDatabase()
-    console.log("category " + props.category)
-    // Reference to categories in the meal plan
-    const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+props.category+"/meals")
-    let dataMeals = []
-    
-    // Stores all of the meal categories and pushes them to an array
-    onValue(categoryRef, (snapshot) => {
-      snapshot.forEach((childsnapshot => {
-        
-        // pushes meal item to array
-        dataMeals.push({key: childsnapshot.key, value: childsnapshot.val()})
-        console.log("meal from category " + childsnapshot.val())
-      }))
-    });
-    
-
     return (
-      dataMeals?.map((x, i) => (
+     props.meals?.map((x, i) => (
         <div className="left-spacing">
           <Row> 
             <label key={i}>
@@ -120,7 +147,7 @@ const [quotas, setQuotas] = useState([
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, {id: x.value.label, tags: x.value.tags, notes: x.value.notes, type: x.value.type, completed: x.value.completed}, x.key)}>
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, {id: x.value.label, tags: x.value.tags, notes: x.value.notes, type: x.value.type, completed: x.value.completed}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
               {x.value.type === "Ingredients" ? x.value.label : props.recipes[x.value.label].value.title}
@@ -135,7 +162,7 @@ const [quotas, setQuotas] = useState([
     )
   }
 
-return(
+return (
   <Container fluid="md" className="p-0">
     
     <div className="title">
@@ -145,38 +172,59 @@ return(
     </div>
 
     {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
-    {quotas.map((category, j) =>  (
+    {categories.map((category, j) =>  (
     <div>
       <div className="d-flex justify-between category-header">
         <Col>
             {/* Displays the category name */}
             <div className="mr-auto">
-                {category.id}
+                {category.key}
             </div>
         </Col>
 
         <Col>
             <div className="d-flex justify-content-end pr-1">
                 {/* Displays number of meals planned out of quota amount */}
-                {category.items.length} out of {category.quota}
+
+                {category.quota !== 0 ? category.length + " out of " + category.quota : null}
                 
               {/* Displays the edit icon next to each category name so its name and quota amount can be edited*/}
-              <a href="#" onClick={()=>handleEditCategory(category.value)} className="pe-auto left-spacing">
+              <a href="#" onClick={()=>handleEditCategory(j)} className="pe-auto left-spacing">
                 <img src={PencilIcon} alt="Edit Pencil Icon" className="pencil-icon"/>
               </a>          
             </div>
         </Col>
       </div>
-
+      {category.meals?.map((x, i)=> (
+      <div className="left-spacing">
+          <Row> 
+            <label key={i}>
+            {/* Checkbox that keeps track of whether meal was completed or not. */}
+            <input
+            type="checkbox"
+            name="lang"
+            value={x.label}
+            /> 
+            
+            {/* Allows user to select the meal name in order to view additional details about the meal*/}
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(category.key, {id: x.label, tags: x.tags, notes: x.notes, type: x.type, completed: x.completed}, i)}>
+            
+              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
+              {x.type === "Ingredients" ? x.label : x.tags}
+            </a>
+          </label>
+        </Row>
+        <Row className="left-spacing">
+          <div className="tag">{x.tags}</div>  
+        </Row>
+      </div>))}
       {/* Displays the list of meals for the current category. */}
-      <HandleMealItems category={category.id}></HandleMealItems> 
-
       </div>
       ))}
 
     {/* Shows meal details if the meal is selected. */}
     {showViewMealPopup &&
-       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} quota={quotas} setQuota={setQuotas} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={setCategories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
           currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
  
   {/* Displays modal to create a meal if the add button is pressed */}
@@ -206,8 +254,8 @@ return(
   />
 
   {/* Displays popup to edit category name and quota for the selected category. */}
-  {editCategory && <EditMealCategory open={editCategory} onClose={setEdit} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-           prevQuota={quotas} setQuota={setQuotas} />}
+  {editCategory && <EditMealCategory open={editCategory} onClose={setEdit} categoryIndex={quotaIndex} setCategoryIndex={setQuotaIndex}
+           categories={categories} setCategories={setCategories} />}
 </Container>
   );
 };

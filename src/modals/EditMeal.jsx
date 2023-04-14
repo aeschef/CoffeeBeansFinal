@@ -16,7 +16,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   const auth = getAuth()
 
   // Saves category selected when planning a meal
-  const [selectedCategory, setCategory] = useState(quota[currentCategoryIndex].id)
+  const [selectedCategory, setCategory] = useState(currentCategoryIndex)
 
   // Saves the tags selected when planning a meal
   const [selectedTags, setSelectedTags] = useState(currentMealDetails.tags)
@@ -37,7 +37,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   const [viewRecipe, setViewRecipe] = useState(false)
 
   // Stores either the name of the meal if it is by ingredients or the index of the recipe. 
-  const [mealDetails, setMealDetails] = useState(currentMealDetails.id)
+  const [mealDetails, setMealDetails] = useState(currentMealDetails.label)
   const [updatedMeal, setUpdatedMeal] = useState(null)
 
   // Days of the week used for tag names
@@ -173,14 +173,14 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
     if (newMeal) {
       console.log(updatedMeal)
       // If meal category is the first in the categories list, adds meal to breakfast state array
-      if (updatedMeal.id === quota[0].id) {
+      if (updatedMeal.label=== quota[0].id) {
         addNewMeal(0)
       
       // If meal category is lunch, adds meal to the lunch state array
-      } else if (updatedMeal.id  === quota[1].id) {
+      } else if (updatedMeal.label === quota[1].id) {
         addNewMeal(1)
       // If meal category is dinner, adds meal to the dinner state array
-      } else if (updatedMeal.id  === quota[2].id) {
+      } else if (updatedMeal.label === quota[2].id) {
         addNewMeal(2)
       }
       setNewMeal(false)
@@ -198,7 +198,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
     // If the category, tag info or meal was changed, it will be reinserted into the quota.
     if (categoryChanged || tagChanged || mealDetailsChanged || notesChanged) {
-      setUpdatedMeal({id: selectedCategory, tags:selectedTags, description: mealDetails, notes: notes, type: currentMealDetails.type})
+      setUpdatedMeal({label: selectedCategory, tags:selectedTags, description: mealDetails, notes: notes, type: currentMealDetails.type})
       console.log("added meal")
       setNewMeal(true)
     }
@@ -263,27 +263,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
             
             <Form.Label className="edit-modal-header">Day</Form.Label>
             
-            {/* Displays the dropdown of tag sfo rhte user to choose from. */}
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedTags}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setSelectedTags(e.target.value);
-              }}
-              >
-                {/* Displays the tags listed in the days array */ }
-                {days.map(day => (
-                      <option
-                        key={day}
-                        value={day}>
-                        {day}
-                      </option>
-                    ))}
-                {/* Allows user to not select tag */}
-                <option value="None">None</option>
-            </Form.Select>
+            {/* Displays the dropdown of tags for te user to choose from. */}
             <Creatable 
 
                   defaultValue={{value: selectedTags, label: selectedTags}}

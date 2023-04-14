@@ -223,23 +223,6 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
             <Form.Label className="edit-modal-header">Day</Form.Label>
             
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedDay}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setDay(e.target.value);
-              }}
-              >
-                {tags.map(tag => (
-                      <option key={tag}
-                        value={tag}>
-                        {tag}
-                      </option>
-                    ))}
-                <option value="None">None</option>
-            </Form.Select>
 
             <Creatable 
                   options={tags.map(opt => ({ label: opt, value: opt}))}
