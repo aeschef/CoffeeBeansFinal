@@ -146,8 +146,8 @@ function AddRecipePopup(props) {
             title: inputs.title, 
             picture: inputs.picture, 
             energyRequired: inputs.energyRequired, 
-            hoursRequired: inputs.hoursRequired, 
-            minsRequired: inputs.minsRequired, 
+            hoursRequired: inputs.hoursRequired || 0, 
+            minsRequired: inputs.minsRequired || 0, 
             tags: inputs.tags?.split(",").map(s => s.trim()) || [], 
             ingredients: inputs.ingredients?.
                     split(",").
@@ -307,52 +307,52 @@ function FilterPopup(props) {
     
     const [sortRulesDropdownValue, setSortRulesDropdownValue] = useState(props.sortRules["title"]);
 
-    // energy levels mapped to checkboxes
-    const energyLevelCheckboxes = props.energyLevels.map((energyLevel, index) => 
-    {
-        const id = "energyCheck" + index;
+    // // energy levels mapped to checkboxes
+    // const energyLevelCheckboxes = props.energyLevels.map((energyLevel, index) => 
+    // {
+    //     const id = "energyCheck" + index;
         
-        return (
-            <div className="form-check" key={index}>
-                <input className="form-check-input" type="checkbox" value="" id={id}></input>
-                <label className="form-check-label" htmlFor={id}>
-                    {energyLevel}
-                </label>
-            </div>
-        )
-    })
+    //     return (
+    //         <div className="form-check" key={index}>
+    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
+    //             <label className="form-check-label" htmlFor={id}>
+    //                 {energyLevel}
+    //             </label>
+    //         </div>
+    //     )
+    // })
 
-    // time levels mapped to checkboxes
-    const timeLevels = ["< 10 mins", "10-20 mins", "20-40 mins", "40-60 mins", "> 1 hour"];
-    const timeLevelCheckboxes = timeLevels.map((timeLevel, index) => 
-    {
-        const id = "timeCheck" + index;
+    // // time levels mapped to checkboxes
+    // const timeLevels = ["< 10 mins", "10-20 mins", "20-40 mins", "40-60 mins", "> 1 hour"];
+    // const timeLevelCheckboxes = timeLevels.map((timeLevel, index) => 
+    // {
+    //     const id = "timeCheck" + index;
         
-        return (
-            <div className="form-check" key={index}>
-                <input className="form-check-input" type="checkbox" value="" id={id}></input>
-                <label className="form-check-label" htmlFor={id}>
-                    {timeLevel}
-                </label>
-            </div>
-        )
-    })
+    //     return (
+    //         <div className="form-check" key={index}>
+    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
+    //             <label className="form-check-label" htmlFor={id}>
+    //                 {timeLevel}
+    //             </label>
+    //         </div>
+    //     )
+    // })
 
-    // inventory levels mapped to checkboxes
-    const inventoryLevels = ["100%", "75%-100%", "50%-75%", "25%-50%", "0%-25%"];
-    const inventoryLevelCheckboxes = inventoryLevels.map((inventoryLevel, index) => 
-    {
-        const id = "inventoryCheck" + index;
+    // // inventory levels mapped to checkboxes
+    // const inventoryLevels = ["100%", "75%-100%", "50%-75%", "25%-50%", "0%-25%"];
+    // const inventoryLevelCheckboxes = inventoryLevels.map((inventoryLevel, index) => 
+    // {
+    //     const id = "inventoryCheck" + index;
         
-        return (
-            <div className="form-check" key={index}>
-                <input className="form-check-input" type="checkbox" value="" id={id}></input>
-                <label className="form-check-label" htmlFor={id}>
-                    {inventoryLevel}
-                </label>
-            </div>
-        )
-    })
+    //     return (
+    //         <div className="form-check" key={index}>
+    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
+    //             <label className="form-check-label" htmlFor={id}>
+    //                 {inventoryLevel}
+    //             </label>
+    //         </div>
+    //     )
+    // })
 
     // tags levels mapped to checkboxes
     const tagCheckboxes = props.tags.sort().map((tag, index) => 
@@ -361,7 +361,7 @@ function FilterPopup(props) {
         
         return (
             <div className="form-check" key={index}>
-                <input className="form-check-input" type="checkbox" value="" id={id} defaultChecked></input>
+                <input className="form-check-input" type="checkbox" value="" id={id}></input>
                 <label className="form-check-label" htmlFor={id}>
                     {tag}
                 </label>
@@ -399,14 +399,21 @@ function FilterPopup(props) {
                     
                     {/* filtering options */}
                     <h6>Filter:</h6>
-                    <p>Energy Required</p>
+                    {/* <p>Energy Required</p>
                     <div>{energyLevelCheckboxes}</div>
                     <p>Time Required</p>
                     <div>{timeLevelCheckboxes}</div>
                     <p>Ingredients Already Owned</p>
-                    <div>{inventoryLevelCheckboxes}</div>
+                    <div>{inventoryLevelCheckboxes}</div> */}
                     {/* TODO: 'deselect all' button */}
                     <p>Tags</p>
+                    <div className="form-check">
+                        <input className="form-check-input" type="checkbox" value="" id="select-all"></input>
+                        <label className="form-check-label" htmlFor="select-all">
+                            Show All
+                        </label>
+                    </div>
+                    <br></br>
                     <div>{tagCheckboxes}</div>
                     
                 </Modal.Body>
