@@ -101,10 +101,7 @@ export default function EditRecipePopup(props) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             const nextRecipes = props.recipes;
-            console.log(nextRecipes);
             nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
-            console.log(nextRecipes);
-            console.log(props.inputs.ingredients);
             props.setRecipes(nextRecipes);
             props.handleCloseEditPopup();
         }

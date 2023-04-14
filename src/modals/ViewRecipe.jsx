@@ -154,7 +154,6 @@ export default function ViewRecipePopup(props) {
       setShowEditPopup(true);
       setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
       setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join(", "));
-      console.log("when edit it opened " + props.recipes);
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 

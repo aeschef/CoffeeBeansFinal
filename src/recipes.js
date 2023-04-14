@@ -42,7 +42,6 @@ export default function RecipesHome(props) {
         for (const recipe of props.recipes) {
             for (const tag of recipe.tags) {
                 if (!(newTags.map(tag => tag.name).includes(tag))) {
-                    console.log("hit");
                     newTags.push({name: tag, show: false});
                 }
             }
@@ -50,7 +49,6 @@ export default function RecipesHome(props) {
         newTags.sort((tagA, tagB) => tagA.name - tagB.name)
         setTags(newTags);
         setTagCheckboxesValues(newTags.map((tag) => tag.show));
-        console.log(newTags.map((tag) => tag.show))
         setShowFilterPopup(true);
     }
 
@@ -95,8 +93,6 @@ export default function RecipesHome(props) {
         if (showAllRecipes) {
             return true;
         } else {
-            console.log("recipe tags: " + recipe.tags);
-            console.log(tags);
             var found = false;
             for (const recipeTag of recipe.tags) {
                 for (const tag of tags) {
@@ -373,13 +369,11 @@ function FilterPopup(props) {
     })
 
     const handleTagCheckboxChange = (position) => {
-        console.log(props.tagCheckboxesValues);
         const newTagCheckboxesValues = props.tagCheckboxesValues.map((value, index) =>
                 index === position ? !value : value
         );
 
         props.setTagCheckboxesValues(newTagCheckboxesValues);
-        console.log(newTagCheckboxesValues);
     }
 
     const handleShowAllCheckboxChange = () => {
