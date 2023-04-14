@@ -9,6 +9,9 @@ import './css/account.css';
 import Stack from 'react-bootstrap/Stack'
 import Alert from 'react-bootstrap/Alert';
 
+
+
+
 /**
  * renders button to view roommates 
  */
@@ -20,6 +23,8 @@ function ViewRoommates() {
     /** TODO starting next week roommate information will be retrieved through the database 
      * via a randomly generated access code BUT for now I will simply use dummy information*/
     const roommieList = ["Annabelle", "Luis", "Mirya", "Jane"];
+
+   
 
     return (
         <Row>
@@ -50,11 +55,16 @@ function ViewRoommates() {
 }
 
 /*render's signoutbutton and ability */
-function SignOut(){
+function SignOut({setLogin}){
+    // bump user back to login page!
+    const handleSignout = () => {
+        setLogin(false);
+    };    
+
     return (
         <Row className="justify-content-md-center">
             <Col>
-                <Button>Sign Out</Button>
+                <Button onClick={handleSignout}>Sign Out</Button>
             </Col>
             
         </Row>
@@ -162,40 +172,40 @@ function Profile() {
     );
 }
 
-export default class AccountHome extends Component {
-    render() {
-        return (
-            <Container fluid>
-                <Row>
-                    <Col>
-                        <h1>Account</h1>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <h1>Hi Mirya!</h1>
-                    </Col>
-                </Row>
-                
-                <Row>
-                    <Stack gap={4} >
-                        <ViewRoommates></ViewRoommates>
-                        <Profile></Profile>
-                        <ChangePassword></ChangePassword>
-                    </Stack>
-                </Row>
+const AccountHome = ({login, setLogin}) => {
+    return (
+        <Container fluid>
+            <Row>
+                <Col>
+                    <h1>Account</h1>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <h1>Hi Mirya!</h1>
+                </Col>
+            </Row>
             
-                <Row>
-                <Alert key='success' variant='success'>
-                    Access Code: 
-                </Alert>
-                </Row>
-                <SignOut></SignOut>
-                
-               
+            <Row>
+                <Stack gap={4} >
+                    <ViewRoommates></ViewRoommates>
+                    <Profile></Profile>
+                    <ChangePassword></ChangePassword>
+                </Stack>
+            </Row>
         
-            </Container>
-        );
+            <Row>
+            <Alert key='success' variant='success'>
+                Access Code: 
+            </Alert>
+            </Row>
+            <SignOut login={login} setLogin={setLogin}></SignOut>
+            
+            
+    
+        </Container>
+    );
         
-    }
-}
+};
+
+export default AccountHome;
