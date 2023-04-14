@@ -34,23 +34,23 @@ export default function RecipesHome(props) {
     
     // these two will be passed in as the current state!
     const [showAllRecipes, setShowAllRecipes] = useState(true);
-    const [tagsToShow, setTagsToShow] = useState([]);
     const [tagCheckboxesValues, setTagCheckboxesValues] = useState([]);
     const [showAllRecipesCheckboxValue, setShowAllRecipesCheckboxValue] = useState(true);
     
     const handleOpenFilterPopup = () => {
-        console.log(props.recipes); // TODO: why doesn't props.recipes include all recipes right here
-        const newTags = [];
+        const newTags = tags.slice();
         for (const recipe of props.recipes) {
             for (const tag of recipe.tags) {
-                if (!newTags.includes(tag)) {
-                    newTags.push(tag);
+                if (!(newTags.map(tag => tag.name).includes(tag))) {
+                    console.log("hit");
+                    newTags.push({name: tag, show: false});
                 }
             }
         }
-        console.log(newTags);
+        newTags.sort((tagA, tagB) => tagA.name - tagB.name)
         setTags(newTags);
-        setTagCheckboxesValues(new Array(newTags.length).fill(false));
+        setTagCheckboxesValues(newTags.map((tag) => tag.show));
+        console.log(newTags.map((tag) => tag.show))
         setShowFilterPopup(true);
     }
 
@@ -90,18 +90,22 @@ export default function RecipesHome(props) {
         }
     }
 
+    // TODO: edit
     const shouldBeShown = (recipe) => {
-        console.log("title: " + recipe.title);
         if (showAllRecipes) {
             return true;
         } else {
-            // console.log("recipe tags: " + recipe.tags);
-            // console.log("tags to show: " + tagsToShow);
-            const recipeTags = recipe.tags;
-            const recipeTagsThatAreSelected = recipe.tags.filter((tag) => tagsToShow.includes(tag));
-            // console.log("recipe tags to show: " + recipeTagsThatAreSelected);
-            // console.log("-------------------------------------------");
-            if (recipeTagsThatAreSelected.length > 0) {
+            console.log("recipe tags: " + recipe.tags);
+            console.log(tags);
+            var found = false;
+            for (const recipeTag of recipe.tags) {
+                for (const tag of tags) {
+                    if (recipeTag === tag.name && tag.show === true) {
+                        found = true;
+                    }
+                }
+            }
+            if (found === true) {
                 return true;
             } else {
                 return false;
@@ -142,7 +146,7 @@ export default function RecipesHome(props) {
             {/* popups */}
             <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
-            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagsToShow={tagsToShow} setTagsToShow={setTagsToShow} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
+            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
 }
@@ -345,55 +349,8 @@ function FilterPopup(props) {
     const [sortRulesDropdownValue, setSortRulesDropdownValue] = useState(props.sortRules["title"]);
     const [checkboxDisabledString, setCheckboxDisabledString] = useState(true);
 
-    // // tags mapped to checkboxes
-    // const energyLevelCheckboxes = props.energyLevels.map((energyLevel, index) => 
-    // {
-    //     const id = "energyCheck" + index;
-        
-    //     return (
-    //         <div className="form-check" key={index}>
-    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
-    //             <label className="form-check-label" htmlFor={id}>
-    //                 {energyLevel}
-    //             </label>
-    //         </div>
-    //     )
-    // })
-
-    // // time levels mapped to checkboxes
-    // const timeLevels = ["< 10 mins", "10-20 mins", "20-40 mins", "40-60 mins", "> 1 hour"];
-    // const timeLevelCheckboxes = timeLevels.map((timeLevel, index) => 
-    // {
-    //     const id = "timeCheck" + index;
-        
-    //     return (
-    //         <div className="form-check" key={index}>
-    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
-    //             <label className="form-check-label" htmlFor={id}>
-    //                 {timeLevel}
-    //             </label>
-    //         </div>
-    //     )
-    // })
-
-    // // inventory levels mapped to checkboxes
-    // const inventoryLevels = ["100%", "75%-100%", "50%-75%", "25%-50%", "0%-25%"];
-    // const inventoryLevelCheckboxes = inventoryLevels.map((inventoryLevel, index) => 
-    // {
-    //     const id = "inventoryCheck" + index;
-        
-    //     return (
-    //         <div className="form-check" key={index}>
-    //             <input className="form-check-input" type="checkbox" value="" id={id}></input>
-    //             <label className="form-check-label" htmlFor={id}>
-    //                 {inventoryLevel}
-    //             </label>
-    //         </div>
-    //     )
-    // })
-
-    // tags levels mapped to checkboxes
-    const tagCheckboxes = props.tags.sort().map((tag, index) => 
+    // tags mapped to checkboxes
+    const tagCheckboxes = props.tags.map((tag, index) => 
     {
         const id = "tagCheck" + index;
         
@@ -402,20 +359,21 @@ function FilterPopup(props) {
                 <input 
                     className="form-check-input" 
                     type="checkbox" 
-                    value={tag} 
+                    value={tag.name} 
                     id={id}
                     checked={props.tagCheckboxesValues[index]}
                     onChange={() => handleTagCheckboxChange(index)}
                     disabled={checkboxDisabledString}>
                 </input>
                 <label className="form-check-label" htmlFor={id}>
-                    {tag}
+                    {tag.name}
                 </label>
             </div>
         )
     })
 
     const handleTagCheckboxChange = (position) => {
+        console.log(props.tagCheckboxesValues);
         const newTagCheckboxesValues = props.tagCheckboxesValues.map((value, index) =>
                 index === position ? !value : value
         );
@@ -436,7 +394,11 @@ function FilterPopup(props) {
     const handleSubmit = () => {
         props.handleCloseFilterPopup();
         props.setSortRule(sortRulesDropdownValue);
-        props.setTagsToShow(props.tags.filter((tag, index) => props.tagCheckboxesValues[index] === true));
+        const newTags = props.tags.slice();
+        for (var i = 0; i < props.tagCheckboxesValues.length; i++) {
+            newTags[i].show = props.tagCheckboxesValues[i];
+        }
+        props.setTags(newTags);
         props.setShowAllRecipes(props.showAllRecipesCheckboxValue);
     }
 
