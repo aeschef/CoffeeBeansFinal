@@ -43,7 +43,7 @@ function App() {
       <div contextMenu=''>
             {/* If user is logged in, display home screen, otherwise user will be prompted to log in/sign up. */}
             {login ? 
-            <NavbarElements app={app}></NavbarElements> :
+            <NavbarElements app={app} setLogin={setLogin} login={login}></NavbarElements> :
             <LoginHome login={login} setLogin={setLogin} auth={auth}/>
             }
             

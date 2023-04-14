@@ -136,7 +136,7 @@ function NavbarElements(props) {
                     <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
                 } />
                 <Route path="/account.js" element={
-                    <AccountHome />
+                    <AccountHome login={props.login} setLogin={props.setLogin}/>
                 } />
             </Routes>
 
