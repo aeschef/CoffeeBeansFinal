@@ -138,7 +138,7 @@ function NavbarElements(props) {
                  addPersonalItemInv={addPersonalItemInv}
                   addSharedItemInv={addSharedItemInv}
                   props={props}
-                  welp={categories}> </GroceryListHome>
+                  databaseArr={categories}> </GroceryListHome>
             } />
             <Route path="/inventory.js" element={
                 <InventoryHome itemsInPersonalInv={itemsInPersonalInv}

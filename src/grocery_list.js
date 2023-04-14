@@ -20,7 +20,6 @@ import FilterPopup from './modals/FilterItems';
 import CategorysPopup from './modals/EditGLICategories';
 
 
-
 /**
  * Handles incrementing and decrementing the number of items 
  * needed from the grocery store
@@ -60,7 +59,10 @@ function IncDec() {
  * Component controls what is shown in content from top level. Primary 
  * job is determining if shared or personal content is displayed 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, welp }) => {
+/**
+ * TO DO: Have the items in shared inventory and such figured out
+ */
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray }) => {
 
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
@@ -146,13 +148,16 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory groceryList={showPersonal ? itemsInPersonalInv : itemsInSharedGL}
+            <ListCategory groceryList={showPersonal ? databaseArray : itemsInSharedGL}
                 user={authentication}
-                database={welp}
+                database={databaseArray}
                 inventoryList={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
             <AddItem list={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
-                addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}></AddItem>
+                addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}
+                database={database}
+                auth={authentication}
+                databaseArr={databaseArray}></AddItem>
         </Container>
     );
 
@@ -180,8 +185,9 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
     }
 
     return (
+        
         <div className="category-rectangle">
-            {database.map(category => 
+            {database.map(category =>
                 <Row>
                     <div className="d-flex justify-between category-header">
                         <Col>
@@ -191,8 +197,8 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
-                        {category.data.map((cat,i) =>
-                            <div className="left-spacing">
+                    {category.data.map((cat, i) =>
+                        <div className="left-spacing">
                             <Row>
                                 <Col>
                                     <label key={i}>
@@ -210,9 +216,9 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
                                 </Col>
                             </Row>
                         </div>
-                        )}
-                    
-                    {groceryList.map((x, i) =>
+                    )}
+
+                    {/*{groceryList.map((x, i) =>
                         <div className="left-spacing">
                             <Row>
                                 <Col>
@@ -231,11 +237,13 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
                                 </Col>
                             </Row>
                         </div>
-                    )}
+                    )}*/}
+                    
                 </Row>
             )}
 
         </div>
+
     );
 }
 
@@ -261,13 +269,15 @@ const RemoveItem = () => {
  * addToList -> function that allows altering of state variable
  */
 
-const AddItem = ({ list, addToList }) => {
+const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
     const [checked, setChecked] = useState(false);
     const [itemName, setName] = useState(null);
     const [categoryName, setCategory] = useState(null);
+
+
 
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
@@ -288,12 +298,31 @@ const AddItem = ({ list, addToList }) => {
 
     const setItemName = (event) => {
         setName(event.target.value);
+        console.log(itemName);
     };
 
     const setCategoryName = (event) => {
-        setCategory(event.target.value);
+        let lowerCase = event.target.value.toLowerCase();
+        setCategory(lowerCase);
     };
 
+    const addToDatabase = () => {
+        setShow(false);
+        databaseArr.map(category => {
+            let lowerCaseCategory = category.value.toLowerCase();
+            if (categoryName === lowerCaseCategory) {
+                let count = 0;
+                category.data.map((cat, i) => {
+                    count += 1;
+                })
+                console.log(count);
+                let obj = {}
+                const item = { item_name: itemName, item_num: 1 };
+                obj[count] = item;
+                update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + category.value), obj);
+            }
+        })
+    }
 
     return (
         <>
@@ -334,7 +363,7 @@ const AddItem = ({ list, addToList }) => {
                     >
                         Filter out checked off buttons
                     </ToggleButton>
-                    <Button variant="primary" onClick={handleSave}>Save</Button>
+                    <Button variant="primary" onClick={addToDatabase}>Save</Button>
                 </Modal.Body>
             </Modal>
         </>
@@ -344,7 +373,7 @@ const AddItem = ({ list, addToList }) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, welp }) => {
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
     return (
@@ -368,7 +397,7 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 addSharedItemInv={addSharedItemInv}
                 database={db}
                 authentication={auth}
-                welp={welp}></ShowTab>
+                databaseArray={databaseArr}></ShowTab>
 
 
         </Container>
