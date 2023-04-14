@@ -62,8 +62,7 @@ function IncDec() {
 /**
  * TO DO: Have the items in shared inventory and such figured out
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray }) => {
-
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s }) => {
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
@@ -87,58 +86,11 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
     const handleSelect = (key) => {
         if (key == 'personal') {
             setPersonal(true);
-            {/*const dbRef = ref(database, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/');
-            onValue(dbRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const childKey = childSnapshot.key;
-                    handleCategory(childKey);
-                    console.log(childKey);
-                    console.log(categories);
-                    const childData = childSnapshot.val();
-                });
-            })*/}
-            //const dbRefQ = query(ref(database, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/'), orderByChild('categories'));
-            //console.log(dbRefQ);
-            //console.log(dbRefQ.toJSON());
-            {/*get(child(dbRef, '/users/' + authentication.currentUser.uid + '/grocery_list/categories/')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    console.log(snapshot.val());
-                    console.log(snapshot.val().key);
-                    console.log(snapshot.val().Dairy);
-                    console.log(snapshot.val().Dairy.zero.item_name);
-                } else {
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                console.error(error);
-            });*/}
         } else if (key == 'shared') {
             setPersonal(false);
         }
 
     };
-
-    {/*useEffect(()=> {
-        const dbRef = ref(database);
-  
-        // Uses the current user's UID to retrieve their associated data in firebase. 
-        get(child(dbRef, `users/`+authentication.currentUser.uid)).then((snapshot) => {
-          
-          // If a collection exists for the specified user UID:
-          if (snapshot.exists()) {
-            console.log(snapshot.val());
-            // addFavorites(snapshot.val().favorites);
-          
-          // If a collection does not exist for the user, create one. 
-          } else {
-  
-            // Creates empty data structure for new user.
-            // writeUserData()
-            console.log("user does not yet have information")
-          }
-        })
-      }, [])*/}
-
 
     return (
         <Container>
@@ -148,16 +100,16 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory groceryList={showPersonal ? databaseArray : itemsInSharedGL}
+            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
                 user={authentication}
-                database={databaseArray}
+                database={showPersonal ? databaseArray_p : databaseArray_s}
                 inventoryList={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
             <AddItem list={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
                 addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}
                 database={database}
                 auth={authentication}
-                databaseArr={databaseArray}></AddItem>
+                databaseArr={showPersonal ? databaseArray_p : databaseArray_s}></AddItem>
         </Container>
     );
 
@@ -187,6 +139,7 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
     return (
         
         <div className="category-rectangle">
+            <h1>HIIII</h1>
             {database.map(category =>
                 <Row>
                     <div className="d-flex justify-between category-header">
@@ -373,7 +326,7 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr }) => {
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
     return (
@@ -397,7 +350,8 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 addSharedItemInv={addSharedItemInv}
                 database={db}
                 authentication={auth}
-                databaseArray={databaseArr}></ShowTab>
+                databaseArray_p={databaseArr_p}
+                databaseArray_s={databaseArr_s}></ShowTab>
 
 
         </Container>

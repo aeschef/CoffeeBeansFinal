@@ -82,8 +82,59 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
       group_name: {groupName},
       members: {0: user},
       // only needs shared.. other in the account
-      grocery_list: {0:""},
-      inventory:{0:""}
+      grocery_list: {
+        categories: {
+          Produce: {
+            0: {
+              item_name: "grapes",
+              item_num: 1
+            }
+          },
+          Dairy: {
+            0: {
+              item_name: "milk",
+              item_num: 1
+            }
+          },
+          Meats: {
+            0: {
+              item_name: "ham",
+              item_num: 1
+            }
+          },
+          Grains: {
+            0: {
+              item_name: "bread",
+              item_num: 1
+            }
+          },
+          Miscellaneous: {
+            0: {
+              item_name: "Hot Fries",
+              item_num: 1
+            }
+          }
+        }
+      },
+      inventory: {
+        categories: {
+          Produce: {
+            0: ""
+          },
+          Dairy: {
+            0: ""
+          },
+          Meats: {
+            0: ""
+          },
+          Grains: {
+            0: ""
+          },
+          Miscellaneous: {
+            0: ""
+          }
+        }
+      }
     });
     setLogin(true);
   };
@@ -141,7 +192,7 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
                 },
                 Miscellaneous: {
                   0: {
-                    item_name: "yogurt",
+                    item_name: "Cheetos",
                     item_num: 1
                   }
                 }
