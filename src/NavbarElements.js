@@ -20,13 +20,17 @@ import AccountHome from './account';
 function NavbarElements() {
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
-        {value:"carrots", label:"carrots"},
-        {value:"fruit snacks", label: "fruit snacks"}
+        {value:"bone broth", label:"bone broth"},
+        {value:"rice", label: "rice"},
+        {value:"egg yolks", label: "egg yolks"},
+        {value:"lemon juice", label: "lemon juice"},
+        {value:"chicken", label: "chicken"},
+        {value:"flour", label: "flour"},
+        {value:"sugar", label: "sugar"},
         ]);
     
     const [itemsInSharedInv, addSharedItemInv] = useState([
-        {value:"oat milk", label:"oat milk"},
-        {value:"rice", label: "rice"}
+        {value:"baking powder", label: "baking powder"}
         ]);
 
             // Dummy items for now lol
