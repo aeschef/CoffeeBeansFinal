@@ -154,6 +154,7 @@ export default function ViewRecipePopup(props) {
       setShowEditPopup(true);
       setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
       setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join(", "));
+      console.log("when edit it opened " + props.recipes);
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
@@ -186,6 +187,7 @@ export default function ViewRecipePopup(props) {
                       <div className='col-6'>
                           <div id="image">{currentRecipe?.picture}</div>
                       </div>
+                      <p>{props.recipes.map((recipe) => recipe.title)}</p>
                       
                       {/* energy and time required for this recipe */}
                       <div className='col-6'>
