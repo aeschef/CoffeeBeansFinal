@@ -161,7 +161,7 @@ export default function ViewRecipePopup(props) {
   const currentRecipe = props.recipes[props.indexOfRecipeToView];
 
   const recipeIngredients = currentRecipe?.ingredients?.map(
-          (ingredient, index) => <li key={index}>{ingredient.phrase}</li>);
+          (ingredient, index) => <li key={index}>{ingredient.phrase.replaceAll("\"", "")}</li>);
 
   const recipeSteps = currentRecipe?.steps?.map(
           (step, index) => <li key={index}>{step}</li>);

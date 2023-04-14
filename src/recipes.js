@@ -89,17 +89,49 @@ function AddRecipePopup(props) {
         setInputs(values => ({...values, [name]: value}))
     }
 
+    const findQuotedWord = (word) => {
+        const indexOfFirstQuote = word.indexOf("\"");
+        const indexOfSecondQuote = word.slice(indexOfFirstQuote + 1).indexOf("\"") + indexOfFirstQuote + 1;
+        if (indexOfFirstQuote === -1 || indexOfSecondQuote === -1) {
+            return null;
+        } else {
+            return word.slice(indexOfFirstQuote + 1, indexOfSecondQuote);
+        }
+    }
+
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
-        props.handleCloseAddPopup();
+        
         if (!("minsRequired" in inputs)) {
             setInputs(values => ({...values, ["minsRequired"]: 0}))
         }
         if (!("hoursRequired" in inputs)) {
             setInputs(values => ({...values, ["hoursRequired"]: 0}))
         }
-        const nextRecipes = [...props.recipes, {title: inputs.title, picture: inputs.picture, energyRequired: inputs.energyRequired, hoursRequired: inputs.hoursRequired, minsRequired: inputs.minsRequired, tags: inputs.tags?.split(",").map(s => s.trim()) || null, ingredients: inputs.ingredients?.split(",").map(s => s.trim()).filter((str) => str !== '').map((ingredientPhrase) => ({"phrase": ingredientPhrase, "focusWord": ingredientPhrase})) || null, notes: inputs.notes}]; // TODO: parse out capitalized word
-        props.setRecipes(nextRecipes);
+        const nextRecipes = [...props.recipes, {
+            title: inputs.title, 
+            picture: inputs.picture, 
+            energyRequired: inputs.energyRequired, 
+            hoursRequired: inputs.hoursRequired, 
+            minsRequired: inputs.minsRequired, 
+            tags: inputs.tags?.split(",").map(s => s.trim()) || null, 
+            ingredients: inputs.ingredients?.
+                    split(",").
+                    map(s => s.trim()).
+                    filter((str) => str !== '').
+                    map((ingredientPhrase) => ({
+                        "phrase": ingredientPhrase, 
+                        "focusWord": findQuotedWord(ingredientPhrase)
+                    })) || null, 
+                    notes: inputs.notes}]; // TODO: parse out capitalized word
+        
+        
+        if (nextRecipes[nextRecipes.length - 1].ingredients.length !== nextRecipes[nextRecipes.length - 1].ingredients.filter((ingredient) => ingredient.focusWord).length) {
+            alert("All ingredients must have a focus word or phrase in quotes!");
+        } else {
+            props.handleCloseAddPopup();
+            props.setRecipes(nextRecipes);
+        }
     }
 
     return (
@@ -195,7 +227,7 @@ function AddRecipePopup(props) {
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">Put the focus word or phrase in all caps (i.e. 12 TORTILLAS, flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                <span className="info-tooltip-text">Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
                             </div>
                         </div>
                         <Form.Control 

@@ -61,6 +61,16 @@ function DeleteAlert() {
 // popup for editing a recipe
 export default function EditRecipePopup(props) {
 
+    const findQuotedWord = (word) => {
+        const indexOfFirstQuote = word.indexOf("\"");
+        const indexOfSecondQuote = word.slice(indexOfFirstQuote + 1).indexOf("\"") + indexOfFirstQuote + 1;
+        if (indexOfFirstQuote === -1 || indexOfSecondQuote === -1) {
+            return null;
+        } else {
+            return word.slice(indexOfFirstQuote + 1, indexOfSecondQuote);
+        }
+    }
+
     // handler for change to a form element (https://www.w3schools.com/react/react_forms.asp)
     const handleChange = (event) => {
         const name = event.target.name;
@@ -71,17 +81,32 @@ export default function EditRecipePopup(props) {
             props.setInputs(values => ({ ...values, ["tags"]: value.split(",").map(s => s.trim()).filter((str) => str !== '') }));
         } else if (name === "ingredients") {
             props.setIngredientsInStringForm(value);
-            props.setInputs(values => ({ ...values, ["ingredients"]: value.split(",").map(s => s.trim()).filter((str) => str !== '').map((ingredientPhrase) => ({"phrase": ingredientPhrase, "focusWord": ingredientPhrase})) })); // TODO: parse out capitalized word
+            props.setInputs(values => ({ ...values, ["ingredients"]: 
+                    value.
+                    split(",").
+                    map(s => s.trim()).
+                    filter((str) => str !== '').
+                    map((ingredientPhrase) => ({
+                        "phrase": ingredientPhrase, 
+                        "focusWord": findQuotedWord(ingredientPhrase)})) 
+                    }));
         } else {
             props.setInputs(values => ({ ...values, [name]: value }))
         }
     }
 
     const handleSubmit = () => { 
-        const nextRecipes = props.recipes;
-        nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
-        props.setRecipes(nextRecipes);
-        props.handleCloseEditPopup();
+        console.log(props.inputs.ingredients);
+        
+        if (props.inputs.ingredients.length !== props.inputs.ingredients.filter((ingredient) => ingredient.focusWord).length) {
+            alert("All ingredients must have a focus word or phrase in quotes!");
+        } else {
+            const nextRecipes = props.recipes;
+            nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
+            console.log(props.inputs.ingredients);
+            props.setRecipes(nextRecipes);
+            props.handleCloseEditPopup();
+        }
     }
 
     return (
@@ -177,7 +202,7 @@ export default function EditRecipePopup(props) {
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">Put the focus word or phrase in all caps (i.e. 12 TORTILLAS, flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                <span className="info-tooltip-text">Put the focus word or phrase in all caps (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
                             </div>
                         </div>
                         <Form.Control
