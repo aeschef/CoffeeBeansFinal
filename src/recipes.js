@@ -9,7 +9,7 @@ import RecipeSearchBar from './RecipeSearchBar';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
-    
+
     // searchInput for the search bar
     const [searchInput, setSearchInput] = useState("");
     
@@ -42,6 +42,40 @@ export default function RecipesHome(props) {
         setShowFilterPopup(true);
     }
     const handleCloseFilterPopup = () => setShowFilterPopup(false);
+    const energyLevels = ["low", "medium", "high"];
+    const sortRules = {
+        title: "Title (A to Z)", 
+        energy: "Energy Required (Low to High)", 
+        time: "Time Required (Low to High)", 
+        inventory: "Percent of Owned Ingredients (High to Low)"
+    };
+    const [sortRule, setSortRule] = useState(sortRules["title"]);
+
+    const sortFunction = (recipeA, recipeB) => { 
+        if (sortRule == sortRules["title"]) {
+            const titleA = recipeA.title.toLowerCase();
+            const titleB = recipeB.title.toLowerCase();
+            return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+        } else if (sortRule == sortRules["energy"]) {
+            const energyLevelA = recipeA.energyRequired.toLowerCase();
+            const energyLevelB = recipeB.energyRequired.toLowerCase();
+            return energyLevels.indexOf(energyLevelA) - energyLevels.indexOf(energyLevelB);
+        } else if (sortRule == sortRules["time"]) {
+            const timeInMinsA = recipeA.minsRequired + (recipeA.hoursRequired * 60);
+            const timeInMinsB = recipeB.minsRequired + (recipeB.hoursRequired * 60);
+            return timeInMinsA - timeInMinsB;
+        } else if (sortRule == sortRules["inventory"]) {
+            const listOfItemsInSharedInventory = props.itemsInSharedInventory.map((item) => item.value);
+            const listOfItemsInPersonalInventory = props.itemsInPersonalInventory.map((item) => item.value);
+            const inInventoryA = recipeA.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryB = recipeB.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
+            const numIngredientsA = recipeA.ingredients.length;
+            const numIngredientsB = recipeB.ingredients.length;
+            const inventoryPercentageA = inInventoryA / numIngredientsA;
+            const inventoryPercentageB = inInventoryB / numIngredientsB;
+            return inventoryPercentageB - inventoryPercentageA; 
+        }
+    }
 
     return (
         <>
@@ -62,7 +96,7 @@ export default function RecipesHome(props) {
 
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                <RecipeCards recipes={(props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))).sort(sortFunction)} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
@@ -71,7 +105,7 @@ export default function RecipesHome(props) {
             {/* popups */}
             <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
-            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags}></FilterPopup>
+            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels}></FilterPopup>
         </>
     )
 }
@@ -114,7 +148,7 @@ function AddRecipePopup(props) {
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired, 
             minsRequired: inputs.minsRequired, 
-            tags: inputs.tags?.split(",").map(s => s.trim()) || null, 
+            tags: inputs.tags?.split(",").map(s => s.trim()) || [], 
             ingredients: inputs.ingredients?.
                     split(",").
                     map(s => s.trim()).
@@ -122,11 +156,11 @@ function AddRecipePopup(props) {
                     map((ingredientPhrase) => ({
                         "phrase": ingredientPhrase, 
                         "focus": findQuotedWord(ingredientPhrase)
-                    })) || null, 
-                    notes: inputs.notes}]; // TODO: parse out capitalized word
+                    })) || [], 
+            steps: inputs.steps,
+            notes: inputs.notes}];
         
-        
-        if (nextRecipes[nextRecipes.length - 1].ingredients.length !== nextRecipes[nextRecipes.length - 1].ingredients.filter((ingredient) => ingredient.focus).length) {
+        if (nextRecipes[nextRecipes.length - 1].ingredients?.length !== nextRecipes[nextRecipes.length - 1].ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             props.handleCloseAddPopup();
@@ -270,10 +304,11 @@ function AddRecipePopup(props) {
 
 // popup for filtering all recipes
 function FilterPopup(props) {
+    
+    const [sortRulesDropdownValue, setSortRulesDropdownValue] = useState(props.sortRules["title"]);
 
     // energy levels mapped to checkboxes
-    const energyLevels = ["low", "medium", "high"];
-    const energyLevelCheckboxes = energyLevels.map((energyLevel, index) => 
+    const energyLevelCheckboxes = props.energyLevels.map((energyLevel, index) => 
     {
         const id = "energyCheck" + index;
         
@@ -334,6 +369,11 @@ function FilterPopup(props) {
         )
     })
 
+    const handleSubmit = () => {
+        props.handleCloseFilterPopup();
+        props.setSortRule(sortRulesDropdownValue);
+    }
+
     return (
         <>
             {/* filter popup modal */}
@@ -349,11 +389,11 @@ function FilterPopup(props) {
                     
                     {/* sorting options */}
                     <h6>Sort By:</h6>
-                    <select className="form-select">
-                        <option>Title (A to Z)</option>
-                        <option>Energy Required (Low to High)</option>
-                        <option>Time Required (Low to High)</option>
-                        <option>Percent of Owned Ingredients (High to Low)</option>
+                    <select defaultValue={props.sortRule} className="form-select" onChange={(event) => {setSortRulesDropdownValue(event.target.value)}}>
+                        <option>{props.sortRules["title"]}</option>
+                        <option>{props.sortRules["energy"]}</option>
+                        <option>{props.sortRules["time"]}</option>
+                        <option>{props.sortRules["inventory"]}</option>
                     </select>
                     <br></br>
                     
@@ -375,7 +415,7 @@ function FilterPopup(props) {
                     <Button variant="secondary" type="submit" onClick={props.handleCloseFilterPopup}>
                         Reset
                     </Button>
-                    <Button variant="primary" type="submit" onClick={props.handleCloseFilterPopup}>
+                    <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
                     </Button>
                 </Modal.Footer>

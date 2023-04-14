@@ -138,7 +138,14 @@ function NavbarElements() {
                 <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL}/> 
             } />
             <Route path="/recipes.js" element={
-                <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} /> 
+                <RecipesHome 
+                    recipes={recipes} 
+                    setRecipes={setRecipes} 
+                    personalGroceryList={itemsInPersonalGL} 
+                    addToGL={addPersonalItemGL}
+                    itemsInSharedInventory={itemsInSharedInv}
+                    itemsInPersonalInventory={itemsInPersonalInv} 
+                /> 
             } />
             <Route path="/account.js" element={
                 <AccountHome /> 
