@@ -69,10 +69,12 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
     const handlePersonal = () => {
         console.log("personal button pressed");
         setPersonal(true)
+        setKey('personal');
     };
     const handleShared = () => {
         console.log("shared button pressed");
         setPersonal(false)
+        setKey('shared');
     };
 
     const [categories, setCategory] = useState([]);
@@ -84,9 +86,9 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
     };
 
     const handleSelect = (key) => {
-        if (key == 'personal') {
+        if (key === 'personal') {
             setPersonal(true);
-        } else if (key == 'shared') {
+        } else if (key === 'shared') {
             setPersonal(false);
         }
 
@@ -136,12 +138,14 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
         }
     }
 
+    let count = 0;
+
     return (
-        
+
         <div className="category-rectangle">
-            <h1>HIIII</h1>
             {database.map(category =>
                 <Row>
+                    {count += 1}
                     <div className="d-flex justify-between category-header">
                         <Col>
                             <div className="mr-auto">
@@ -191,7 +195,7 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
                             </Row>
                         </div>
                     )}*/}
-                    
+
                 </Row>
             )}
 
@@ -281,7 +285,7 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
         if (!found) {
             let add = {};
             const item = { item_name: itemName, item_num: 1 };
-            add[count_c] = { value: categoryName};
+            add[count_c] = { value: categoryName };
             console.log(add);
             let itemAdd = {};
             itemAdd[0] = item;

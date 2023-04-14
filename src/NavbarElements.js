@@ -62,7 +62,7 @@ function NavbarElements(props) {
     const handleCategory_s = (name, data) => {
         setCategory_s(categories_s => [
             ...categories_s,
-            { value: name, datas: data }
+            { value: name, data: data }
         ]);
     };
 
@@ -92,16 +92,6 @@ function NavbarElements(props) {
 
         //const dbRefA = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
 
-        get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-            if (snapshot.exists()) {
-                setAccess(snapshot.val());
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
-
         if (doAgain) {
             const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
             onValue(dbRefP, (snapshot) => {
@@ -111,10 +101,42 @@ function NavbarElements(props) {
                     handleCategory(childKey, childData);
                 });
             })
+            get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    setAccess(snapshot.val());
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+            console.log("HIIIII " + accessCode);
+            if (doAgain_s) {
+                const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
+                onValue(dbRefS, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const childKey = childSnapshot.key;
+                        const childData = childSnapshot.val();
+                        handleCategory_s(childKey, childData);
+                        console.log(childData);
+                        console.log(categories_s);
+                    });
+                })
+                doAgain_s = false;
+            }
             doAgain = false;
         }
-        if (doAgain_s) {
-            console.log(accessCode);
+        {/*if (doAgain_s) {
+            get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    setAccess(snapshot.val());
+                } else {
+                    console.log("No data available");
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+            console.log("HIIIII " + accessCode);
             const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
             onValue(dbRefS, (snapshot) => {
                 snapshot.forEach((childSnapshot) => {
@@ -122,10 +144,11 @@ function NavbarElements(props) {
                     const childData = childSnapshot.val();
                     handleCategory_s(childKey, childData);
                     console.log(childData);
+                    console.log(categories_s);
                 });
             })
             doAgain_s = false;
-        }
+        }*/}
     }, [])
 
 
@@ -195,7 +218,7 @@ function NavbarElements(props) {
                     <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
                 } />
                 <Route path="/account.js" element={
-                    <AccountHome />
+                    <AccountHome login={props.login} setLogin={props.setLogin} />
                 } />
             </Routes>
 
