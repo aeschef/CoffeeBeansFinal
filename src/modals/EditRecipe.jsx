@@ -4,6 +4,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import "../recipes.css";
+import { createPath } from 'react-router-dom';
 
 function DeleteAlert() {
     const [show, setShow] = useState(false);
@@ -88,17 +89,15 @@ export default function EditRecipePopup(props) {
                     filter((str) => str !== '').
                     map((ingredientPhrase) => ({
                         "phrase": ingredientPhrase, 
-                        "focusWord": findQuotedWord(ingredientPhrase)})) 
+                        "focus": findQuotedWord(ingredientPhrase)})) 
                     }));
         } else {
             props.setInputs(values => ({ ...values, [name]: value }))
         }
     }
 
-    const handleSubmit = () => { 
-        console.log(props.inputs.ingredients);
-        
-        if (props.inputs.ingredients.length !== props.inputs.ingredients.filter((ingredient) => ingredient.focusWord).length) {
+    const handleSubmit = () => {        
+        if (props.inputs.ingredients.length !== props.inputs.ingredients.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             const nextRecipes = props.recipes;

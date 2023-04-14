@@ -121,12 +121,12 @@ function AddRecipePopup(props) {
                     filter((str) => str !== '').
                     map((ingredientPhrase) => ({
                         "phrase": ingredientPhrase, 
-                        "focusWord": findQuotedWord(ingredientPhrase)
+                        "focus": findQuotedWord(ingredientPhrase)
                     })) || null, 
                     notes: inputs.notes}]; // TODO: parse out capitalized word
         
         
-        if (nextRecipes[nextRecipes.length - 1].ingredients.length !== nextRecipes[nextRecipes.length - 1].ingredients.filter((ingredient) => ingredient.focusWord).length) {
+        if (nextRecipes[nextRecipes.length - 1].ingredients.length !== nextRecipes[nextRecipes.length - 1].ingredients.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             props.handleCloseAddPopup();
