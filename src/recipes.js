@@ -27,10 +27,20 @@ export default function RecipesHome(props) {
     }
     const handleCloseViewPopup = () => setShowViewPopup(false);
 
+    // variables and functions for Filter Recipe popup
     const [showFilterPopup, setShowFilterPopup] = useState(false);
     const [tags, setTags] = useState([]);
+    
+    
+    // these two will be passed in as the current state!
+    const [showAllRecipes, setShowAllRecipes] = useState(true);
+    const [tagsToShow, setTagsToShow] = useState([]);
+    const [tagCheckboxesValues, setTagCheckboxesValues] = useState([]);
+    const [showAllRecipesCheckboxValue, setShowAllRecipesCheckboxValue] = useState(true);
+    
     const handleOpenFilterPopup = () => {
-        const newTags = tags.splice();
+        console.log(props.recipes); // TODO: why doesn't props.recipes include all recipes right here
+        const newTags = [];
         for (const recipe of props.recipes) {
             for (const tag of recipe.tags) {
                 if (!newTags.includes(tag)) {
@@ -38,9 +48,12 @@ export default function RecipesHome(props) {
                 }
             }
         }
+        console.log(newTags);
         setTags(newTags);
+        setTagCheckboxesValues(new Array(newTags.length).fill(false));
         setShowFilterPopup(true);
     }
+
     const handleCloseFilterPopup = () => setShowFilterPopup(false);
     const energyLevels = ["low", "medium", "high"];
     const sortRules = {
@@ -77,6 +90,25 @@ export default function RecipesHome(props) {
         }
     }
 
+    const shouldBeShown = (recipe) => {
+        console.log("title: " + recipe.title);
+        if (showAllRecipes) {
+            return true;
+        } else {
+            // console.log("recipe tags: " + recipe.tags);
+            // console.log("tags to show: " + tagsToShow);
+            const recipeTags = recipe.tags;
+            const recipeTagsThatAreSelected = recipe.tags.filter((tag) => tagsToShow.includes(tag));
+            // console.log("recipe tags to show: " + recipeTagsThatAreSelected);
+            // console.log("-------------------------------------------");
+            if (recipeTagsThatAreSelected.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     return (
         <>
             {/* header with title and filter button */}
@@ -96,7 +128,11 @@ export default function RecipesHome(props) {
 
             {/* recipe cards */}
             <div className='recipe-cards'>
-                <RecipeCards recipes={(props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))).sort(sortFunction)} setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                <RecipeCards 
+                    recipes={(props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))).
+                        sort(sortFunction).
+                        filter((recipe) => shouldBeShown(recipe))} 
+                    setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
             </div>
 
             {/* the add button that appears on the home page */}
@@ -105,7 +141,7 @@ export default function RecipesHome(props) {
             {/* popups */}
             <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
-            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels}></FilterPopup>
+            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagsToShow={tagsToShow} setTagsToShow={setTagsToShow} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
 }
@@ -306,8 +342,9 @@ function AddRecipePopup(props) {
 function FilterPopup(props) {
     
     const [sortRulesDropdownValue, setSortRulesDropdownValue] = useState(props.sortRules["title"]);
+    const [checkboxDisabledString, setCheckboxDisabledString] = useState(true);
 
-    // // energy levels mapped to checkboxes
+    // // tags mapped to checkboxes
     // const energyLevelCheckboxes = props.energyLevels.map((energyLevel, index) => 
     // {
     //     const id = "energyCheck" + index;
@@ -361,7 +398,15 @@ function FilterPopup(props) {
         
         return (
             <div className="form-check" key={index}>
-                <input className="form-check-input" type="checkbox" value="" id={id}></input>
+                <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    value={tag} 
+                    id={id}
+                    checked={props.tagCheckboxesValues[index]}
+                    onChange={() => handleTagCheckboxChange(index)}
+                    disabled={checkboxDisabledString}>
+                </input>
                 <label className="form-check-label" htmlFor={id}>
                     {tag}
                 </label>
@@ -369,9 +414,29 @@ function FilterPopup(props) {
         )
     })
 
+    const handleTagCheckboxChange = (position) => {
+        const newTagCheckboxesValues = props.tagCheckboxesValues.map((value, index) =>
+                index === position ? !value : value
+        );
+
+        props.setTagCheckboxesValues(newTagCheckboxesValues);
+        console.log(newTagCheckboxesValues);
+    }
+
+    const handleShowAllCheckboxChange = () => {
+        props.setShowAllRecipesCheckboxValue(!props.showAllRecipesCheckboxValue);
+        if (checkboxDisabledString === true) {
+            setCheckboxDisabledString(false);
+        } else {
+            setCheckboxDisabledString(true);
+        }
+    }
+
     const handleSubmit = () => {
         props.handleCloseFilterPopup();
         props.setSortRule(sortRulesDropdownValue);
+        props.setTagsToShow(props.tags.filter((tag, index) => props.tagCheckboxesValues[index] === true));
+        props.setShowAllRecipes(props.showAllRecipesCheckboxValue);
     }
 
     return (
@@ -398,7 +463,7 @@ function FilterPopup(props) {
                     <br></br>
                     
                     {/* filtering options */}
-                    <h6>Filter:</h6>
+                    <h6>Filter by Tags:</h6>
                     {/* <p>Energy Required</p>
                     <div>{energyLevelCheckboxes}</div>
                     <p>Time Required</p>
@@ -406,14 +471,12 @@ function FilterPopup(props) {
                     <p>Ingredients Already Owned</p>
                     <div>{inventoryLevelCheckboxes}</div> */}
                     {/* TODO: 'deselect all' button */}
-                    <p>Tags</p>
                     <div className="form-check">
-                        <input className="form-check-input" type="checkbox" value="" id="select-all"></input>
+                        <input className="form-check-input" type="checkbox" id="select-all" checked={props.showAllRecipesCheckboxValue} onChange={handleShowAllCheckboxChange}></input>
                         <label className="form-check-label" htmlFor="select-all">
-                            Show All
+                            <i><u>show all recipes</u></i>
                         </label>
                     </div>
-                    <br></br>
                     <div>{tagCheckboxes}</div>
                     
                 </Modal.Body>
@@ -427,7 +490,6 @@ function FilterPopup(props) {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
         </>
     )
 }
