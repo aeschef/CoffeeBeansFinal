@@ -140,7 +140,7 @@ function NavbarElements(props) {
                 } />
             </Routes>
 
-            <nav className="navbar fixed-bottom navbar-light">
+            <nav className="navbar fixed-bottom  navbar-light" id="navbar-background">
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
@@ -151,15 +151,13 @@ function NavbarElements(props) {
                         <Row className="justify-content-md-center">
                             <Link to="/grocery_list.js" className='nav-link'>List</Link>
                         </Row>
-
-
                     </Col>
                 </span>
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" className="">
-                                <img src={InventoryIcon} alt="Inventory Navigation Bar Icon" className="navbar-icon" />
+                            <a href="#" >
+                                <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon try" />
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
@@ -217,30 +215,3 @@ function NavbarElements(props) {
 }
 
 export default NavbarElements
-
-//     //<div>
-//     <nav class="navbar fixed-bottom navbar-light">
-//     <span class="navbar-text">
-//         <img src="grocery_list.png"></img>
-//         <Link to="/grocery_list" className='nav-link'>List</Link>
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/inventory" className='nav-link'>Inventory</Link>
-//         {/*<a class="nav-link" href="inventory.js">Inventory</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/meal_plan" className='nav-link'>Meal Plan</Link>
-//         {/*<a class="nav-link" href="meal_plan.js">Meal Plan</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/recipes" className='nav-link'>Recipes</Link>
-//         {/*<a class="nav-link" href="recipes.js">Recipes</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/account" className='nav-link'>Account</Link>
-//         {/*<a class="nav-link" href="account.js">Account</a>*/}
-//     </span>
-// </nav>
-// <div>
-// </div>
-// </div>

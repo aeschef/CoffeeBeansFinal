@@ -10,7 +10,12 @@
 .navbar-text{
     font-size: 14px;
     color: #525252;
-    padding-top:3%
+    padding-top:3%;
+    padding: 3%;
+    border: #525252;
+    border-style: dashed;
+    justify-content: center;
+    align-content: center;
 }
 
 .navbar-icon {
@@ -19,5 +24,11 @@
     align-items: center;
     justify-content: center;
     align-content: center;
+}
+
+.try {
+    align-self: center;
+    justify-content: center;
+    padding-left: 3%;
 }
 
