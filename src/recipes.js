@@ -129,11 +129,15 @@ export default function RecipesHome(props) {
             {/* recipe cards */}
             <div className='recipe-cards'>
                 <RecipeCards 
-                    filteredRecipes={(props.recipes.filter((recipe) => (recipe.title?.toLowerCase().match(searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(searchInput.toLowerCase().trim())))).
-                        sort(sortFunction).
-                        filter((recipe) => shouldBeShown(recipe))} 
                     recipes={props.recipes}
-                    setRecipes={props.setRecipes} onClickFunction={handleOpenViewPopup} groceryList={props.personalGroceryList} addToGL={props.addToGL} view={true}/>
+                    setRecipes={props.setRecipes} 
+                    onClickFunction={handleOpenViewPopup} 
+                    groceryList={props.personalGroceryList} 
+                    addToGL={props.addToGL} 
+                    view={true}
+                    searchInput={searchInput}
+                    sortFunction={sortFunction}
+                    shouldBeShown={shouldBeShown}/>
             </div>
 
             {/* the add button that appears on the home page */}

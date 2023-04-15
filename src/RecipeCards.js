@@ -46,7 +46,11 @@ export default function RecipeCards(props) {
 
   return (
       <div>
-      {props.filteredRecipes.map((recipe, index) => (
+      {props.recipes.
+        filter((recipe) => (recipe.title?.toLowerCase().match(props.searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(props.searchInput.toLowerCase().trim()))).
+        sort(props.sortFunction).
+        filter((recipe) => props.shouldBeShown(recipe)).
+        map((recipe, index) => (
         <div className={props.addedRecipe === index ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(props.recipes.indexOf(recipe))} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
