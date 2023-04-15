@@ -91,7 +91,6 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
         } else if (key === 'shared') {
             setPersonal(false);
         }
-
     };
 
     return (

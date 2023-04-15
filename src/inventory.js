@@ -8,6 +8,8 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
 import './css/inventory.css';
@@ -21,13 +23,21 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s }) => {
 
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
-    const handlePersonal = () => setPersonal(true);
-    const handleShared = () => setPersonal(false);
+    const handlePersonal = () => {
+        console.log("personal button pressed");
+        setPersonal(true)
+        setKey('personal');
+    };
+    const handleShared = () => {
+        console.log("shared button pressed");
+        setPersonal(false)
+        setKey('shared');
+    };
     // displays the toggle buttons and handles switching functionality
     const handleSelect = (key) => {
         if (key == 'personal') {
@@ -45,9 +55,14 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonalInv : itemsInSharedInv} 
-    addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}></AddItem>
+            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
+                user={authentication}
+                database={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
+            <AddItem list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
+                addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}
+                database={database}
+                authentication={authentication}
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></AddItem>
             {/*<Row>
                 <Col>
                     <div className="d-grid gap-2">
@@ -72,8 +87,43 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ list }) {
+function ListCategory({ list, user, database }) {
+    let count = 0;
+
     return (
+
+        <div className="category-rectangle">
+            {database.map(category =>
+                <Row>
+                    <div className="d-flex justify-between category-header">
+                        <Col>
+                            <div className="mr-auto">
+                                {category.value}
+                            </div>
+                        </Col>
+                        <CategorysPopup></CategorysPopup>
+                    </div>
+                    {category.data.map((cat, i) =>
+                        <div className="left-spacing">
+                            <Row>
+                                <Col>
+                                    <label key={i}>
+                                        {cat.item_name}
+                                    </label>
+                                </Col>
+                            </Row>
+                        </div>
+                    )}
+
+                </Row>
+            )}
+
+        </div>
+
+    );
+
+    {/*return (
+        
         <div className="category-rectangle">
             <Row>
 
@@ -95,8 +145,8 @@ function ListCategory({ list }) {
             <Row>
 
             </Row>
-        </div>
-    );
+            </div>
+    );*/}
 }
 
 /**
@@ -118,7 +168,7 @@ const RemoveItem = () => {
  * list -> list that contains items
  * addtoList-> function that allows list to be alteredd
  */
-const AddItem = ({ list, addToList }) => {
+const AddItem = ({ list, addToList, database, authentication, databaseArr }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
@@ -137,12 +187,40 @@ const AddItem = ({ list, addToList }) => {
     };
 
     const handleShow = () => setShow(true);
+
     const setItemName = (event) => {
         setName(event.target.value);
     };
+
     const setCategoryName = (event) => {
-        setCategory(event.target.value);
+        let lowerCase = event.target.value.toLowerCase();
+        setCategory(lowerCase);
     };
+
+    const addToDatabase = () => {
+        setShow(false);
+        let found = false;
+        let count_c = 0;
+        databaseArr.map(category => {
+            let lowerCaseCategory = category.value.toLowerCase();
+            if (categoryName === lowerCaseCategory) {
+                let count = 0;
+                category.data.map((cat, i) => {
+                    count += 1;
+                })
+                const item = {item_name: itemName};
+                //TODO: figure out how to do push
+                found = true;
+            }
+            count_c += 1;
+        })
+        if(!found){
+            const item =  {item_name: itemName};
+            let itemAdd = {};
+            itemAdd[0] = item;
+            //TODO: figure out to push
+        }
+    }
 
     // modal to add element to inventory
     return (
@@ -191,11 +269,9 @@ const AddItem = ({ list, addToList }) => {
 };
 
 
-const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
-
-
-
-
+const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s }) => {
+    const db = getDatabase(props.app)
+    const auth = getAuth(props.app)
     return (
         <Container fluid="md">
             <Row>
@@ -213,7 +289,11 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                 itemsInPersonalInv={itemsInPersonalInv}
                 itemsInSharedInv={itemsInSharedInv}
                 addPersonalItemInv={addPersonalItemInv}
-                addSharedItemInv={addSharedItemInv}></ShowTab>
+                addSharedItemInv={addSharedItemInv}
+                database={db}
+                authentication={auth}
+                databaseArr_p={databaseArr_p}
+                databaseArr_s={databaseArr_s}></ShowTab>
 
 
         </Container>

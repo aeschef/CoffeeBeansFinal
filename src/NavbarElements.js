@@ -28,6 +28,9 @@ function NavbarElements(props) {
 
     let doAgain_s = true;
 
+    let doAgain_i = true;
+    let doAgain_is = true;
+
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
 
@@ -65,8 +68,23 @@ function NavbarElements(props) {
             { value: name, data: data }
         ]);
     };
-
     const [accessCode, setAccess] = useState("");
+
+    const [categories_i, setCategory_i] = useState([]);
+    const handleCategory_i = (name, data) => {
+        setCategory_i(categories_i => [
+            ...categories_i,
+            { value: name, data: data }
+        ]);
+    }
+
+    const [categories_is, setCategory_is] = useState([]);
+    const handleCategory_is = (name, data) => {
+        setCategory_is(categories_is => [
+            ...categories_is,
+            { value: name, data: data }
+        ]);
+    }
 
 
     // Populates pages with data for the current user
@@ -125,6 +143,30 @@ function NavbarElements(props) {
                 doAgain_s = false;
             }
             doAgain = false;
+        }
+        if (doAgain_i) {
+            const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+            onValue(dbRefIP, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    const childData = childSnapshot.val();
+                    handleCategory_i(childKey, childData);
+                });
+            })
+            if (doAgain_is) {
+                const dbRefS = ref(db, '/groups/' + accessCode + '/inventory/categories');
+                onValue(dbRefS, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const childKey = childSnapshot.key;
+                        const childData = childSnapshot.val();
+                        handleCategory_is(childKey, childData);
+                        console.log(childData);
+                        console.log(categories_s);
+                    });
+                })
+                doAgain_is = false;
+            }
+            doAgain_i = false;
         }
         {/*if (doAgain_s) {
             get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
@@ -209,7 +251,10 @@ function NavbarElements(props) {
                         itemsInPersonalGL={itemsInPersonalGL}
                         itemsInSharedGL={itemsInSharedGL}
                         addPersonalItemGL={addPersonalItemGL}
-                        addSharedItemGL={addSharedItemGL}>  </InventoryHome>
+                        addSharedItemGL={addSharedItemGL}
+                        props={props}
+                        databaseArr_p={categories_i}
+                        databaseArr_s={categories_is}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
                     <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
