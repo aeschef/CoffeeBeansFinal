@@ -95,3 +95,7 @@ h1 {
 .info-tooltip:hover .info-tooltip-text {
     visibility: visible;
 }
+
+#notes {
+    white-space: pre-wrap;
+}

@@ -148,12 +148,14 @@ export default function ViewRecipePopup(props) {
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
   const [tagsInStringForm, setTagsInStringForm] = useState("");
   const [ingredientsInStringForm, setIngredientsInStringForm] = useState("");
+  const [stepsInStringForm, setStepsInStringForm] = useState("");
   const handleOpenEditPopup = (index) => {
       setIndexOfRecipeToEdit(index);
       setInputs(props.recipes[index]);
       setShowEditPopup(true);
       setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
-      setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join(", "));
+      setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join("\n"));
+      setStepsInStringForm(props.recipes[index].steps?.join("\n"));
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
@@ -210,12 +212,12 @@ export default function ViewRecipePopup(props) {
                   
                   {/* recipe notes */}
                   <h6>Notes</h6>
-                  <p>{currentRecipe?.notes}</p>
+                  <p id="notes">{currentRecipe?.notes}</p>
                     <HandleAddtoMealPlan groceryList={props.groceryList} addToGL={props.addToGL}></HandleAddtoMealPlan>
                   <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
-          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm}></EditRecipePopup>
+          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       

@@ -84,13 +84,16 @@ export default function EditRecipePopup(props) {
             props.setIngredientsInStringForm(value);
             props.setInputs(values => ({ ...values, ["ingredients"]: 
                     value.
-                    split(",").
+                    split("\n").
                     map(s => s.trim()).
                     filter((str) => str !== '').
                     map((ingredientPhrase) => ({
                         "phrase": ingredientPhrase, 
                         "focus": findQuotedWord(ingredientPhrase)})) 
                     }));
+        } else if (name === "steps") {
+            props.setStepsInStringForm(value);
+            props.setInputs(values => ({ ...values, ["steps"]: value.split("\n").map(s => s.trim()).filter((str) => str !== '') }));
         } else {
             props.setInputs(values => ({ ...values, [name]: value }))
         }
@@ -205,6 +208,7 @@ export default function EditRecipePopup(props) {
                         </div>
                         <Form.Control
                             type="text"
+                            as="textarea"
                             name="ingredients"
                             value={props.ingredientsInStringForm || ""}
                             onChange={handleChange}
@@ -214,8 +218,9 @@ export default function EditRecipePopup(props) {
                         <Form.Label>Steps:</Form.Label>
                         <Form.Control
                             type="text"
+                            as="textarea"
                             name="steps"
-                            value={props.inputs?.steps || ""}
+                            value={props.stepsInStringForm || ""}
                             onChange={handleChange}
                         />
 
@@ -223,6 +228,7 @@ export default function EditRecipePopup(props) {
                         <Form.Label>Notes:</Form.Label>
                         <Form.Control
                             type="text"
+                            as="textarea"
                             name="notes"
                             value={props.inputs?.notes || ""}
                             onChange={handleChange}

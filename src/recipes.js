@@ -187,14 +187,14 @@ function AddRecipePopup(props) {
             minsRequired: inputs.minsRequired || 0, 
             tags: inputs.tags?.split(",").map(s => s.trim()) || [], 
             ingredients: inputs.ingredients?.
-                    split(",").
+                    split("\n").
                     map(s => s.trim()).
                     filter((str) => str !== '').
                     map((ingredientPhrase) => ({
                         "phrase": ingredientPhrase, 
                         "focus": findQuotedWord(ingredientPhrase)
                     })) || [], 
-            steps: inputs.steps,
+            steps: inputs.steps?.split("\n").map(s => s.trim()) || [],
             notes: inputs.notes}];
         
         if (nextRecipes[nextRecipes.length - 1].ingredients?.length !== nextRecipes[nextRecipes.length - 1].ingredients?.filter((ingredient) => ingredient.focus).length) {
@@ -303,6 +303,7 @@ function AddRecipePopup(props) {
                         </div>
                         <Form.Control 
                             type="text" 
+                            as="textarea"
                             name="ingredients"
                             value={inputs.ingredients || ""}
                             onChange={handleChange}
@@ -311,7 +312,8 @@ function AddRecipePopup(props) {
                         {/* steps entry - TODO: format differently */}
                         <Form.Label>Steps:</Form.Label>
                         <Form.Control 
-                            type="text" 
+                            type="text"
+                            as="textarea" 
                             name="steps"
                             value={inputs.steps || ""}
                             onChange={handleChange}
@@ -321,6 +323,7 @@ function AddRecipePopup(props) {
                         <Form.Label>Notes:</Form.Label>
                         <Form.Control 
                             type="text" 
+                            as="textarea"
                             name="notes"
                             value={inputs.notes || ""}
                             onChange={handleChange}
