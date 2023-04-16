@@ -76,6 +76,7 @@ function NavbarElements(props) {
             ...categories_i,
             { value: name, data: data }
         ]);
+        console.log(categories_i);
     }
 
     const [categories_is, setCategory_is] = useState([]);
@@ -84,6 +85,7 @@ function NavbarElements(props) {
             ...categories_is,
             { value: name, data: data }
         ]);
+        //console.log(categories_i);
     }
 
 

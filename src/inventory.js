@@ -210,15 +210,23 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                 })
                 const item = {item_name: itemName};
                 //TODO: figure out how to do push
+                const dbRefIP = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + category.value);
+                push(dbRefIP, {
+                    item_name: itemName
+                })
                 found = true;
             }
             count_c += 1;
         })
         if(!found){
-            const item =  {item_name: itemName};
-            let itemAdd = {};
-            itemAdd[0] = item;
+            let obj = {};
+            obj[count_c] = categoryName;
+            const dbRefIC = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + categoryName);
+            push(dbRefIC, {
+                item_name: itemName
+            })
             //TODO: figure out to push
+
         }
     }
 

@@ -144,7 +144,6 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
         <div className="category-rectangle">
             {database.map(category =>
                 <Row>
-                    {count += 1}
                     <div className="d-flex justify-between category-header">
                         <Col>
                             <div className="mr-auto">
