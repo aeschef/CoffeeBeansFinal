@@ -41,11 +41,11 @@ function IncDec() {
         <>
             <div className="input-group">
                 <div className="input-group-prepend">
-                    <button type="button" onClick={dec_num}>-</button>
+                    <button type="button" className="inc-btn" onClick={dec_num}>-</button>
                 </div>
-                <input className="form-control input-sm" size="2" value={num} onChange={handleChange} />
+                <input className="form-control input-sm quantity" value={num} onChange={handleChange} />
                 <div className="input-group-prepend">
-                    <button type="button" onClick={inc_num}>+</button>
+                    <button type="button" className="inc-btn" onClick={inc_num}>+</button>
                 </div>
             </div>
         </>
@@ -271,7 +271,7 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
         <Container fluid="md">
             <Row>
                 <Col xs={{ span: 6, offset: 3 }}>
-                    <h1>Grocery List</h1>
+                    <h1 className="title">Grocery List</h1>
                 </Col>
                 <Col xs={{ span: 2 }}>
                     <FilterPopup></FilterPopup>

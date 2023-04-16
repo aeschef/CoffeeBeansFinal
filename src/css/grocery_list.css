@@ -1,3 +1,19 @@
+/* General Style rules */
+body{
+    font-family: 'Nunito Sans', sans-serif;
+    color:#525252;
+    font-weight:bold;
+    font-size:20px;
+
+}
+
+.title {
+    text-align: center;
+    margin-top: 2rem;
+    color:#729701;
+    font-weight:bold;
+}
+  
 #add-button {
     position: fixed;
     top: 80%;
@@ -18,12 +34,27 @@
 }
 .category-header {
     background-color:#e3eace;
-    font-size: 20px;
     padding-left: 1rem;
     color: #525252;
     margin-top: 1rem;
     margin-bottom: 1rem;
 }
+
+.quantity {
+    border-top-style: hidden;
+    border-left-style:hidden;
+    border-right-style:hidden;
+    border-bottom-style: hidden;
+    color:#525252;
+    font-weight: bold;
+}
+
+.inc-btn {
+    border-style:hidden;
+    border-radius: 40%;
+}
+
+
 
 .left-spacing {
     padding-left: 1rem;
@@ -41,7 +72,6 @@
     display: inline-block;
     margin: 4px 2px;
     border-radius: 16px;
-
     background-color: #EFDACF;
     width: auto;
     font-size: 13px;
