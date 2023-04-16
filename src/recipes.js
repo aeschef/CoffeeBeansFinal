@@ -57,8 +57,22 @@ export default function RecipesHome(props) {
             <button id='add-button' onClick={handleOpenAddPopup}>add</button>
 
             {/* popups */}
-            <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
+            <AddRecipePopup recipes={props.recipes} 
+                setRecipes={props.setRecipes} 
+                showAddPopup={showAddPopup} 
+                handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
+
+            <ViewRecipePopup recipes={props.recipes} 
+                showViewPopup={showViewPopup} 
+                handleCloseViewPopup={handleCloseViewPopup} 
+                indexOfRecipeToView={indexOfRecipeToView} 
+                setRecipes={props.setRecipes} 
+                view={true} 
+                groceryList={props.personalGroceryList} 
+                addToGL={props.addToGL} 
+                databaseCatGL={props.databaseCatGL}
+                auth={props.userAuth}> </ViewRecipePopup>
+
             <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup}></FilterPopup>
         </>
     )

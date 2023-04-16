@@ -23,6 +23,8 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
+
+    let doAgain = true;
     
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
@@ -69,6 +71,37 @@ function NavbarElements(props) {
       })
     }, [])
 
+
+    if (doAgain) {
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
+        onValue(dbRefP, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                const childData = childSnapshot.val();
+                handleCategory(childKey, childData);
+            });
+        })
+        get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+            if (snapshot.exists()) {
+                setAccess(snapshot.val());
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+        console.log("HIIIII " + accessCode);
+        doAgain = false;
+    }
+
+    const [categories, setCategory] = useState([]);
+        const handleCategory = (name, data) => {
+            setCategory(categories => [
+                ...categories,
+                { value: name, data: data }
+            ]);
+        };
+
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
         {value:"carrots", label:"carrots"},
@@ -103,29 +136,37 @@ function NavbarElements(props) {
         <Routes>
             <Route path="/grocery_list.js" element={
                 <GroceryListHome itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                 addSharedItemGL={addSharedItemGL}
-                 itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                 addPersonalItemInv={addPersonalItemInv}
-                  addSharedItemInv={addSharedItemInv}> </GroceryListHome>
+                    itemsInSharedGL={itemsInSharedGL}
+                    addPersonalItemGL={addPersonalItemGL}
+                    addSharedItemGL={addSharedItemGL}
+                    itemsInPersonalInv={itemsInPersonalInv}
+                    itemsInSharedInv={itemsInSharedInv}
+                    addPersonalItemInv={addPersonalItemInv}
+                    addSharedItemInv={addSharedItemInv}> </GroceryListHome>
             } />
             <Route path="/inventory.js" element={
                 <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                 addPersonalItemInv={addPersonalItemInv}
-                  addSharedItemInv={addSharedItemInv}
-                  itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                 addSharedItemGL={addSharedItemGL}>  </InventoryHome>
+                    itemsInSharedInv={itemsInSharedInv}
+                    addPersonalItemInv={addPersonalItemInv}
+                    addSharedItemInv={addSharedItemInv}
+                    itemsInPersonalGL={itemsInPersonalGL}
+                    itemsInSharedGL={itemsInSharedGL}
+                    addPersonalItemGL={addPersonalItemGL}
+                    addSharedItemGL={addSharedItemGL}>  </InventoryHome>
             } />
             <Route path="/meal_plan.js" element={
-                <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL}/> 
+                <MealPlanHome recipes={recipes} 
+                    setRecipes={setRecipes} 
+                    personalGroceryList={itemsInPersonalGL} 
+                    addToGL={addPersonalItemGL}/> 
             } />
             <Route path="/recipes.js" element={
-                <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} /> 
+                <RecipesHome recipes={recipes} 
+                    setRecipes={setRecipes} 
+                    personalGroceryList={itemsInPersonalGL} 
+                    addToGL={addPersonalItemGL} 
+                    databaseCatGL={categories} 
+                    userAuth={auth}/> 
             } />
             <Route path="/account.js" element={
                 <AccountHome login={props.login} setLogin={props.setLogin}/> 
