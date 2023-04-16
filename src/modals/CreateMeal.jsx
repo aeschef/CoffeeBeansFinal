@@ -15,7 +15,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
-const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal,
+const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, setNewMeal, addedMeal, setAddedMeal,
    meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL}) => {
   const auth = getAuth(app);
   
@@ -29,7 +29,7 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
   const [openChooseMeal, setOpenChooseMeal] = useState(false)
 
   // Saves category selected when planning a meal
-  const [selectedCategory, setCategory] = useState(quota[0].id)
+  const [selectedCategory, setCategory] = useState([])
 
   // Saves the day selected when planning a meal
   const [selectedDay, setDay] = useState("Monday")
@@ -52,7 +52,7 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   // Stores list of categories so we know where to add the meal
-  const [categories, setCategories] = useState([])
+  const [categoriesList, setCategoriesList] = useState([])
 
   // When page first loads, populates meals with information from user's database
   useEffect(()=> {
@@ -68,22 +68,15 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
     });
 
     // Reference to categories in the meal plan
-    const categoryRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/categories")
     let dataCategories = []
     
     // Stores all of the meal categories and pushes them to an array
-    onValue(categoryRef, (snapshot) => {
-      snapshot.forEach((childsnapshot => {
-        
-        // pushes category name to array
-        dataCategories.push(childsnapshot.key)
-        console.log(childsnapshot.key)
-        console.log(childsnapshot.val())
-      }))
+    categories.forEach((category)=> {
+      // pushes category name to array
+      dataCategories.push(category.key)
 
-      // updates state variable to store list of categories
-      setCategories(dataCategories)
-    });
+    })
+    setCategoriesList(dataCategories)
 
   }, [])
 
@@ -203,23 +196,15 @@ const CreateMeal = ({ app, open, onClose, quota, setQuota, newMeal, setNewMeal, 
             <Form.Label className="edit-modal-header">Category</Form.Label>
             
             {/* Populates a dropdown menu that contains the list of categories for user to choose from. */}
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedCategory}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setCategory(e.target.value);
-              }}
-                >
-                {quota.map(option => (
-                      <option
-                        value={option.id}>
-                        {option.id}
-                      </option>
-                    ))}
-            </Form.Select>
-            
+            <Creatable 
+
+                  defaultValue={{value: selectedCategory, label: selectedCategory}}
+                  value={selectedCategory}
+                  options={categoriesList?.map(category => ({ label: category, value: category}))}
+                  onChange={opt =>setCategory(opt)}
+
+            />
+
             <Form.Label className="edit-modal-header">Day</Form.Label>
             
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}

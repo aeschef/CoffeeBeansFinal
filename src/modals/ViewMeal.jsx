@@ -12,20 +12,9 @@ import EditMeal from './EditMeal'
 
 // Modal that will appear when the user clicks on a meal so that they can view details about the meal.
 const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes}) => {
-  
-  // Passed as variable to editing category popup so we know which category to edit
-  const [quotaIndex, setQuotaIndex] = useState(0)
-
-  // Saves category selected when planning a meal
-  const selectedCategory = currentCategoryIndex
-
-  // Saves the day selected when planning a meal
-  const selectedTag = currentMealDetails.tags
 
   // Saves either meal title or the index of the recipe
-  const mealDetails = currentMealDetails.label
-
-  const [mealInfo, setMealInfo] = useState([])
+  const mealDetails = currentMealDetails.value.label
 
   // Used to indicate when a popup should open to view recipe
   const [viewRecipe, setViewRecipe] = useState(false)
@@ -33,22 +22,6 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
   // Indicates when modal should appear to edit the meal details
   const [editMeal, setEditMeal] = useState(false)
 
-  // When user wants to view a meal, retrieve its information from database
-  useEffect(()=> {
-    if (open) {
-      const db = getDatabase()
-      const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals/"+currentMealIndex)
-      
-      // iterates through the meals of t
-      onValue(mealRef, (snapshot) => {
-      
-        setMealInfo(snapshot.val())
-          // pushes meal item to array
-        console.log(snapshot.val())          
-       
-      });
-    }
-  }, [open])
   // Days of the week used for tag names
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
@@ -70,20 +43,20 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
             <Row>
               <Form.Label>
                 {/* If the meal is made by ingredients, will just display meal title. Otherwise, will index into recipes list to find recipe title. */}
-                {currentMealDetails.type === "Ingredients" ? mealInfo.label : recipes[mealDetails].title}
+                {currentMealDetails.value.type === "Ingredients" ? currentMealDetails.value.label : recipes[mealDetails].title}
               </Form.Label>
             </Row> 
           
             {/* Displays the category associated with the meal*/}
             <Form.Label className="edit-modal-header">Category</Form.Label>
-            <Row><Form.Label>{selectedCategory}</Form.Label></Row>
+            <Row><Form.Label>{currentCategoryIndex}</Form.Label></Row>
         
             {/* Displays the tag associated with the meal. */}
             <Form.Label className="edit-modal-header">Day</Form.Label>
-            <Row><Form.Label>{mealInfo.tags}</Form.Label></Row>
+            <Row><Form.Label>{currentMealDetails.value.tags}</Form.Label></Row>
 
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
-            {mealInfo.type === "Recipe" && 
+            {currentMealDetails.value.type === "Recipe" && 
                   <Row>
                     <Button onClick={()=>setViewRecipe(true)}>
                      View Recipe
@@ -91,22 +64,22 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
                     <ViewRecipePopup 
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
-                      indexOfRecipeToView={mealInfo.label} 
+                      indexOfRecipeToView={currentMealDetails.value.label} 
                       setRecipes={setRecipes}> 
                     </ViewRecipePopup>
                   </Row>
                 
             }
 
-            {mealInfo.type === "Ingredients" && mealInfo.notes &&
+            {currentMealDetails.value.type === "Ingredients" && currentMealDetails.value.notes &&
             <>
               {/* Displays the note information associated with the user's inputted meal idea */} 
               <Row><Form.Label className="edit-modal-header">Notes</Form.Label></Row>
-              <Row><Form.Label>{mealInfo.notes}</Form.Label></Row>
+              <Row><Form.Label>{currentMealDetails.value.notes}</Form.Label></Row>
             </>}
           {/* Modal that will appear if the user wants to edit a meal's information. */}   
-          {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} categories={categories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={mealInfo} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}/>}
+          {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} categories={categories} setCategories={setCategories}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}/>}
         
           </Form.Group>
         </Form> 

@@ -76,43 +76,55 @@ const [quotas, setQuotas] = useState([
   const [categories, setCategories] = useState([])
   const [meals, setMeals] = useState([])
 
-
+  // Updates database for a meal when user checks or unchecks the checkbox
+  function handleChecked(category, mealIndex, value) {
+    console.log("originally " + value)
+    console.log("should now be " +  !value)
+  }
 
   useEffect(()=> {
     const db = getDatabase()
 
     // Reference to categories in the meal plan
     const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
-    const dataCategories = []
     let arrMeals = []
     // Stores all of the meal categories and pushes them to an array
+    console.log("use effect")
+    console.log(newMeal)
     onValue(categoryRef, (snapshot) => {
-      snapshot.forEach((childsnapshot => {
+      const dataCategories = []
+
+      snapshot.forEach((childsnapshot) => {
         
         // pushes meal item to array        
         const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
         let dataMeals = []
-        
+        console.log("child snapshot")
+        console.log(childsnapshot.val())
         // Stores all of the meal categories and pushes them to an array
-        onValue(mealRef, (snapshot) => {
-
-            // pushes meal item to array
-            snapshot.forEach((childsnapshot => { 
-              dataMeals.push(childsnapshot.val())
-
-            }))
-         
-        });
-        // pushes meal item to array
-        console.log(dataCategories)
-        dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-        console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-        console.log("category meals " + dataMeals)
+        dataMeals = []
+        let keys = Object.keys(childsnapshot.val().meals);
+        keys.forEach((id) => {
+          dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
+          console.log({key: id, value: childsnapshot.val().meals[id]})
+        })
+        console.log("data meals")
+        console.log(dataMeals)
         
-      }))
+        // pushes meal item to array
+          console.log(dataCategories)
+          dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+          console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+          console.log("category meals " + dataMeals)
+        });
+
+        
+      setCategories(dataCategories)
+      console.log(dataCategories)
+    },  {
+      onlyOnce: true
     });
-    setCategories(dataCategories)
-    console.log(dataCategories)
+
     
   }, [])
 
@@ -120,6 +132,8 @@ const [quotas, setQuotas] = useState([
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
     setCurrentMealDetails(mealInfo)
+    console.log("key" + mealInfo.key.toString())
+    console.log("meal Info " + mealInfo.value)
     setCurrentMealIndex(mealIndex)
     setShowViewMealPopup(true)
   }
@@ -143,14 +157,14 @@ const [quotas, setQuotas] = useState([
             <input
             type="checkbox"
             name="lang"
-            value={x.value.label}
+            value={x.label}
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, {id: x.value.label, tags: x.value.tags, notes: x.value.notes, type: x.value.type, completed: x.value.completed}, i)}>
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, x, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.value.type === "Ingredients" ? x.value.label : props.recipes[x.value.label].value.title}
+              {x.type === "Ingredients" ? x.label : props.recipes[x.value.label].value.title}
             </a>
           </label>
         </Row>
@@ -195,27 +209,32 @@ return (
             </div>
         </Col>
       </div>
-      {category.meals?.map((x, i)=> (
+
+     
+
+      {category.meals?.map((x, i) => (
       <div className="left-spacing">
           <Row> 
-            <label key={i}>
+            <label key={x}>
             {/* Checkbox that keeps track of whether meal was completed or not. */}
             <input
             type="checkbox"
             name="lang"
-            value={x.label}
+            value={x}
+            checked={x.value.completed}
+            onChange={handleChecked(category.key, i, x.value.completed)}
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(category.key, {id: x.label, tags: x.tags, notes: x.notes, type: x.type, completed: x.completed}, i)}>
+            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(category.key, {key: x.key, value: x.value}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.type === "Ingredients" ? x.label : x.tags}
+              {x.value.type === "Ingredients" ? x.value.label : x.value.tags}
             </a>
           </label>
         </Row>
         <Row className="left-spacing">
-          <div className="tag">{x.tags}</div>  
+          <div className="tag">{x.value.tags}</div>  
         </Row>
       </div>))}
       {/* Displays the list of meals for the current category. */}
@@ -224,7 +243,7 @@ return (
 
     {/* Shows meal details if the meal is selected. */}
     {showViewMealPopup &&
-       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={setCategories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
+       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={categories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
           currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
  
   {/* Displays modal to create a meal if the add button is pressed */}
@@ -237,8 +256,8 @@ return (
     app={props.app}
     open={showCreateMealPopup}
     onClose={() => setShowCreateMealPopup(false)}
-    quota={quotas}
-    setQuota={setQuotas}
+    categories={categories}
+    setCategories={setCategories}
     newMeal={newMeal}
     setNewMeal={setNewMeal}
     addedMeal={addedMeal}

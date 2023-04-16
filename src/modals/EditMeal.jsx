@@ -8,18 +8,18 @@ import ViewRecipePopup from './ViewRecipe';
 import RecipeCards from '../RecipeCards'
 import TagsInput from '../TagsInput';
 import Creatable from 'react-select/creatable';
-import { getDatabase, ref, set, onValue } from 'firebase/database';
+import { getDatabase, ref, set, onValue, update, push, child} from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
-const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
+const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
   const auth = getAuth()
 
-  // Saves category selected when planning a meal
-  const [selectedCategory, setCategory] = useState(currentCategoryIndex)
+  // Saves category selected when planning a meal, stored in format so that it can appear in dropdown
+  const [selectedCategory, setCategory] = useState({label: currentCategoryIndex, value: currentCategoryIndex})
 
-  // Saves the tags selected when planning a meal
-  const [selectedTags, setSelectedTags] = useState(currentMealDetails.tags)
+  // Saves the tags selected when planning a meal, has to be in right format so that it can populate in dropdown
+  const [selectedTags, setSelectedTags] = useState({label: currentMealDetails.value.tags, value:currentMealDetails.value.tags})
   
   const [categoryChanged, setCategoryChanged] = useState(false)
   const [tagChanged, setTagChanged] = useState(false)
@@ -28,7 +28,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   const [mealDetailsChanged, setMealDetailsChanged] = useState(false)
 
   // Stores notes information for meal ideas and determines when the user has changed the entry
-  const [notes, setNotes] = useState(currentMealDetails.notes)
+  const [notes, setNotes] = useState(currentMealDetails.value.notes)
   const [notesChanged, setNotesChanged] = useState(false)
 
   const [newMeal, setNewMeal] = useState(false)
@@ -37,7 +37,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   const [viewRecipe, setViewRecipe] = useState(false)
 
   // Stores either the name of the meal if it is by ingredients or the index of the recipe. 
-  const [mealDetails, setMealDetails] = useState(currentMealDetails.label)
+  const [mealDetails, setMealDetails] = useState(currentMealDetails.value.label)
   const [updatedMeal, setUpdatedMeal] = useState(null)
 
   // Days of the week used for tag names
@@ -49,89 +49,22 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
     console.log(auth.currentUser.uid)
     // updates tags state variable so that it stores the saved tags from the user's database
     const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+    
+    
     onValue(tagRef, (snapshot) => {
       const data = snapshot.val();
       console.log(data);
       setTags(data);
 
-    });
+    }); 
+
   }, [])
 
-  // Reinserts the meal into the quota array with updated information 
-  function addNewMeal(categoryIndex) {
-    // TODO:  ERROR CHECKING - Check if category name already exists
-    // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
-    let quotas= [...quota];
-
-     // if the category was changed, we need to insert the meal into the new category's list and remove it from the old category's list
-     if (categoryChanged) {
-        
-      // Updates previous category so that it removes the meal from its list of items
-      let categoryList = {...quotas[currentCategoryIndex]}
-      
-      let oldItems = categoryList.items
-
-      // Removes the meal from old category's list
-      let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex),
-        ...oldItems.slice(currentMealIndex + 1)
-      ]
-      categoryList.items = newCategoryList
-
-      // Updates quota so that the category contains the list of meals with the updated meal removed
-      quotas[currentCategoryIndex] = categoryList
-
-      // Makes a copy of the category to which we need to add the meal
-      let item = {...quotas[categoryIndex]};
-
-      // Update the current category's array of meals so that it stores the new meal
-      let copyMeals = [...item.items, 
-        {value:updatedMeal.description, label:updatedMeal.description, tags:updatedMeal.tags.value, notes: updatedMeal.notes, type:updatedMeal.type}]
-      item.items = copyMeals
-
-      console.log(item.items)
-
-      // Reinsert the category back into the copy of the quotas
-      quotas[categoryIndex] = item;
-      console.log(quotas)
-      
-      // Set the state to our new copy
-      setQuota(quotas)
-    }
-
-    // If the tag or meal details were changed, then the meal just needs to be reinserted in the same category's list of meals
-    else if (tagChanged || mealDetailsChanged) {
-
-      // Makes a copy of the quota array 
-      let prevCategoryInfo = {...quotas[currentCategoryIndex]};
-
-      // Copies the old array of meals for the category
-      let oldItems = prevCategoryInfo.items
-
-      // Updates the meal so that it contains the new information      
-      let newCategoryList = [
-        ...oldItems.slice(0, currentMealIndex), {value:updatedMeal.description, label:updatedMeal.description, tags:updatedMeal.tags.value, notes:updatedMeal.notes, type:updatedMeal.type}, 
-        ...oldItems.slice(currentMealIndex + 1)
-      ]
-
-      // Update the current category's array of meals so that it stores the meal with updated information
-      prevCategoryInfo.items = newCategoryList
-
-      // Adds the category back into the array
-      quotas[categoryIndex] = prevCategoryInfo;
-      console.log(quotas)
-      
-      // Set the state to our new copy
-      setQuota(quotas)
-    }
-    onClose(false)
-    closeViewPopup()
-  }
 
   // Keeps track if user changed tag. 
   useEffect(()=> {
     console.log(selectedTags)
-    if (selectedTags !== currentMealDetails.tags) {
+    if (selectedTags !== currentMealDetails.value.tags) {
       setTagChanged(true)
     } else {
       setTagChanged(false)
@@ -142,7 +75,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
   // Keeps track if user changes the meal category, meaning that the meal needs to be inserted into another category's list of meals
   // and removed from old category's list
   useEffect(()=> {
-    if (selectedCategory !== quota[currentCategoryIndex].id) {
+    if (selectedCategory.label !== currentCategoryIndex) {
       setCategoryChanged(true)
     } else {
       setCategoryChanged(false)
@@ -152,7 +85,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
   // Keeps track when user changes the notes section for a meal idea so that we know to update its old entry in a meal category's list
   useEffect(()=> {
-    if (notes && notes !== currentMealDetails.notes) {
+    if (notes && notes !== currentMealDetails.value.notes) {
       setNotesChanged(true)
     }
   }, [notes])
@@ -161,29 +94,137 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
-    if (mealDetails !== currentMealDetails.description) {
+    if (mealDetails !== currentMealDetails.value.description) {
       setMealDetailsChanged(true)
     } else {
       setMealDetailsChanged(false)
     }
   }, [mealDetails])
 
-  // Executed if the user 
+  // Updates meal's information in the database
   useEffect(()=> {
     if (newMeal) {
       console.log(updatedMeal)
-      // If meal category is the first in the categories list, adds meal to breakfast state array
-      if (updatedMeal.label=== quota[0].id) {
-        addNewMeal(0)
+      const db = getDatabase()
+      console.log("meal key" + currentMealDetails.key)
+      const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals/"+currentMealDetails.key)
       
-      // If meal category is lunch, adds meal to the lunch state array
-      } else if (updatedMeal.label === quota[1].id) {
-        addNewMeal(1)
-      // If meal category is dinner, adds meal to the dinner state array
-      } else if (updatedMeal.label === quota[2].id) {
-        addNewMeal(2)
+      const newMeal = {
+        label:updatedMeal.description,
+        tags:updatedMeal.tags,
+        notes: updatedMeal.notes,
+        type:updatedMeal.type,
+        completed: updatedMeal.completed }
+      
+      // Checks to see if label changed, meaning that the meal has to be added to a new category
+      if (categoryChanged) {
+        // Adds meal to another category
+        let categoryIndex = -1
+        for(var i = 0 ; i < categories.length ; i++){
+          if (categories[i].key === selectedCategory.label) {
+            categoryIndex = i
+          }
+        }
+
+        // If the category was already found, this means that it already exists in the list of categories
+        if (categoryIndex !== -1) {
+          console.log("Category was found. ")
+
+          // Creates a new key for the meal so that it can be added to the category's list of meals
+          const newMealKey = push(child(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label), 'meals')).key;
+          const updates = {};
+
+          // Maps the key to the meal object
+          updates['/meals/' + newMealKey] = newMeal;
+
+          // Pushes the changes to the category in database
+          update(ref(db), updates)
+
+
+
+        // Otherwise, if the category was not found, this means it needs to be added to the database
+        } else {
+
+          // Creates basic structure for new category
+          const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label)
+          const newCategory = {
+            quota: 0,
+            meals: []
+          }
+          set(mealRef, newCategory);
+
+          // Creates key for meal and pushes it to new category's list of meals
+          const newMealKey = push(child(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label), 'meals')).key;
+          const updates = {};
+
+          updates['/meals/' + newMealKey] = newMeal;
+
+          update(ref(db), updates)
+          
+          console.log("New category will be added to database. ")
+        }
+
+        // Deletes the meal's entry in the old category
+        // set(mealRef, null)
+
+
+      // Doesn't need to create new key for meal, but just updates its key to map to the updated object
+      } else if (tagChanged || mealDetailsChanged || notesChanged) {
+        // Updates meal in current category so that it stores updated information
+
+        // Checks to see if the tags were changed, and if so, will add new tags to the tags list. 
+        // if (tagChanged && )
+
+        // updates meal information for the category
+          
+        set(mealRef, newMeal);
+        console.log("success")
+        const db = getDatabase()
+
+        // Reference to categories in the meal plan
+        const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals")
+        let arrMeals = []
+        // Stores all of the meal categories and pushes them to an array
+        console.log("use effect")
+        onValue(categoryRef, (snapshot) => {
+          const dataCategories = []
+    
+          snapshot.forEach((childsnapshot) => {
+            
+            // pushes meal item to array        
+            const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
+            let dataMeals = []
+            console.log("child snapshot")
+            console.log(childsnapshot.val())
+            // Stores all of the meal categories and pushes them to an array
+            dataMeals = []
+            let keys = Object.keys(childsnapshot.val().meals);
+            keys.forEach((id) => {
+              dataMeals.push({key: id, value: childsnapshot.val().meals.id})
+              console.log({key: id, value: childsnapshot.val().meals.id})
+            })
+            console.log("data meals")
+            console.log(dataMeals)
+            
+            // pushes meal item to array
+              console.log(dataCategories)
+              dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+              console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+              console.log("category meals " + dataMeals)
+            });
+    
+            
+          setCategories(dataCategories)
+          console.log(dataCategories)
+        },  {
+          onlyOnce: true
+        });
+        // pushes meal item to array
+        
       }
       setNewMeal(false)
+      onClose(false)
+      closeViewPopup()
     }
 
   }, [newMeal])
@@ -198,7 +239,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
 
     // If the category, tag info or meal was changed, it will be reinserted into the quota.
     if (categoryChanged || tagChanged || mealDetailsChanged || notesChanged) {
-      setUpdatedMeal({label: selectedCategory, tags:selectedTags, description: mealDetails, notes: notes, type: currentMealDetails.type})
+      setUpdatedMeal({label: selectedCategory.label, tags:selectedTags.label, description: mealDetails, notes: notes, type: currentMealDetails.value.type, completed: currentMealDetails.value.completed})
       console.log("added meal")
       setNewMeal(true)
     }
@@ -223,7 +264,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
             <Form.Label className="edit-modal-header">Meal Name</Form.Label>
             
             {/* Shows meal title if meal type is Ingredients*/}
-            {currentMealDetails.type === "Ingredients" && 
+            {currentMealDetails.value.type === "Ingredients" && 
                   <Form.Control
                   size="sm"
                   type="text"
@@ -235,7 +276,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
                 }
 
               {/* Shows title of recipe */}
-              {currentMealDetails.type === "Recipe" && 
+              {currentMealDetails.value.type === "Recipe" && 
               <Row>
                 <Form.Label>
                   {recipes[mealDetails].title}
@@ -244,22 +285,17 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
           
 
             <Form.Label className="edit-modal-header">Category</Form.Label>
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedCategory}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setCategory(e.target.value);
-              }}
-                >
-                {quota.map(option => (
-                      <option
-                        value={option.id}>
-                        {option.id}
-                      </option>
-                    ))}
-            </Form.Select>
+
+            {/* Displays the dropdown of tags for te user to choose from. */}
+            <Creatable 
+
+                  defaultValue={{value: selectedCategory, label: selectedCategory}}
+                  value={selectedCategory}
+                  options={categories?.map(category => ({ label: category.key, value: category.key}))}
+                  onChange={opt =>setCategory(opt)}
+
+            />
+
             
             <Form.Label className="edit-modal-header">Day</Form.Label>
             
@@ -274,7 +310,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
             />
 
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}
-            {currentMealDetails.type === "Recipe" && 
+            {currentMealDetails.value.type === "Recipe" && 
                   <Row className="my-3">
 
                     {/* Displays card for the recipe associated with the meal*/}
@@ -291,7 +327,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, quota, setQuota, c
                   </Row>
             }
 
-            {currentMealDetails.type === "Ingredients" && 
+            {currentMealDetails.value.type === "Ingredients" && 
             <>
               {/* Displays the note information associated with the user's inputted meal idea */} 
               <Form.Label className="edit-modal-header">Notes</Form.Label>
