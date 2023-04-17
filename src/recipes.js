@@ -20,13 +20,9 @@ export default function RecipesHome(props) {
 
     // getting data from dp
     useEffect(() => {
-        
-        console.log("recipe effect!"); // TODO: figure out why the effect appears to run twice
-        
+                
         // getting a reference to the 'recipes' section of this user's area of the database
         const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
-
-        console.log("current user's ID:" + auth.currentUser.uid); // TODO: delete
         
         // runs upon startup and every time the data changes
         onValue(dbRecipeRef, (snapshot) => {
@@ -34,27 +30,7 @@ export default function RecipesHome(props) {
             // getting data from the spot in the db that changes
             setRecipes(snapshot.val());
         });
-        //     //console.log("EFFECT INSIDE");
-        //     const dataCat = []
-        //     snapshot.forEach((childSnapshot) => {
-        //         const childKey = childSnapshot.key;
-        //         let dataGL = []
-        //         const childData = childSnapshot.val();
-        //         dataGL = { childData };
-        //         dataCat.push({ value: childKey, data: childData })
-        //         //console.log("DATACAT: ");
-        //         //console.log(dataCat);
-        //     });
-        //     setCategory(dataCat);
-        //     //console.log(categories);
-        // }, {
-        //     onlyOnce: true
-        // });
-        // setAccess(accessCode);
-        // setRefresh(false);
-    }, [])
-    //console.log("IDK MAN");
-    //console.log(categories);
+    }, []);
 
     // searchInput for the search bar
     const [searchInput, setSearchInput] = useState("");
@@ -190,7 +166,7 @@ export default function RecipesHome(props) {
             <button id='add-button' onClick={handleOpenAddPopup}>add</button>
 
             {/* popups */}
-            <AddRecipePopup recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
+            <AddRecipePopup app={props.app} recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
             <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
@@ -199,6 +175,10 @@ export default function RecipesHome(props) {
 
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
+
+    // database info
+    const auth = getAuth(props.app)
+    const db = getDatabase(props.app)
 
     // form inputs
     const [inputs, setInputs] = useState({});
