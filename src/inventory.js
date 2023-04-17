@@ -24,7 +24,8 @@ import CategorysPopup from './modals/EditGLICategories';
  * the components necessary to display that tab. 
  */
 const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s }) => {
-
+    console.log("SHOW TAB");
+    console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
@@ -57,7 +58,7 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
             </Tabs>
             <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 user={authentication}
-                database={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
             <AddItem list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
                 addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}
                 database={database}
@@ -87,34 +88,39 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ list, user, database }) {
+function ListCategory({ list, user, databaseArr }) {
     let count = 0;
+    console.log("LIST CATEGORY");
+    console.log(databaseArr);
 
     return (
 
         <div className="category-rectangle">
-            {database.map(category =>
+            {databaseArr.map(categories =>
                 <Row>
+                    {console.log(categories)}
                     <div className="d-flex justify-between category-header">
                         <Col>
                             <div className="mr-auto">
-                                {category.value}
+                                {categories.value}
                             </div>
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
-                    {category.data.map((cat, i) =>
+                    {console.log("Category data")}
+                    {console.log(categories.data)}
+                    {categories.map((cat, i) =>
                         <div className="left-spacing">
+                            {console.log("WTF")}
                             <Row>
                                 <Col>
-                                    <label key={i}>
+                                    <label key= {i}>
                                         {cat.item_name}
                                     </label>
                                 </Col>
                             </Row>
                         </div>
-                    )}
-
+            )}
                 </Row>
             )}
 
@@ -208,7 +214,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                 category.data.map((cat, i) => {
                     count += 1;
                 })
-                const item = {item_name: itemName};
+                const item = { item_name: itemName };
                 //TODO: figure out how to do push
                 const dbRefIP = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + category.value);
                 push(dbRefIP, {
@@ -218,7 +224,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
             }
             count_c += 1;
         })
-        if(!found){
+        if (!found) {
             let obj = {};
             obj[count_c] = categoryName;
             const dbRefIC = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + categoryName);
@@ -254,7 +260,6 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                                 type="text"
                                 placeholder="Category Name"
                                 onChange={setCategoryName}
-                                autoFocus
                             />
                         </Form.Group>
                     </Form>
@@ -269,7 +274,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                     >
                         Filter out checked off buttons
                     </ToggleButton>
-                    <Button variant="primary" onClick={handleClose}>Save</Button>
+                    <Button variant="primary" onClick={addToDatabase}>Save</Button>
                 </Modal.Body>
             </Modal>
         </>
@@ -277,9 +282,11 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
 };
 
 
-const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s }) => {
+const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArray_p, databaseArray_s, accessCode }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
+    console.log("Inventory Home")
+    console.log(databaseArray_p);
     return (
         <Container fluid="md">
             <Row>
@@ -300,8 +307,8 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                 addSharedItemInv={addSharedItemInv}
                 database={db}
                 authentication={auth}
-                databaseArr_p={databaseArr_p}
-                databaseArr_s={databaseArr_s}></ShowTab>
+                databaseArr_p={databaseArray_p}
+                databaseArr_s={databaseArray_s}></ShowTab>
 
 
         </Container>

@@ -24,12 +24,11 @@ function NavbarElements(props) {
     console.log(db)
     const auth = getAuth(props.app)
 
-    let doAgain = true;
+    const [doAgain, setDoAgain] = useState(true);
+    const [doAgain_s, setDoAgain_s] = useState(true);
+    const [doAgain_i, setDoAgain_i] = useState(true);
+    const [doAgain_is, setDoAgain_is] = useState(true);
 
-    let doAgain_s = true;
-
-    let doAgain_i = true;
-    let doAgain_is = true;
 
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
@@ -53,14 +52,16 @@ function NavbarElements(props) {
         })
     }
 
+    //Creating array for GL personal items
     const [categories, setCategory] = useState([]);
     const handleCategory = (name, data) => {
+        console.log("GL: " + data);
         setCategory(categories => [
             ...categories,
             { value: name, data: data }
         ]);
     };
-
+    //array for GL shared items
     const [categories_s, setCategory_s] = useState([]);
     const handleCategory_s = (name, data) => {
         setCategory_s(categories_s => [
@@ -69,15 +70,17 @@ function NavbarElements(props) {
         ]);
     };
     const [accessCode, setAccess] = useState("");
-
+    //array for inventory personal items
     const [categories_i, setCategory_i] = useState([]);
     const handleCategory_i = (name, data) => {
+        console.log(name + " And " + data);
         setCategory_i(categories_i => [
             ...categories_i,
             { value: name, data: data }
         ]);
+        console.log("WELP");
         console.log(categories_i);
-    }
+    };
 
     const [categories_is, setCategory_is] = useState([]);
     const handleCategory_is = (name, data) => {
@@ -86,7 +89,7 @@ function NavbarElements(props) {
             { value: name, data: data }
         ]);
         //console.log(categories_i);
-    }
+    };
 
 
     // Populates pages with data for the current user
@@ -109,67 +112,7 @@ function NavbarElements(props) {
                 console.log("user does not yet have information")
             }
         })
-
         //const dbRefA = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
-
-        if (doAgain) {
-            const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
-            onValue(dbRefP, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const childKey = childSnapshot.key;
-                    const childData = childSnapshot.val();
-                    handleCategory(childKey, childData);
-                });
-            })
-            get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    setAccess(snapshot.val());
-                } else {
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                console.error(error);
-            });
-            console.log("HIIIII " + accessCode);
-            if (doAgain_s) {
-                const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
-                onValue(dbRefS, (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const childKey = childSnapshot.key;
-                        const childData = childSnapshot.val();
-                        handleCategory_s(childKey, childData);
-                        console.log(childData);
-                        console.log(categories_s);
-                    });
-                })
-                doAgain_s = false;
-            }
-            doAgain = false;
-        }
-        if (doAgain_i) {
-            const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
-            onValue(dbRefIP, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const childKey = childSnapshot.key;
-                    const childData = childSnapshot.val();
-                    handleCategory_i(childKey, childData);
-                });
-            })
-            if (doAgain_is) {
-                const dbRefS = ref(db, '/groups/' + accessCode + '/inventory/categories');
-                onValue(dbRefS, (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const childKey = childSnapshot.key;
-                        const childData = childSnapshot.val();
-                        handleCategory_is(childKey, childData);
-                        console.log(childData);
-                        console.log(categories_s);
-                    });
-                })
-                doAgain_is = false;
-            }
-            doAgain_i = false;
-        }
         {/*if (doAgain_s) {
             get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
                 if (snapshot.exists()) {
@@ -194,6 +137,97 @@ function NavbarElements(props) {
             doAgain_s = false;
         }*/}
     }, [])
+
+    useEffect(() => {
+        if (accessCode) {
+            if (doAgain_s) {
+                const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
+                onValue(dbRefS, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const childKey = childSnapshot.key;
+                        const childData = childSnapshot.val();
+                        handleCategory_s(childKey, childData);
+                    });
+                })
+                setDoAgain_s(false);
+            }
+            console.log("HIIIII " + accessCode);
+            if (doAgain_is) {
+                const dbRefS = ref(db, '/groups/' + accessCode + '/inventory/categories');
+                onValue(dbRefS, (snapshot) => {
+                    snapshot.forEach((childSnapshot) => {
+                        const childKey = childSnapshot.key;
+                        const childData = childSnapshot.val();
+                        handleCategory_is(childKey, childData);
+                    });
+                })
+                setDoAgain_is(false);
+            }
+        }
+    }, [accessCode])
+
+    const dbRef = ref(db);
+    if (doAgain) {
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
+        onValue(dbRefP, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                const childData = childSnapshot.val();
+                handleCategory(childKey, childData);
+            });
+        })
+        get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+            if (snapshot.exists()) {
+                setAccess(snapshot.val());
+                console.log("HI" + accessCode + snapshot.val());
+                console.log()
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+        {/*if (doAgain_s) {
+            const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
+            onValue(dbRefS, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    const childData = childSnapshot.val();
+                    handleCategory_s(childKey, childData);
+                });
+            })
+            setDoAgain_s(false);
+        }*/}
+        setDoAgain(false);
+        console.log("GL SHIT")
+        console.log(categories);
+    }
+    if (doAgain_i) {
+        const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        onValue(dbRefIP, (snapshot) => {
+            snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                const childData = childSnapshot.val();
+                handleCategory_i(childKey, childData);
+                console.log(childKey);
+                console.log(childData);
+            });
+        })
+        {/*if (doAgain_is) {
+            const dbRefS = ref(db, '/groups/' + accessCode + '/inventory/categories');
+            onValue(dbRefS, (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    const childData = childSnapshot.val();
+                    handleCategory_is(childKey, childData);
+                });
+            })
+            setDoAgain_is(false);
+        }*/}
+        setDoAgain_i(false);
+        console.log(categories_i);
+        console.log("HIII");
+    }
 
 
 
@@ -243,7 +277,8 @@ function NavbarElements(props) {
                         addSharedItemInv={addSharedItemInv}
                         props={props}
                         databaseArr_p={categories}
-                        databaseArr_s={categories_s}></GroceryListHome>
+                        databaseArr_s={categories_s}
+                        accessCode={accessCode}></GroceryListHome>
                 } />
                 <Route path="/inventory.js" element={
                     <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
@@ -255,8 +290,9 @@ function NavbarElements(props) {
                         addPersonalItemGL={addPersonalItemGL}
                         addSharedItemGL={addSharedItemGL}
                         props={props}
-                        databaseArr_p={categories_i}
-                        databaseArr_s={categories_is}>  </InventoryHome>
+                        databaseArray_p={categories_i}
+                        databaseArray_s={categories_is}
+                        accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
                     <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />

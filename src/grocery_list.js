@@ -9,7 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set} from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
@@ -62,7 +62,7 @@ function IncDec() {
 /**
  * TO DO: Have the items in shared inventory and such figured out
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s }) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s, accessCode }) => {
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
@@ -110,7 +110,8 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}
                 database={database}
                 auth={authentication}
-                databaseArr={showPersonal ? databaseArray_p : databaseArray_s}></AddItem>
+                databaseArr={showPersonal ? databaseArray_p : databaseArray_s}
+                accessCode={showPersonal ? 0 : accessCode}></AddItem>
         </Container>
     );
 
@@ -121,7 +122,6 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * takes in the list of items in the gorcery list currently
  */
 function ListCategory({ groceryList, user, database, inventoryList, addtoInventory }) {
-
     const handleCheck = (event) => {
         if (event.target.checked) {
             const itemName = event.target.value;
@@ -224,8 +224,9 @@ const RemoveItem = () => {
  * addToList -> function that allows altering of state variable
  */
 
-const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
-
+const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode }) => {
+    console.log("Add Item");
+    console.log(databaseArr);
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
     const [checked, setChecked] = useState(false);
@@ -264,18 +265,33 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
+            console.log("Here");
+            console.log(categoryName);
+            console.log(category.value);
+            let normal = category.value;
             let lowerCaseCategory = category.value.toLowerCase();
+            console.log(category.value);
             if (categoryName === lowerCaseCategory) {
+                category.value = normal;
+                found = true;
                 let count = 0;
                 category.data.map((cat, i) => {
                     count += 1;
                 })
-                console.log(count);
+                //console.log(count);
                 let obj = {}
                 const item = { item_name: itemName, item_num: 1 };
                 obj[count] = item;
-                update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + category.value), obj);
-                found = true;
+                let users = '/users/' + auth.currentUser.uid;
+                let group = '/groups/' + accessCode;
+                let use = "";
+                if (("" + accessCode).length === 1) {
+                    use = users;
+                } else {
+                    use = group;
+                }
+                console.log("WTF: " + category.value);
+                update(ref(database, use + '/grocery_list/categories/' + category.value), obj);
             }
             count_c += 1;
         })
@@ -284,10 +300,25 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
             let add = {};
             const item = { item_name: itemName, item_num: 1 };
             add[count_c] = { value: categoryName };
-            console.log(add);
+            console.log("not found");
             let itemAdd = {};
             itemAdd[0] = item;
-            update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + categoryName), itemAdd);
+            let users = '/users/' + auth.currentUser.uid;
+            let group = '/groups/' + accessCode;
+            let use = "";
+            if (("" + accessCode).length === 1) {
+                use = users;
+            } else {
+                use = group;
+            }
+            {/*if (("" + accessCode).length == 1) {
+                update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + categoryName), itemAdd);
+            } else {
+                update(ref(database, '/groups/' + accessCode + '/grocery_list/categories/' + categoryName), itemAdd);
+            }*/}
+            update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
+            set(ref(database, use + '/inventory/categories/'), categoryName);
+            //update(ref(database, use + '/inventory/categories/'), categoryName);
         }
     }
 
@@ -315,7 +346,6 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
                                 type="text"
                                 placeholder="Category Name"
                                 onChange={setCategoryName}
-                                autoFocus
                             />
                         </Form.Group>
                     </Form>
@@ -340,9 +370,11 @@ const AddItem = ({ list, addToList, database, auth, databaseArr }) => {
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s }) => {
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s, accessCode }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
+    console.log("Shared: ");
+    console.log(databaseArr_p);
     return (
         <Container fluid="md">
             <Row>
@@ -365,7 +397,8 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 database={db}
                 authentication={auth}
                 databaseArray_p={databaseArr_p}
-                databaseArray_s={databaseArr_s}></ShowTab>
+                databaseArray_s={databaseArr_s}
+                accessCode={accessCode}></ShowTab>
 
 
         </Container>
