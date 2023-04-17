@@ -209,7 +209,7 @@ function AddRecipePopup(props) {
         if (!("hoursRequired" in inputs)) {
             setInputs(values => ({...values, ["hoursRequired"]: 0}))
         }
-        const nextRecipes = [...props.recipes, {
+        const newRecipe = {
             title: inputs.title, 
             picture: inputs.picture, 
             energyRequired: inputs.energyRequired, 
@@ -225,13 +225,24 @@ function AddRecipePopup(props) {
                         "focus": findQuotedWord(ingredientPhrase)
                     })) || [], 
             steps: inputs.steps?.split("\n").map(s => s.trim()) || [],
-            notes: inputs.notes}];
+            notes: inputs.notes
+        };
         
-        if (nextRecipes[nextRecipes.length - 1].ingredients?.length !== nextRecipes[nextRecipes.length - 1].ingredients?.filter((ingredient) => ingredient.focus).length) {
+        if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             props.handleCloseAddPopup();
-            props.setRecipes(nextRecipes);
+                    
+            // getting a reference to the 'recipes' section of this user's area of the database
+            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
+
+            // getting a reference to new place to post
+            var newRecipePostRef = push(dbRecipeRef);
+
+            set(newRecipePostRef, newRecipe);
+
+            // var postID = newRecipePostRef.key;
+            // console.log(postID);
         }
     }
 
