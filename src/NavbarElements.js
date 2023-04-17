@@ -1,6 +1,6 @@
 import React, { useState, Component, useEffect } from 'react'
 import { Navbar, Nav } from 'react'
-import './nav_bar.css';
+import './css/nav_bar.css';
 import {
     BrowserRouter as Router,
     Routes,
@@ -8,14 +8,22 @@ import {
     Link,
     BrowserRouter
 } from "react-router-dom";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
+import InventoryIcon from './svg/inventory.svg'
+import MealPlanIcon from './svg/meal_plan.svg'
+import RecipeIcon from './svg/recipes.svg'
+import GroceryListIcon from './svg/grocery_list.svg'
+import AccountIcon from './svg/account.svg'
 
 import GroceryListHome from './grocery_list.js';
 import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
-import { getDatabase,  ref, set, child, get, update, getReference, push  } from "firebase/database";
+import { getDatabase, ref, set, child, get, update, getReference, push } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -23,50 +31,50 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
-    
+
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
-      
-      // contains default structure to store data
-      let dataStructure = require('./newUser.json');
-      console.log("database")
-      console.log(dataStructure)
-      // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
-     
-       // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
-       get(child(ref(db), `users/`+auth.currentUser.uid)).then((snapshot) => {
-        
-        // If a collection exists for the specified user UID:
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          // addFavorites(snapshot.val().favorites);
-        
-        // If a collection does not exist for the user, create one. 
-        }   
+
+        // contains default structure to store data
+        let dataStructure = require('./newUser.json');
+        console.log("database")
+        console.log(dataStructure)
+        // set(ref(db, 'users/' + auth.currentUser.uid), dataStructure)) 
+
+        // Uses the current user's UID (the user who is logged in) to retrieve their associated data in firebase. 
+        get(child(ref(db), `users/` + auth.currentUser.uid)).then((snapshot) => {
+
+            // If a collection exists for the specified user UID:
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                // addFavorites(snapshot.val().favorites);
+
+                // If a collection does not exist for the user, create one. 
+            }
         })
     }
 
 
     // Populates pages with data for the current user
-    useEffect(()=> {
-      const dbRef = ref(db);
+    useEffect(() => {
+        const dbRef = ref(db);
 
-      // Uses the current user's UID to retrieve their associated data in firebase. 
-      get(child(dbRef, `users/`+auth.currentUser.uid)).then((snapshot) => {
-        
-        // If a collection exists for the specified user UID:
-        if (snapshot.exists()) {
-          console.log(snapshot.val());
-          // addFavorites(snapshot.val().favorites);
-        
-        // If a collection does not exist for the user, create one. 
-        } else {
+        // Uses the current user's UID to retrieve their associated data in firebase. 
+        get(child(dbRef, `users/` + auth.currentUser.uid)).then((snapshot) => {
 
-          // Creates empty data structure for new user.
-          // writeUserData()
-          console.log("user does not yet have information")
-        }
-      })
+            // If a collection exists for the specified user UID:
+            if (snapshot.exists()) {
+                console.log(snapshot.val());
+                // addFavorites(snapshot.val().favorites);
+
+                // If a collection does not exist for the user, create one. 
+            } else {
+
+                // Creates empty data structure for new user.
+                // writeUserData()
+                console.log("user does not yet have information")
+            }
+        })
     }, [])
 
     // Dummy items for now lol   
@@ -84,20 +92,20 @@ function NavbarElements(props) {
         {value:"baking powder", label: "baking powder"}
         ]);
 
-            // Dummy items for now lol
+    // Dummy items for now lol
     const [itemsInPersonalGL, addPersonalItemGL] = useState([
-        {value:"hummus", label:"hummus"},
-        {value:"strawberries", label: "Stawberries"},
-        {value:"raspberries", label: "raspberries"},
-        {value:"milk", label: "milk"}
-        ]);
-    
+        { value: "hummus", label: "hummus" },
+        { value: "strawberries", label: "Stawberries" },
+        { value: "raspberries", label: "raspberries" },
+        { value: "milk", label: "milk" }
+    ]);
+
     const [itemsInSharedGL, addSharedItemGL] = useState([
-        {value:"almond milk", label:"almond milk"},
-        {value:"flour", label: "flour"}
-        ]);
-    
-    // mock database of recipes - TODO: make the pictures actual pictures!
+        { value: "almond milk", label: "almond milk" },
+        { value: "flour", label: "flour" }
+    ]);
+
+    // mock database of recipes - TODO: make the pictures actual pictures!  
     let [recipes, setRecipes] = useState([
         {
             title: "Lemon Dill Chicken Soup", 
@@ -161,34 +169,33 @@ function NavbarElements(props) {
             notes: ""
         }
     ]);
-
     return (
         <BrowserRouter>
-        <Routes>
-            <Route path="/grocery_list.js" element={
-                <GroceryListHome itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                 addSharedItemGL={addSharedItemGL}
-                 itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                 addPersonalItemInv={addPersonalItemInv}
-                  addSharedItemInv={addSharedItemInv}> </GroceryListHome>
-            } />
-            <Route path="/inventory.js" element={
-                <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                 addPersonalItemInv={addPersonalItemInv}
-                  addSharedItemInv={addSharedItemInv}
-                  itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                 addSharedItemGL={addSharedItemGL}>  </InventoryHome>
-            } />
-            <Route path="/meal_plan.js" element={
-                <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL}/> 
-            } />
-            <Route path="/recipes.js" element={
+            <Routes>
+                <Route path="/grocery_list.js" element={
+                    <GroceryListHome itemsInPersonalGL={itemsInPersonalGL}
+                        itemsInSharedGL={itemsInSharedGL}
+                        addPersonalItemGL={addPersonalItemGL}
+                        addSharedItemGL={addSharedItemGL}
+                        itemsInPersonalInv={itemsInPersonalInv}
+                        itemsInSharedInv={itemsInSharedInv}
+                        addPersonalItemInv={addPersonalItemInv}
+                        addSharedItemInv={addSharedItemInv}> </GroceryListHome>
+                } />
+                <Route path="/inventory.js" element={
+                    <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
+                        itemsInSharedInv={itemsInSharedInv}
+                        addPersonalItemInv={addPersonalItemInv}
+                        addSharedItemInv={addSharedItemInv}
+                        itemsInPersonalGL={itemsInPersonalGL}
+                        itemsInSharedGL={itemsInSharedGL}
+                        addPersonalItemGL={addPersonalItemGL}
+                        addSharedItemGL={addSharedItemGL}>  </InventoryHome>
+                } />
+                <Route path="/meal_plan.js" element={
+                    <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
+                } />
+                <Route path="/recipes.js" element={
                 <RecipesHome 
                     recipes={recipes} 
                     setRecipes={setRecipes} 
@@ -198,64 +205,83 @@ function NavbarElements(props) {
                     itemsInPersonalInventory={itemsInPersonalInv} 
                 /> 
             } />
-            <Route path="/account.js" element={
-                <AccountHome login={props.login} setLogin={props.setLogin}/> 
-            } />
-        </Routes>
+                <Route path="/account.js" element={
+                    <AccountHome login={props.login} setLogin={props.setLogin}/>
+                } />
+            </Routes>
 
-        <nav className="navbar fixed-bottom navbar-light">
-              <span className="navbar-text">
-                  <img src="grocery_list.png"></img>
-                  <Link to="/grocery_list.js" className='nav-link'>List</Link>
-              </span>
-              <span className="navbar-text">
-                  <Link to="/inventory.js" className='nav-link'>Inventory</Link>
-                  {}
-              </span>
-              <span className="navbar-text">
-                  <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
-                  {}
-              </span>
-              <span className="navbar-text">
-                  <Link to="/recipes.js" className='nav-link'>Recipes</Link>
-                  {}
-              </span>
-              <span className="navbar-text">
-                  <Link to="/account.js" className='nav-link'>Account</Link>
-                  {}
-              </span>
-          </nav>
-          <div>
-          </div>
-        </BrowserRouter>  
+            <nav className="navbar fixed-bottom  navbar-light" id="navbar-background">
+                <span className="navbar-text">
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                        </Row>
+                    </Col>
+                </span>
+                <span className="navbar-text">
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" >
+                                <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon try" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/inventory.js" className='nav-link text-style'>Inventory</Link>
+                            { }
+                        </Row>
+                    </Col>
+                </span>
+                <span className="navbar-text">
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
+                            { }
+                        </Row>
+                    </Col>
+                </span>
+                <span className="navbar-text">
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/recipes.js" className='nav-link'>Recipes</Link>
+                            { }
+                        </Row>
+                    </Col>
+                </span>
+                <span className="navbar-text">
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/account.js" className='nav-link'>Account</Link>
+                            { }
+                        </Row>
+                    </Col>
+
+
+                </span>
+            </nav>
+            <div>
+            </div>
+        </BrowserRouter>
     );
 }
 
 export default NavbarElements
-
-//     //<div>
-//     <nav class="navbar fixed-bottom navbar-light">
-//     <span class="navbar-text">
-//         <img src="grocery_list.png"></img>
-//         <Link to="/grocery_list" className='nav-link'>List</Link>
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/inventory" className='nav-link'>Inventory</Link>
-//         {/*<a class="nav-link" href="inventory.js">Inventory</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/meal_plan" className='nav-link'>Meal Plan</Link>
-//         {/*<a class="nav-link" href="meal_plan.js">Meal Plan</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/recipes" className='nav-link'>Recipes</Link>
-//         {/*<a class="nav-link" href="recipes.js">Recipes</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/account" className='nav-link'>Account</Link>
-//         {/*<a class="nav-link" href="account.js">Account</a>*/}
-//     </span>
-// </nav>
-// <div>
-// </div>
-// </div>
