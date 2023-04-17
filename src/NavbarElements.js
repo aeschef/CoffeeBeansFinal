@@ -51,10 +51,9 @@ function NavbarElements(props) {
             }
         })
     }
+
+    //to se the access code for the shared aspect
     const [accessCode, setAccess] = useState("");
-    //array for inventory personal items
-
-
 
     // Populates pages with data for the current user
     useEffect(() => {
@@ -80,18 +79,19 @@ function NavbarElements(props) {
     }, [])
 
 
+    /**
+     * Getting the group access code for this user
+     */
     const dbRef = ref(db);
-        get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-            if (snapshot.exists()) {
-                setAccess(snapshot.val());
-                console.log("HI" + accessCode + snapshot.val());
-                console.log()
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
+    get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+        if (snapshot.exists()) {
+            setAccess(snapshot.val());
+        } else {
+            console.log("No data available");
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
 
 
 
@@ -133,15 +133,11 @@ function NavbarElements(props) {
                 <Route path="/grocery_list.js" element={
                     <GroceryListHome
                         props={props}
-                        //databaseArr_p={categories}
-                        //databaseArr_s={categories_s}
                         accessCode={accessCode}></GroceryListHome>
                 } />
                 <Route path="/inventory.js" element={
                     <InventoryHome
                         props={props}
-                        //databaseArray_p={categories_i}
-                        //databaseArray_s={categories_is}
                         accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
@@ -184,30 +180,3 @@ function NavbarElements(props) {
 }
 
 export default NavbarElements
-
-//     //<div>
-//     <nav class="navbar fixed-bottom navbar-light">
-//     <span class="navbar-text">
-//         <img src="grocery_list.png"></img>
-//         <Link to="/grocery_list" className='nav-link'>List</Link>
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/inventory" className='nav-link'>Inventory</Link>
-//         {/*<a class="nav-link" href="inventory.js">Inventory</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/meal_plan" className='nav-link'>Meal Plan</Link>
-//         {/*<a class="nav-link" href="meal_plan.js">Meal Plan</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/recipes" className='nav-link'>Recipes</Link>
-//         {/*<a class="nav-link" href="recipes.js">Recipes</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/account" className='nav-link'>Account</Link>
-//         {/*<a class="nav-link" href="account.js">Account</a>*/}
-//     </span>
-// </nav>
-// <div>
-// </div>
-// </div>

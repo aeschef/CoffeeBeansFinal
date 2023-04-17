@@ -24,8 +24,6 @@ import CategorysPopup from './modals/EditGLICategories';
  * the components necessary to display that tab. 
  */
 const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, accessCode, refresh, setRefresh }) => {
-    //console.log("SHOW TAB");
-    //console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
@@ -183,7 +181,6 @@ const AddItem = ({ database, authentication, databaseArr, accessCode, refresh, s
                 } else {
                     use = group;
                 }
-                //TODO: figure out how to do push
                 const dbRefIP = ref(database, use + '/inventory/categories/' + category.value);
                 push(dbRefIP, {
                     item_name: itemName

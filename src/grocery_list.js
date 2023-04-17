@@ -22,18 +22,13 @@ import CategorysPopup from './modals/EditGLICategories';
 
 /**
  * Handles incrementing and decrementing the number of items 
- * needed from the grocery store
  */
 function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, auth, database}) {
     let [num, setNum] = useState(cat.item_num);
-    //console.log(val);
-    //console.log("NUM: " + category);
     let inc_num = () => {
         setNum(Number(num) + 1);
         let updateNum = num + 1;
         updateDatabase(updateNum);
-        //console.log(num + 1);
-
     }
 
     let dec_num = () => {
@@ -42,16 +37,14 @@ function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, a
         updateDatabase(updateNum);
     }
 
+    /**
+     * update the specified items number
+     */
     const updateDatabase = (num) => {
-        //console.log("HERE");
         databaseArr.map(categ => {
-            //console.log("Inside: " + categ.value + " AND " + category)
             if (categ.value === category) {
-                //console.log("I Inside")
                 categ.data.map((c, i) => {
-                    //console.log("WHY")
                     if (name === c.item_name) {
-                        //console.log("HIIII BUTTT: " + i);
                         let users = '/users/' + auth.currentUser.uid;
                         let group = '/groups/' + code;
                         let use = "";
@@ -60,8 +53,6 @@ function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, a
                         } else {
                             use = group;
                         }
-                        //console.log(use + '/grocery_list/categories/' + categ.value + '/' + i + '/item_name')
-                        //console.log("NUM: " + Number(num));
                         set(ref(database, use + '/grocery_list/categories/' + categ.value + '/' + i + '/item_num'), num)
                         setRefresh(true);
                     }
@@ -149,8 +140,6 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
  * takes in the list of items in the gorcery list currently
  */
 function ListCategory({ user, database, set, refresh, setRefresh, accessCode, auth, data}) {
-    //console.log("LIST CATEGORY");
-    //console.log(database);
 
     const handleCheck = (event) => {
         {/*if (event.target.checked) {
@@ -173,7 +162,6 @@ function ListCategory({ user, database, set, refresh, setRefresh, accessCode, au
         if (item_name.length === 0) {
             return null;
         }
-        //console.log("CAT: " + category);
         return (
             <div className="left-spacing">
                 <Row>
@@ -230,21 +218,6 @@ function ListCategory({ user, database, set, refresh, setRefresh, accessCode, au
                                     accessCode={accessCode}
                                     auth={auth}
                                     data={data}></DummyItem>
-                                {/*<Col>
-                                    <label key={i}>
-                                        <input
-                                            type="checkbox"
-                                            name="lang"
-                                            value={cat.item_name}
-                                            onChange={handleCheck}
-                                        />
-                                        {cat.item_name}
-                                        {console.log(cat.item_name + " AND " + cat.item_name.length)}
-                                    </label>
-                                </Col>
-                                <Col xs={{ span: 4 }}>
-                                    <IncDec val={cat.item_num}></IncDec>
-                    </Col>*/}
                             </Row>
                         </div>
                     )}
@@ -280,8 +253,6 @@ const RemoveItem = () => {
  */
 
 const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh }) => {
-    //console.log("Add Item");
-    //console.log(databaseArr);
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
     const [checked, setChecked] = useState(false);
@@ -315,6 +286,9 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
         setCategory(lowerCase);
     };
 
+    /**
+     * updating the database when an item is added
+     */
     const addToDatabase = () => {
         setShow(false);
         let found = false;
@@ -341,13 +315,14 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
                 } else {
                     use = group;
                 }
-                //console.log("WTF: " + category.value);
                 update(ref(database, use + '/grocery_list/categories/' + category.value), obj);
             }
             count_c += 1;
             setRefresh(true);
         })
-
+        /**
+         * Adding a new category if it doesn't already exist
+         */
         if (!found) {
             let add = {};
             const item = { item_name: itemName, item_num: 1 };
@@ -363,13 +338,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
             } else {
                 use = group;
             }
-            {/*if (("" + accessCode).length == 1) {
-                update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + categoryName), itemAdd);
-            } else {
-                update(ref(database, '/groups/' + accessCode + '/grocery_list/categories/' + categoryName), itemAdd);
-            }*/}
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
-            //set(ref(database, use + '/inventory/categories/'), categoryName);
             let invAdd = {};
             let dummy = { item_name: "" };
             invAdd[0] = dummy;

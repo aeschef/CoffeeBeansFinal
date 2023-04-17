@@ -174,10 +174,6 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
                     item_name: "apples",
                     item_num: ""
                   },
-                  1:{
-                    item_name: "",
-                    item_num: ""
-                  }
                 },
                 Dairy: {
                   0: {
