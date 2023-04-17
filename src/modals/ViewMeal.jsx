@@ -11,7 +11,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import EditMeal from './EditMeal'
 
 // Modal that will appear when the user clicks on a meal so that they can view details about the meal.
-const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes}) => {
+const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, refresh, setRefresh}) => {
 
   // Saves either meal title or the index of the recipe
   const mealDetails = currentMealDetails.value.label
@@ -79,7 +79,8 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
             </>}
           {/* Modal that will appear if the user wants to edit a meal's information. */}   
           {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} categories={categories} setCategories={setCategories}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}/>}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}
+          refresh={refresh} setRefresh={setRefresh}/>}
         
           </Form.Group>
         </Form> 

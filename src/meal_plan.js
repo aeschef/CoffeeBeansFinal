@@ -48,6 +48,7 @@ const [quotaIndex, setQuotaIndex] = useState(0)
 // Stores information of newly created meal, will be reset once 
 const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealDetails:""})
 
+const [refresh, setRefresh] = useState(true)
 // Stores initial default list of meals for breakfast
 const breakfast = [
   {value:"bananas", label:"bananas", tags:"Monday", type:"Ingredients"},
@@ -112,21 +113,22 @@ const [quotas, setQuotas] = useState([
         console.log(dataMeals)
         
         // pushes meal item to array
-          console.log(dataCategories)
-          dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-          console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-          console.log("category meals " + dataMeals)
+        console.log(dataCategories)
+        dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+        console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+        console.log("category meals " + dataMeals)
         });
 
-        
       setCategories(dataCategories)
       console.log(dataCategories)
     },  {
       onlyOnce: true
     });
 
+    setRefresh(false)
+
     
-  }, [])
+  }, [refresh])
 
   // Populates state variables with needed information to display view meal popup once the meal is selected. 
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
@@ -144,37 +146,6 @@ const [quotas, setQuotas] = useState([
     setQuotaIndex(index)
   }
 
-  // Handles populating the meal items associated with the category by reading them from the database
-  function HandleMealItems(props) {
-    // quotas.map((category, j) =>  (console.log(category.id)))
-
-    return (
-     props.meals?.map((x, i) => (
-        <div className="left-spacing">
-          <Row> 
-            <label key={i}>
-            {/* Checkbox that keeps track of whether meal was completed or not. */}
-            <input
-            type="checkbox"
-            name="lang"
-            value={x.label}
-            /> 
-            
-            {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(props.category, x, i)}>
-            
-              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.type === "Ingredients" ? x.label : props.recipes[x.value.label].value.title}
-            </a>
-          </label>
-        </Row>
-        <Row className="left-spacing">
-          <div className="tag">{x.value.tags}</div>  
-        </Row>
-      </div>
-      ))
-    )
-  }
 
 return (
   <Container fluid="md" className="p-0">
@@ -244,7 +215,8 @@ return (
     {/* Shows meal details if the meal is selected. */}
     {showViewMealPopup &&
        <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={categories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes}/>}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes} 
+          refresh={refresh} setRefresh={setRefresh}/>}
  
   {/* Displays modal to create a meal if the add button is pressed */}
   <a class="fixedButton" href="#" onClick={()=>setShowCreateMealPopup(true)}>

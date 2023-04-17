@@ -12,7 +12,9 @@ import { getDatabase, ref, set, onValue, update, push, child} from 'firebase/dat
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
-const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, groceryList, addToGL}) => {
+const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes,
+  refresh, setRefresh,
+  groceryList, addToGL}) => {
   const auth = getAuth()
 
   // Saves category selected when planning a meal, stored in format so that it can appear in dropdown
@@ -47,19 +49,19 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   useEffect(()=> {
     const db = getDatabase()
     console.log(auth.currentUser.uid)
+    
     // updates tags state variable so that it stores the saved tags from the user's database
     const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
     
-    
+    // Updates state variable so that it stores the list of tags from database
     onValue(tagRef, (snapshot) => {
       const data = snapshot.val();
+      console.log("data")
       console.log(data);
       setTags(data);
-
     }); 
 
   }, [])
-
 
   // Keeps track if user changed tag. 
   useEffect(()=> {
@@ -173,52 +175,20 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
         // Updates meal in current category so that it stores updated information
 
         // Checks to see if the tags were changed, and if so, will add new tags to the tags list. 
-        // if (tagChanged && )
+        if (tagChanged && tags.indexOf(selectedTags.label) <= -1) {
+          let arr = [...tags, selectedTags.label]
+          console.log(arr)
+
+          const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+          set(tagRef, arr)
+        }
 
         // updates meal information for the category
           
         set(mealRef, newMeal);
+        setRefresh(true)
         console.log("success")
-        const db = getDatabase()
 
-        // Reference to categories in the meal plan
-        const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals")
-        let arrMeals = []
-        // Stores all of the meal categories and pushes them to an array
-        console.log("use effect")
-        onValue(categoryRef, (snapshot) => {
-          const dataCategories = []
-    
-          snapshot.forEach((childsnapshot) => {
-            
-            // pushes meal item to array        
-            const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
-            let dataMeals = []
-            console.log("child snapshot")
-            console.log(childsnapshot.val())
-            // Stores all of the meal categories and pushes them to an array
-            dataMeals = []
-            let keys = Object.keys(childsnapshot.val().meals);
-            keys.forEach((id) => {
-              dataMeals.push({key: id, value: childsnapshot.val().meals.id})
-              console.log({key: id, value: childsnapshot.val().meals.id})
-            })
-            console.log("data meals")
-            console.log(dataMeals)
-            
-            // pushes meal item to array
-              console.log(dataCategories)
-              dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-              console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-              console.log("category meals " + dataMeals)
-            });
-    
-            
-          setCategories(dataCategories)
-          console.log(dataCategories)
-        },  {
-          onlyOnce: true
-        });
         // pushes meal item to array
         
       }
