@@ -270,9 +270,9 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, ref
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
-            console.log("Here");
-            console.log(categoryName);
-            console.log(category.value);
+            //console.log("Here");
+            //console.log(categoryName);
+            //console.log(category.value);
             let normal = category.value;
             let lowerCaseCategory = category.value.toLowerCase();
             console.log(category.value);

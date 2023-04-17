@@ -23,7 +23,7 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s, refresh, setRefresh}) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s, accessCode, refresh, setRefresh }) => {
     //console.log("SHOW TAB");
     //console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
@@ -64,6 +64,7 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 database={database}
                 authentication={authentication}
                 databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
+                accessCode={showPersonal ? 0 : accessCode}
                 refresh={refresh}
                 setRefresh={setRefresh}></AddItem>
             {/*<Row>
@@ -174,7 +175,7 @@ const RemoveItem = () => {
  * list -> list that contains items
  * addtoList-> function that allows list to be alteredd
  */
-const AddItem = ({ list, addToList, database, authentication, databaseArr, refresh, setRefresh }) => {
+const AddItem = ({ list, addToList, database, authentication, databaseArr, accessCode, refresh, setRefresh }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
@@ -208,19 +209,30 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr, refre
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
+            let normal = category.value;
             let lowerCaseCategory = category.value.toLowerCase();
             if (categoryName === lowerCaseCategory) {
+                category.value = normal;
+                found = true;
                 let count = 0;
                 category.data.map((cat, i) => {
                     count += 1;
                 })
-                const item = { item_name: itemName };
+                //const item = { item_name: itemName };
+                let users = '/users/' + authentication.currentUser.uid;
+                let group = '/groups/' + accessCode;
+                let use = "";
+                if (("" + accessCode).length === 1) {
+                    use = users;
+                } else {
+                    use = group;
+                }
                 //TODO: figure out how to do push
-                const dbRefIP = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + category.value);
+                const dbRefIP = ref(database, use + '/inventory/categories/' + category.value);
                 push(dbRefIP, {
                     item_name: itemName
                 })
-                found = true;
+
             }
             count_c += 1;
             setRefresh(true);
@@ -228,7 +240,15 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr, refre
         if (!found) {
             let obj = {};
             obj[count_c] = categoryName;
-            const dbRefIC = ref(database, '/users/' + authentication.currentUser.uid + '/inventory/categories/' + categoryName);
+            let users = '/users/' + authentication.currentUser.uid;
+            let group = '/groups/' + accessCode;
+            let use = "";
+            if (("" + accessCode).length === 1) {
+                use = users;
+            } else {
+                use = group;
+            }
+            const dbRefIC = ref(database, use + '/inventory/categories/' + categoryName);
             push(dbRefIC, {
                 item_name: itemName
             })
@@ -336,7 +356,7 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                 //console.log(keys);
                 keys.forEach((id) => {
                     dataI.push({ key: id, item_name: childData[id].item_name })
-                    console.log("Item_name: " +  childData[id].item_name)
+                    console.log("Item_name: " + childData[id].item_name)
                 })
                 //console.log("DATAI: ")
                 //console.log(dataI);
