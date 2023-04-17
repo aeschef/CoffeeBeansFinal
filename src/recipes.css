@@ -67,4 +67,35 @@ h1 {
     border-radius: 100%;
 }
 
+#select-energy-level {
+    display: none;
+}
 
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    color: black;
+    border-bottom: 1px dotted black;
+}
+  
+.info-tooltip .info-tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.info-tooltip:hover .info-tooltip-text {
+    visibility: visible;
+}
+
+#notes {
+    white-space: pre-wrap;
+}

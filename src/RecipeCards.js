@@ -46,14 +46,20 @@ export default function RecipeCards(props) {
 
   return (
       <div>
-      {props.recipes.map((recipe, index) => (
-        <div className={props.addedRecipe === index ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(index)} key={index}>
+      {props.recipes.
+        filter((recipe) => (recipe.title?.toLowerCase().match(props.searchInput.toLowerCase().trim()) || recipe.ingredients?.join(", ").toLowerCase().match(props.searchInput.toLowerCase().trim()))).
+        sort(props.sortFunction).
+        filter((recipe) => props.shouldBeShown(recipe)).
+        map((recipe, index) => (
+        <div className={props.addedRecipe === index ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(props.recipes.indexOf(recipe))} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
                 <div className='row'>
-                    <div className='col-6'>{recipe.energyRequired}</div>
-                    <div className='col-6'>{recipe.timeRequired}</div>
+                    <div className='col-6'>{recipe.energyRequired + " Energy"}</div>
+                    <div className='col-6'>
+                      {recipe.hoursRequired !== "0" ? recipe.hoursRequired + " hours " : ""}{recipe.minsRequired !== "0" ? recipe.minsRequired + " mins" : ""}
+                    </div>
                 </div>
                 <p className='tags'>{recipe.tags?.join(", ")}</p>
             </div>

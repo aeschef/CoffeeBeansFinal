@@ -101,7 +101,7 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
 
             {/* Only displays recipes if the user is not creating a custom meal. */}
             <div>
-              <RecipeCards recipes={recipes.filter((recipe) => (recipe.title.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={setRecipes} 
+              <RecipeCards recipes={recipes.filter((recipe) => (recipe?.title === searchInput.toLowerCase()))} setRecipes={setRecipes} 
               addedRecipe={chosenRecipe} setAddedRecipe={setChosenRecipe} view={false} custom={custom} setCustom={setCustom} />
             </div>
 

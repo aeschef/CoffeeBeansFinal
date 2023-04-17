@@ -120,6 +120,28 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     onClose(false)
   }
 
+
+  useEffect(()=> {
+    const db = getDatabase()
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes")
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(recipesRef, (snapshot) => {
+      const data = snapshot.val()
+      console.log(snapshot.val())
+      console.log("data is " + data)
+      setRecipes(snapshot.val())
+      // snapshot.forEach((childsnapshot) => {
+      //   data.push({key: childsnapshot.key, value: childsnapshot.val()})
+        
+      // });
+
+    },  {
+      onlyOnce: true
+    });
+
+  }, [])
+
   // Manages switching between modals
   useEffect(()=> {
 
@@ -252,7 +274,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
           {type === "Recipe" && !openChooseMeal && 
             <>
             <Form.Label>Recipe</Form.Label>
-            <RecipeCards recipes={recipes.filter((recipe, index) => (index === mealDetails))} 
+            <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
             setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} groceryList={personalGroceryList} addToGL={addToGL} view={true}/>
           </>
           }
