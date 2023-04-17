@@ -9,7 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set} from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
@@ -62,7 +62,7 @@ function IncDec() {
 /**
  * TO DO: Have the items in shared inventory and such figured out
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s, accessCode }) => {
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s, accessCode, refresh, setRefresh }) => {
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
@@ -111,7 +111,9 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 database={database}
                 auth={authentication}
                 databaseArr={showPersonal ? databaseArray_p : databaseArray_s}
-                accessCode={showPersonal ? 0 : accessCode}></AddItem>
+                accessCode={showPersonal ? 0 : accessCode}
+                refresh={refresh}
+                setRefresh={setRefresh}></AddItem>
         </Container>
     );
 
@@ -224,9 +226,9 @@ const RemoveItem = () => {
  * addToList -> function that allows altering of state variable
  */
 
-const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode }) => {
-    console.log("Add Item");
-    console.log(databaseArr);
+const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, refresh, setRefresh }) => {
+    //console.log("Add Item");
+    //console.log(databaseArr);
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
     const [checked, setChecked] = useState(false);
@@ -294,6 +296,7 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode }) =
                 update(ref(database, use + '/grocery_list/categories/' + category.value), obj);
             }
             count_c += 1;
+            setRefresh(true);
         })
 
         if (!found) {
@@ -317,8 +320,9 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode }) =
                 update(ref(database, '/groups/' + accessCode + '/grocery_list/categories/' + categoryName), itemAdd);
             }*/}
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
-            set(ref(database, use + '/inventory/categories/'), categoryName);
+            //set(ref(database, use + '/inventory/categories/'), categoryName);
             //update(ref(database, use + '/inventory/categories/'), categoryName);
+            setRefresh(true);
         }
     }
 
@@ -370,11 +374,92 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode }) =
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_p, databaseArr_s, accessCode }) => {
-    const db = getDatabase(props.app)
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_s, accessCode }) => {
     const auth = getAuth(props.app)
-    console.log("Shared: ");
-    console.log(databaseArr_p);
+    const db = getDatabase(props.app)
+    const [categories, setCategory] = useState([]);
+    const [categories_s, setCategory_s] = useState([]);
+    const [accessCode_s, setAccess] = useState("");
+    const [categories_i, setCategory_i] = useState([]);
+    const [categories_is, setCategory_is] = useState([]);
+    console.log("HIIIII " + accessCode_s);
+    console.log("COOOODE: " + accessCode)
+
+    const [refresh, setRefresh] = useState(true);
+
+    const getAccessCode = () => {
+        get(child(db, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+            if (snapshot.exists()) {
+                setAccess(snapshot.val());
+                console.log("HI" + accessCode_s + snapshot.val());
+                console.log()
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });   
+    }
+
+    useEffect(() => {
+        console.log("BYYYEEE " + accessCode_s);
+        if (accessCode_s) {
+            console.log("INSIDEEE ACCESSS");
+            const dbRefS = ref(db, '/groups/' + accessCode_s + '/grocery_list/categories');
+            onValue(dbRefS, (snapshot) => {
+                const accessData = []
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    const childData = childSnapshot.val();
+                    accessData.push({value: childKey, data: childData})
+                });
+                setCategory_s(accessData);
+                console.log("Access Data: ")
+                console.log(accessData)
+            }, {
+                onlyOnce: true
+            });
+        }
+    }, [accessCode_s])
+
+    useEffect(() => {
+        console.log("EFFECT");
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
+        onValue(dbRefP, (snapshot) => {
+            console.log("EFFECT INSIDE");
+            const dataCat = []
+            snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                let dataGL = []
+                const childData = childSnapshot.val();
+                dataGL = { childData };
+                dataCat.push({ value: childKey, data: childData })
+                //console.log("DATACAT: ");
+                //console.log(dataCat);
+            });
+            setCategory(dataCat);
+            //console.log(categories);
+        }, {
+            onlyOnce: true
+        });
+        /*get(child(db, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+            if (snapshot.exists()) {
+                setAccess(snapshot.val());
+                console.log("HI" + accessCode_s + snapshot.val());
+                console.log()
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });*/
+        //getAccessCode();
+        setAccess(accessCode);
+        setRefresh(false);
+    }, [refresh])
+    console.log("IDK MAN");
+    //console.log(categories);
+
     return (
         <Container fluid="md">
             <Row>
@@ -396,9 +481,12 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 addSharedItemInv={addSharedItemInv}
                 database={db}
                 authentication={auth}
-                databaseArray_p={databaseArr_p}
-                databaseArray_s={databaseArr_s}
-                accessCode={accessCode}></ShowTab>
+                databaseArray_p={categories}
+                databaseArray_s={categories_s}
+                accessCode={accessCode_s}
+                refresh={refresh}
+                setRefresh={setRefresh}
+                ></ShowTab>
 
 
         </Container>

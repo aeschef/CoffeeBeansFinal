@@ -53,14 +53,14 @@ function NavbarElements(props) {
     }
 
     //Creating array for GL personal items
-    const [categories, setCategory] = useState([]);
+    /*const [categories, setCategory] = useState([]);
     const handleCategory = (name, data) => {
         console.log("GL: " + data);
         setCategory(categories => [
             ...categories,
             { value: name, data: data }
         ]);
-    };
+    };*/
     //array for GL shared items
     const [categories_s, setCategory_s] = useState([]);
     const handleCategory_s = (name, data) => {
@@ -78,8 +78,8 @@ function NavbarElements(props) {
             ...categories_i,
             { value: name, data: data }
         ]);
-        console.log("WELP");
-        console.log(categories_i);
+        //console.log("WELP");
+        //console.log(categories_i);
     };
 
     const [categories_is, setCategory_is] = useState([]);
@@ -113,32 +113,9 @@ function NavbarElements(props) {
             }
         })
         //const dbRefA = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
-        {/*if (doAgain_s) {
-            get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-                if (snapshot.exists()) {
-                    setAccess(snapshot.val());
-                } else {
-                    console.log("No data available");
-                }
-            }).catch((error) => {
-                console.error(error);
-            });
-            console.log("HIIIII " + accessCode);
-            const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
-            onValue(dbRefS, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const childKey = childSnapshot.key;
-                    const childData = childSnapshot.val();
-                    handleCategory_s(childKey, childData);
-                    console.log(childData);
-                    console.log(categories_s);
-                });
-            })
-            doAgain_s = false;
-        }*/}
     }, [])
 
-    useEffect(() => {
+    /*useEffect(() => {
         if (accessCode) {
             if (doAgain_s) {
                 const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
@@ -164,10 +141,10 @@ function NavbarElements(props) {
                 setDoAgain_is(false);
             }
         }
-    }, [accessCode])
+    }, [accessCode])*/
 
     const dbRef = ref(db);
-    if (doAgain) {
+    /*if (doAgain) {
         const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
         onValue(dbRefP, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
@@ -175,7 +152,7 @@ function NavbarElements(props) {
                 const childData = childSnapshot.val();
                 handleCategory(childKey, childData);
             });
-        })
+        })*/
         get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
             if (snapshot.exists()) {
                 setAccess(snapshot.val());
@@ -187,21 +164,10 @@ function NavbarElements(props) {
         }).catch((error) => {
             console.error(error);
         });
-        {/*if (doAgain_s) {
-            const dbRefS = ref(db, '/groups/' + accessCode + '/grocery_list/categories');
-            onValue(dbRefS, (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const childKey = childSnapshot.key;
-                    const childData = childSnapshot.val();
-                    handleCategory_s(childKey, childData);
-                });
-            })
-            setDoAgain_s(false);
-        }*/}
-        setDoAgain(false);
+        /*setDoAgain(false);
         console.log("GL SHIT")
         console.log(categories);
-    }
+    }*/
     if (doAgain_i) {
         const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
         onValue(dbRefIP, (snapshot) => {
@@ -276,7 +242,7 @@ function NavbarElements(props) {
                         addPersonalItemInv={addPersonalItemInv}
                         addSharedItemInv={addSharedItemInv}
                         props={props}
-                        databaseArr_p={categories}
+                        //databaseArr_p={categories}
                         databaseArr_s={categories_s}
                         accessCode={accessCode}></GroceryListHome>
                 } />

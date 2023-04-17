@@ -90,8 +90,8 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  */
 function ListCategory({ list, user, databaseArr }) {
     let count = 0;
-    console.log("LIST CATEGORY");
-    console.log(databaseArr);
+    //console.log("LIST CATEGORY");
+    //console.log(databaseArr);
 
     return (
 
