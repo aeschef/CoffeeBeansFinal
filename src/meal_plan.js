@@ -61,6 +61,7 @@ const [refresh, setRefresh] = useState(true)
     // const newValue = !value
     const db = getDatabase()
 
+    console.log("Value is " + value)
     const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+category+"/meals/"+mealKey+"/completed")
     set(mealRef, !value)
     setRefresh(true)
@@ -217,8 +218,9 @@ return (
 
       {category.meals?.map((x, i) => (
       <div className="left-spacing">
-          <Row> 
-            <label key={x}>
+          <div className="box-custom"> 
+            <div>
+            <label key={x} className="color-checked">
             {/* Checkbox that keeps track of whether meal was completed or not. */}
             <input
             type="checkbox"
@@ -227,15 +229,17 @@ return (
             checked={x.value.completed}
             onChange={()=>handleChecked(category.key, x.key, x.value.completed, i, j)}
             /> 
-            
+          </label>
+          </div>
+          <div>   
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <a href="#" className="m-1" onClick={()=> handleViewMealPopup(category.key, {key: x.key, value: x.value}, i)}>
+            <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key: x.key, value: x.value}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
               {x.value.type === "Ingredients" ? x.value.label : x.value.tags}
-            </a>
-          </label>
-        </Row>
+            </div>
+          </div>
+        </div>
         <Row className="left-spacing">
           <div className="tag">{x.value.tags}</div>  
         </Row>

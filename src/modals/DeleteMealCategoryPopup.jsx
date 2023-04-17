@@ -53,7 +53,7 @@ return (
       <Button variant="primary" onClick={()=>setOpen(false)}>
         Cancel
       </Button>
-      <Button variant="primary" onClick={()=>setRemove(true)}>
+      <Button variant="primary" className="green-button" onClick={()=>setRemove(true)}>
         Confirm
       </Button>
     </Modal.Footer>

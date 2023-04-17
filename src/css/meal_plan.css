@@ -40,7 +40,7 @@
 }
 .tag {
   border: none;
-  color: black;
+  color:  #525252;
   text-align: center;
   display: inline-block;
   margin: 4px 2px;
@@ -66,6 +66,52 @@
 .clear-button {
   width: 5rem;
   display: inline-block;
+
   padding-left: 1rem;
   margin-left: 1rem;
+}
+
+.completed-item {
+  text-decoration: line-through;
+  color: #BDBDBD;
+  display: inline;
+  padding-left: .25rem;
+}
+
+
+.not-completed {
+  color: #525252;
+  text-decoration: underline;
+  font-style: italic;
+  display: inline;
+  padding-left: .25rem;
+}
+
+
+
+.popup {
+  display: inline;
+  padding-left: .25rem
+}
+
+.color-checked {
+  accent-color: #525252;
+}
+
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary:visited,
+.btn-primary:focus {
+  background-color: #729701!important;
+  border-color:#729701!important;
+  color: white !important;
+}
+
+
+.box-custom {
+  display: flex;
+  align-items: stretch;
+  align-content: flex-start;
+  flex-direction: row;
 }
