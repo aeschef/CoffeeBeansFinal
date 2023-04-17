@@ -252,7 +252,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr, acces
             push(dbRefIC, {
                 item_name: itemName
             })
-            //TODO: figure out to push
+            
             setRefresh(true);
         }
     }

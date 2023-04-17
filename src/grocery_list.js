@@ -324,7 +324,10 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, ref
             }*/}
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
             //set(ref(database, use + '/inventory/categories/'), categoryName);
-            //update(ref(database, use + '/inventory/categories/'), categoryName);
+            let invAdd = {};
+            let dummy = {item_name: ""};
+            invAdd[0] = dummy;
+            update(ref(database, use + '/inventory/categories/' + categoryName), invAdd);
             setRefresh(true);
         }
     }
