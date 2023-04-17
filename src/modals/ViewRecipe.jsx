@@ -146,10 +146,16 @@ export default function ViewRecipePopup(props) {
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
+  const [tagsInStringForm, setTagsInStringForm] = useState("");
+  const [ingredientsInStringForm, setIngredientsInStringForm] = useState("");
+  const [stepsInStringForm, setStepsInStringForm] = useState("");
   const handleOpenEditPopup = (index) => {
       setIndexOfRecipeToEdit(index);
       setInputs(props.recipes[index]);
       setShowEditPopup(true);
+      setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
+      setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join("\n"));
+      setStepsInStringForm(props.recipes[index].steps?.join("\n"));
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
@@ -157,7 +163,7 @@ export default function ViewRecipePopup(props) {
   const currentRecipe = props.recipes[props.indexOfRecipeToView];
 
   const recipeIngredients = currentRecipe?.ingredients?.map(
-          (ingredient, index) => <li key={index}>{ingredient}</li>);
+          (ingredient, index) => <li key={index}>{ingredient.phrase.replaceAll("\"", "")}</li>);
 
   const recipeSteps = currentRecipe?.steps?.map(
           (step, index) => <li key={index}>{step}</li>);
@@ -186,9 +192,9 @@ export default function ViewRecipePopup(props) {
                       {/* energy and time required for this recipe */}
                       <div className='col-6'>
                           <h6>Energy Required</h6>
-                          <p>{currentRecipe?.energyRequired}</p>
+                          <p>{currentRecipe?.energyRequired !== "" ? currentRecipe?.energyRequired + " Energy" : ""}</p>
                           <h6>Time Required</h6>
-                          <p>{currentRecipe?.timeRequired}</p>
+                          <p>{currentRecipe?.hoursRequired !== "0" ? currentRecipe?.hoursRequired + " hours " : ""}{currentRecipe?.minsRequired !== "0" ? currentRecipe?.minsRequired + " mins" : ""}</p>
                       </div>
                   </div>
 
@@ -206,12 +212,12 @@ export default function ViewRecipePopup(props) {
                   
                   {/* recipe notes */}
                   <h6>Notes</h6>
-                  <p>{currentRecipe?.notes}</p>
+                  <p id="notes">{currentRecipe?.notes}</p>
                     <HandleAddtoMealPlan groceryList={props.groceryList} addToGL={props.addToGL}></HandleAddtoMealPlan>
                   <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
-          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit}></EditRecipePopup>
+          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       
