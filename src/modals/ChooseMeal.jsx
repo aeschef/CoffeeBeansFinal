@@ -72,9 +72,8 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
           <Form.Group className="mb-3">
             <h4 className="edit-modal-header">Custom Meal</h4>
               <div className={custom  ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={handleCustom} key="custom">
-              <div className='col-6 align-self-center' id='image'>Photo</div>
 
-                <div className='col-6' id='recipe-info'>
+                <div className='col-12' id='recipe-info'>
                 <Form.Label>Meal idea</Form.Label>
 
                 <Form.Control

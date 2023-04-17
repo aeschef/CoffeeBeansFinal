@@ -11,7 +11,7 @@ import Select from 'react-select';
 
 import Creatable from 'react-select/creatable'
 import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/database';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
@@ -49,7 +49,6 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
   // Days of the week used for tag names, but users can also add their own 
   const [tags, setTags] = useState([])
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   // Stores list of categories so we know where to add the meal
   
@@ -77,20 +76,6 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   // to the quota list for the specified category.
   function addNewMeal(categoryName) {
 
-    // TODO:  ERROR CHECKING - Check if category name already exists
-    // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
-    console.log(categoryName)
-
-    // const categoryListRef = ref(getDatabase(), 'users/' + auth.currentUser.uid + "meal_plan/categories/" + categoryName + "/meals");
-    // Autogenerates key to map to the new meal within the array that stores the meals for the existing
-    // const newMealRef = push(categoryListRef);
-    // set(newMealRef, {
-    //   value:addedMeal.description,
-    //   label:addedMeal.description,
-    //   tags:addedMeal.tags,
-    //   notes: addedMeal.notes,
-    //   type:type  
-    // });
     const copyMeal = {
       label:addedMeal.description,
       tags:addedMeal.tags,
@@ -98,46 +83,38 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
       type:addedMeal.type,
       completed: addedMeal.completed }
     const db = getDatabase()
-    const dinnerRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+"Dinner")
-    set(dinnerRef, null)
-    console.log("category list " + categoriesList)
-
-    console.log("category in method " + categoryName)
 
     // Updates categories array in the case that a new category was added
     if ((Array.isArray(categoriesList) && categoriesList.indexOf(categoryName) <= -1) || categoriesList === categoryName) {
-      console.log("Category was not found in list")
+
       // Creates basic structure for new category
       const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName)
-      console.log("category name " + categoryName)
       const newCategory = {
         quota: 0,
         meals: []
       }
-    console.log("new category info " + newCategory)
      set(categoryRef, newCategory);     
     }
 
-     // Pushes meal to the new category's array of meals
-     const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName+"/meals")
-     console.log("category name after ref " + categoryName)
-     // Creates key to push new meal to
-     const newMealRef = push(mealRef);
+    // Pushes meal to the new category's array of meals
+    const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName+"/meals")
 
-     // Sets meal information to the new generated key
-     set(newMealRef,copyMeal)
+    // Creates key to push new meal to
+    const newMealRef = push(mealRef);
 
+    // Sets meal information to the new generated key
+    set(newMealRef,copyMeal)
 
-     if (tags.indexOf(copyMeal.tags) <= -1) {
+    // If tag did not already exist, add it to the database that stores the list of tags.
+    if (tags.indexOf(copyMeal.tags) <= -1) {
       let arr = [...tags, copyMeal.tags]
 
       const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
       set(tagRef, arr)
-      }
+    }
 
-     // Indicates that state variable should be refreshed
-     setRefresh(true)
-
+    // Indicates that state variable should be refreshed
+    setRefresh(true)
 
     // Closes the modal for adding a meal
     onClose(false)

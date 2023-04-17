@@ -9,8 +9,10 @@ import '../css/meal_plan.css';
 import Modal from "react-bootstrap/Modal";
 import Form from 'react-bootstrap/Form'
 import { getDatabase, ref, set, onValue, push } from 'firebase/database';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getAuth} from "firebase/auth";
 
+
+// Modal popup that warns a user before they delete a category on the meal plan screen
 const DeleteMealCategoryPopup = ({ open, setOpen, openEdit, closeEdit, category, refresh, setRefresh}) => {
 
 const [remove, setRemove] = useState(false)
