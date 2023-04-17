@@ -420,7 +420,8 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 onlyOnce: true
             });
         }
-    }, [accessCode_s])
+        setRefresh(false);
+    }, [accessCode_s, refresh])
 
     useEffect(() => {
         console.log("EFFECT");
