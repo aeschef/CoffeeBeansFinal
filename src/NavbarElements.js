@@ -51,45 +51,9 @@ function NavbarElements(props) {
             }
         })
     }
-
-    //Creating array for GL personal items
-    /*const [categories, setCategory] = useState([]);
-    const handleCategory = (name, data) => {
-        console.log("GL: " + data);
-        setCategory(categories => [
-            ...categories,
-            { value: name, data: data }
-        ]);
-    };*/
-    //array for GL shared items
-    const [categories_s, setCategory_s] = useState([]);
-    const handleCategory_s = (name, data) => {
-        setCategory_s(categories_s => [
-            ...categories_s,
-            { value: name, data: data }
-        ]);
-    };
     const [accessCode, setAccess] = useState("");
     //array for inventory personal items
-    const [categories_i, setCategory_i] = useState([]);
-    const handleCategory_i = (name, data) => {
-        console.log(name + " And " + data);
-        setCategory_i(categories_i => [
-            ...categories_i,
-            { value: name, data: data }
-        ]);
-        //console.log("WELP");
-        //console.log(categories_i);
-    };
 
-    const [categories_is, setCategory_is] = useState([]);
-    const handleCategory_is = (name, data) => {
-        setCategory_is(categories_is => [
-            ...categories_is,
-            { value: name, data: data }
-        ]);
-        //console.log(categories_i);
-    };
 
 
     // Populates pages with data for the current user

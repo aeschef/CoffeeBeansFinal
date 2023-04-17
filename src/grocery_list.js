@@ -24,16 +24,50 @@ import CategorysPopup from './modals/EditGLICategories';
  * Handles incrementing and decrementing the number of items 
  * needed from the grocery store
  */
-function IncDec(val) {
-    let [num, setNum] = useState(0);
+function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, auth, database}) {
+    let [num, setNum] = useState(cat.item_num);
     //console.log(val);
-    //console.log("NUM: " + val);
+    //console.log("NUM: " + category);
     let inc_num = () => {
         setNum(Number(num) + 1);
+        let updateNum = num + 1;
+        updateDatabase(updateNum);
+        //console.log(num + 1);
+
     }
 
     let dec_num = () => {
         setNum(Number(num) - 1);
+        let updateNum = num - 1;
+        updateDatabase(updateNum);
+    }
+
+    const updateDatabase = (num) => {
+        //console.log("HERE");
+        databaseArr.map(categ => {
+            //console.log("Inside: " + categ.value + " AND " + category)
+            if (categ.value === category) {
+                //console.log("I Inside")
+                categ.data.map((c, i) => {
+                    //console.log("WHY")
+                    if (name === c.item_name) {
+                        //console.log("HIIII BUTTT: " + i);
+                        let users = '/users/' + auth.currentUser.uid;
+                        let group = '/groups/' + code;
+                        let use = "";
+                        if (("" + code).length === 1) {
+                            use = users;
+                        } else {
+                            use = group;
+                        }
+                        //console.log(use + '/grocery_list/categories/' + categ.value + '/' + i + '/item_name')
+                        //console.log("NUM: " + Number(num));
+                        set(ref(database, use + '/grocery_list/categories/' + categ.value + '/' + i + '/item_num'), num)
+                        setRefresh(true);
+                    }
+                })
+            }
+        })
     }
 
     let handleChange = (e) => {
@@ -61,9 +95,6 @@ function IncDec(val) {
  * Component controls what is shown in content from top level. Primary 
  * job is determining if shared or personal content is displayed 
  */
-/**
- * TO DO: Have the items in shared inventory and such figured out
- */
 const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, accessCode, refresh, setRefresh }) => {
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
@@ -75,14 +106,6 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
     const handleShared = () => {
         setPersonal(false)
         setKey('shared');
-    };
-
-    const [categories, setCategory] = useState([]);
-    const handleCategory = (name) => {
-        setCategory(categories => [
-            ...categories,
-            { value: name, label: name }
-        ]);
     };
 
     const handleSelect = (key) => {
@@ -103,7 +126,12 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
             </Tabs>
             <ListCategory
                 user={authentication}
-                database={showPersonal ? databaseArray_p : databaseArray_s}></ListCategory>
+                database={showPersonal ? databaseArray_p : databaseArray_s}
+                refresh={refresh}
+                setRefresh={setRefresh}
+                accessCode={showPersonal ? 0 : accessCode}
+                auth={authentication}
+                data={database}></ListCategory>
             <AddItem
                 database={database}
                 auth={authentication}
@@ -120,9 +148,9 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({ user, database }) {
-    console.log("LIST CATEGORY");
-    console.log(database);
+function ListCategory({ user, database, set, refresh, setRefresh, accessCode, auth, data}) {
+    //console.log("LIST CATEGORY");
+    //console.log(database);
 
     const handleCheck = (event) => {
         {/*if (event.target.checked) {
@@ -141,10 +169,11 @@ function ListCategory({ user, database }) {
 
     let count = 0;
 
-    function DummyItem({ item_name, i, item_num }) {
+    function DummyItem({ item_name, i, cat, refresh, setRefresh, databaseArr, category, accessCode, auth, data }) {
         if (item_name.length === 0) {
             return null;
         }
+        //console.log("CAT: " + category);
         return (
             <div className="left-spacing">
                 <Row>
@@ -160,7 +189,15 @@ function ListCategory({ user, database }) {
                         </label>
                     </Col>
                     <Col xs={{ span: 4 }}>
-                        <IncDec></IncDec>
+                        <IncDec cat={cat}
+                            refresh={refresh}
+                            setRefresh={setRefresh}
+                            databaseArr={databaseArr}
+                            category={category}
+                            name={item_name}
+                            code={accessCode}
+                            auth={auth}
+                            database={data}></IncDec>
                     </Col>
                 </Row>
             </div>
@@ -184,8 +221,15 @@ function ListCategory({ user, database }) {
                         <div className="left-spacing">
                             <Row>
                                 <DummyItem item_name={cat.item_name}
-                                i={i}
-                                item_num={cat.item_num}></DummyItem>
+                                    i={i}
+                                    cat={cat}
+                                    refresh={refresh}
+                                    setRefresh={setRefresh}
+                                    databaseArr={database}
+                                    category={category.value}
+                                    accessCode={accessCode}
+                                    auth={auth}
+                                    data={data}></DummyItem>
                                 {/*<Col>
                                     <label key={i}>
                                         <input
@@ -276,9 +320,6 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
-            //console.log("Here");
-            //console.log(categoryName);
-            //console.log(category.value);
             let normal = category.value;
             let lowerCaseCategory = category.value.toLowerCase();
             console.log(category.value);
@@ -289,7 +330,6 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
                 category.data.map((cat, i) => {
                     count += 1;
                 })
-                //console.log(count);
                 let obj = {}
                 const item = { item_name: itemName, item_num: 1 };
                 obj[count] = item;
@@ -301,7 +341,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
                 } else {
                     use = group;
                 }
-                console.log("WTF: " + category.value);
+                //console.log("WTF: " + category.value);
                 update(ref(database, use + '/grocery_list/categories/' + category.value), obj);
             }
             count_c += 1;
