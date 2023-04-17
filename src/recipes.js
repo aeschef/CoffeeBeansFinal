@@ -28,7 +28,15 @@ export default function RecipesHome(props) {
         onValue(dbRecipeRef, (snapshot) => {
             
             // getting data from the spot in the db that changes
-            setRecipes(snapshot.val());
+            // good source: https://info340.github.io/firebase.html#firebase-arrays
+            const allRecipesObject = snapshot.val();
+            const allRecipesKeys = Object.keys(allRecipesObject);
+            const allRecipesArray = allRecipesKeys.map((key) => {
+                const singleRecipeCopy = {...allRecipesObject[key]}; // copying the element at that key
+                singleRecipeCopy.key = key; // save the key string so you have it later
+                return singleRecipeCopy;
+            })
+            setRecipes(allRecipesArray);
         });
     }, []);
 
@@ -241,8 +249,7 @@ function AddRecipePopup(props) {
 
             set(newRecipePostRef, newRecipe);
 
-            // var postID = newRecipePostRef.key;
-            // console.log(postID);
+            // TODO: is this where i need to get the id for julia?
         }
     }
 
