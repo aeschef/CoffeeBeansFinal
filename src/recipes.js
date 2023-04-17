@@ -159,6 +159,7 @@ export default function RecipesHome(props) {
             {/* recipe cards */}
             <div className='recipe-cards'>
                 <RecipeCards 
+                    app={props.app}
                     recipes={recipes}
                     setRecipes={props.setRecipes} 
                     onClickFunction={handleOpenViewPopup} 
@@ -175,7 +176,7 @@ export default function RecipesHome(props) {
 
             {/* popups */}
             <AddRecipePopup app={props.app} recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
+            <ViewRecipePopup app={props.app} recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
@@ -242,10 +243,10 @@ function AddRecipePopup(props) {
             props.handleCloseAddPopup();
                     
             // getting a reference to the 'recipes' section of this user's area of the database
-            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
+            const dbRecipesRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
 
             // getting a reference to new place to post
-            var newRecipePostRef = push(dbRecipeRef);
+            var newRecipePostRef = push(dbRecipesRef);
 
             set(newRecipePostRef, newRecipe);
 
