@@ -8,14 +8,20 @@ import ViewRecipePopup from './ViewRecipe';
 import RecipeCards from '../RecipeCards'
 import TagsInput from '../TagsInput';
 import Creatable from 'react-select/creatable';
-import { getDatabase, ref, set, onValue, update, push, child} from 'firebase/database';
+import { getDatabase, ref, set, onValue, update, push, child, remove} from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import RemoveMealWarning from './removeMealWarning';
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes,
   refresh, setRefresh,
-  groceryList, addToGL}) => {
+  groceryList, addToGL, categoriesList, setCategoriesList}) => {
   const auth = getAuth()
+
+  // Popup that appears when user attempts to delete a meal
+  const [openWarning, setOpenWarning] = useState(false)
+
+  const [remove, setRemove] = useState(false)
 
   // Saves category selected when planning a meal, stored in format so that it can appear in dropdown
   const [selectedCategory, setCategory] = useState({label: currentCategoryIndex, value: currentCategoryIndex})
@@ -48,7 +54,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   useEffect(()=> {
     const db = getDatabase()
-    console.log(auth.currentUser.uid)
     
     // updates tags state variable so that it stores the saved tags from the user's database
     const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
@@ -56,8 +61,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
     // Updates state variable so that it stores the list of tags from database
     onValue(tagRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("data")
-      console.log(data);
       setTags(data);
     }); 
 
@@ -103,13 +106,12 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
     }
   }, [mealDetails])
 
+ 
   // Updates meal's information in the database
   useEffect(()=> {
     if (newMeal) {
-      console.log(updatedMeal)
       const db = getDatabase()
-      console.log("meal key" + currentMealDetails.key)
-      const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals/"+currentMealDetails.key)
+      const oldMealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+currentCategoryIndex+"/meals/"+currentMealDetails.key)
       
       const newMeal = {
         label:updatedMeal.description,
@@ -121,49 +123,55 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
       // Checks to see if label changed, meaning that the meal has to be added to a new category
       if (categoryChanged) {
         // Adds meal to another category
-        let categoryIndex = -1
-        for(var i = 0 ; i < categories.length ; i++){
-          if (categories[i].key === selectedCategory.label) {
-            categoryIndex = i
-          }
-        }
 
         // If the category was already found, this means that it already exists in the list of categories
-        if (categoryIndex !== -1) {
-          console.log("Category was found. ")
+        if ((Array.isArray(categoriesList) && categoriesList.indexOf(selectedCategory.label) >= -1) || categoriesList === selectedCategory.label) {
 
           // Creates a new key for the meal so that it can be added to the category's list of meals
-          const newMealKey = push(child(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label), 'meals')).key;
-          const updates = {};
+          // const newMealKey = push(child(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label), 'meals')).key;
+          // const updates = {};
 
-          // Maps the key to the meal object
-          updates['/meals/' + newMealKey] = newMeal;
+          // Pushes meal to the new category's array of meals
+          const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label+"/meals")
+          
+          // Creates key to push new meal to
+          const newMealRef = push(mealRef);
 
-          // Pushes the changes to the category in database
-          update(ref(db), updates)
+          // Sets meal information to the new generated key
+          set(newMealRef,newMeal)
 
+          // Removes the reference from the old category
+          remove(oldMealRef)
 
+          // Indicates that state variable should be refreshed
+          setRefresh(true)
+
+          
 
         // Otherwise, if the category was not found, this means it needs to be added to the database
         } else {
-
           // Creates basic structure for new category
-          const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label)
+          const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label)
           const newCategory = {
             quota: 0,
             meals: []
           }
-          set(mealRef, newCategory);
-
-          // Creates key for meal and pushes it to new category's list of meals
-          const newMealKey = push(child(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label), 'meals')).key;
-          const updates = {};
-
-          updates['/meals/' + newMealKey] = newMeal;
-
-          update(ref(db), updates)
+          set(categoryRef, newCategory);     
+        
+          // Creates basic structure for new category
+          const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+selectedCategory.label+'/meals')
           
-          console.log("New category will be added to database. ")
+          // Creates key to push new meal to
+          const newMealRef = push(mealRef);
+
+          // Sets meal information to the new generated key
+          set(newMealRef, newMeal)
+
+          // Removes the reference from the old category
+          set(oldMealRef, null)
+
+          // Indicates that state variable should be refreshed
+          setRefresh(true)
         }
 
         // Deletes the meal's entry in the old category
@@ -177,20 +185,15 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
         // Checks to see if the tags were changed, and if so, will add new tags to the tags list. 
         if (tagChanged && tags.indexOf(selectedTags.label) <= -1) {
           let arr = [...tags, selectedTags.label]
-          console.log(arr)
 
           const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
           set(tagRef, arr)
         }
 
         // updates meal information for the category
-          
-        set(mealRef, newMeal);
+        set(oldMealRef, newMeal);
         setRefresh(true)
-        console.log("success")
 
-        // pushes meal item to array
-        
       }
       setNewMeal(false)
       onClose(false)
@@ -210,7 +213,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
     // If the category, tag info or meal was changed, it will be reinserted into the quota.
     if (categoryChanged || tagChanged || mealDetailsChanged || notesChanged) {
       setUpdatedMeal({label: selectedCategory.label, tags:selectedTags.label, description: mealDetails, notes: notes, type: currentMealDetails.value.type, completed: currentMealDetails.value.completed})
-      console.log("added meal")
       setNewMeal(true)
     }
 
@@ -221,6 +223,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   }
 
+ 
   return (
     <>
     <Modal show={open} onHide={onClose} centered>
@@ -312,14 +315,30 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
         </Form> 
 
       </Modal.Body>
-      <Modal.Footer>
-        
-        <Button variant="primary" onClick={handleUpdate}>
-          Update meal
-        </Button>
+     
+      <Modal.Footer className="d-flex justify-content-between fixed">
+        {/* Buttons that allow user to delete meal or update  */}
+          <>
+            <Button variant="primary" onClick={()=>setOpenWarning(true)}>
+              Delete meal
+            </Button>
+            <Button variant="primary" onClick={handleUpdate}>
+              Update meal
+            </Button>
+          </>
       </Modal.Footer>
     </Modal>
+    {openWarning && 
+      <RemoveMealWarning 
+        viewPopup={viewPopup} closeViewPopup={closeViewPopup}
+        open={openWarning} setOpen={setOpenWarning} 
+        remove={remove} setRemove={setRemove} 
+        category={currentCategoryIndex} mealId={currentMealDetails.key}
+        openEdit={open} closeEdit={onClose}
+        refresh={refresh} setRefresh={setRefresh} />}
+
   </>
+
   )
 }
 

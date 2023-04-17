@@ -10,13 +10,13 @@ import React from 'react'
 import Select from 'react-select';
 
 import Creatable from 'react-select/creatable'
-import { getDatabase, ref, set, onValue, push } from 'firebase/database';
+import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
 const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, setNewMeal, addedMeal, setAddedMeal,
-   meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL}) => {
+   meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL, refresh, setRefresh, categoriesList, setCategoriesList}) => {
   const auth = getAuth(app);
   
   // Will be updated when user chooses a meal, stores either "Ingredients" or "Recipes"
@@ -52,33 +52,22 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
   // Stores list of categories so we know where to add the meal
-  const [categoriesList, setCategoriesList] = useState([])
-
+  
   // When page first loads, populates meals with information from user's database
   useEffect(()=> {
-    const db = getDatabase()
-    console.log(auth.currentUser.uid)
-    // updates tags state variable so that it stores the saved tags from the user's database
-    const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
-    onValue(tagRef, (snapshot) => {
-      const data = snapshot.val();
-      console.log(data);
-      setTags(data);
+    if (refresh) {
+      const db = getDatabase()
 
-    });
+      // updates tags state variable so that it stores the saved tags from the user's database
+      const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+      onValue(tagRef, (snapshot) => {
+        const data = snapshot.val();
+        setTags(data);
 
-    // Reference to categories in the meal plan
-    let dataCategories = []
-    
-    // Stores all of the meal categories and pushes them to an array
-    categories.forEach((category)=> {
-      // pushes category name to array
-      dataCategories.push(category.key)
+      });
+    }
 
-    })
-    setCategoriesList(dataCategories)
-
-  }, [])
+  }, [refresh])
 
   
   // Will store the tag that the user selects for the new meal
@@ -102,11 +91,53 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     //   notes: addedMeal.notes,
     //   type:type  
     // });
+    const copyMeal = {
+      label:addedMeal.description,
+      tags:addedMeal.tags,
+      notes: addedMeal.notes,
+      type:addedMeal.type,
+      completed: addedMeal.completed }
+    const db = getDatabase()
+    const dinnerRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+"Dinner")
+    set(dinnerRef, null)
+    console.log("category list " + categoriesList)
+
+    console.log("category in method " + categoryName)
 
     // Updates categories array in the case that a new category was added
-    if (categories.indexOf(categoryName) <= -1) {
-      setCategories([...categories, categoryName])
+    if ((Array.isArray(categoriesList) && categoriesList.indexOf(categoryName) <= -1) || categoriesList === categoryName) {
+      console.log("Category was not found in list")
+      // Creates basic structure for new category
+      const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName)
+      console.log("category name " + categoryName)
+      const newCategory = {
+        quota: 0,
+        meals: []
+      }
+    console.log("new category info " + newCategory)
+     set(categoryRef, newCategory);     
     }
+
+     // Pushes meal to the new category's array of meals
+     const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName+"/meals")
+     console.log("category name after ref " + categoryName)
+     // Creates key to push new meal to
+     const newMealRef = push(mealRef);
+
+     // Sets meal information to the new generated key
+     set(newMealRef,copyMeal)
+
+
+     if (tags.indexOf(copyMeal.tags) <= -1) {
+      let arr = [...tags, copyMeal.tags]
+
+      const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+      set(tagRef, arr)
+      }
+
+     // Indicates that state variable should be refreshed
+     setRefresh(true)
+
 
     // Closes the modal for adding a meal
     onClose(false)
@@ -135,7 +166,6 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   // Executed whenever the user is ready to add the new meal, meaning that they had selected the "add meal" button
   useEffect(()=> {
     if (newMeal) {
-      console.log(addedMeal)
 
       // Adds meal to assigned category in database
       addNewMeal(addedMeal.id)
@@ -170,13 +200,14 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
     // If the user is adding meal from ingredients:
     else if (type === "Ingredients"){
-      setAddedMeal({id: selectedCategory, tags:selectedTags.value, description: mealDetails.mealIdea, notes: mealDetails.notes, completed: false})
+      console.log("category before updating " + selectedCategory.label)
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails.mealIdea, type: type, notes: mealDetails.notes, completed: false})
       console.log("added ingredients")
       setNewMeal(true)
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory, tags:selectedTags.value, description: mealDetails, notes:"", completed: false})
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails, type: type, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
     }
@@ -200,13 +231,14 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
                   defaultValue={{value: selectedCategory, label: selectedCategory}}
                   value={selectedCategory}
-                  options={categoriesList?.map(category => ({ label: category, value: category}))}
+                  options={categories?.map(category => ({ label: category.key, value: category.key}))}
                   onChange={opt =>setCategory(opt)}
 
             />
 
             <Form.Label className="edit-modal-header">Day</Form.Label>
-            
+            {console.log(categories)}
+
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}
 
             <Creatable 

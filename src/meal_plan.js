@@ -48,84 +48,63 @@ const [quotaIndex, setQuotaIndex] = useState(0)
 // Stores information of newly created meal, will be reset once 
 const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealDetails:""})
 
+const [categoriesList, setCategoriesList] = useState([])
+
 const [refresh, setRefresh] = useState(true)
-// Stores initial default list of meals for breakfast
-const breakfast = [
-  {value:"bananas", label:"bananas", tags:"Monday", type:"Ingredients"},
-  {value:"soup", label: "soup", tags:"Monday", type:"Ingredients"}
-  ]
-
-// Stores initial default list of meals meals for lunch
-const lunch = [
-  {value:"bananas", label:"bananas", tags:"Tuesday", type:"Ingredients"},
-  {value:"soup", label: "soup", tags:"Tuesday", type:"Ingredients"}
-  ]
-
-// Stores initial default list of meals for dinner
-const dinner = [
-  {value:"bananas", label:"bananas", tags:"Wednesday", type:"Ingredients"},
-  {value:"soup", label: "soup", tags:"Wednesday", type:"Ingredients"}
-  ]
-
-// Stores the list of meal categories, their associated quotas and their meals
-const [quotas, setQuotas] = useState([
-  {id:"Breakfast",quota:0, value:0, items:breakfast}, 
-  {id:"Lunch",quota:0, value:1, items:lunch}, 
-  {id:"Dinner", quota:0, value:2, items:dinner}])
 
   // Stores category names after retrieving from database
   const [categories, setCategories] = useState([])
   const [meals, setMeals] = useState([])
 
   // Updates database for a meal when user checks or unchecks the checkbox
-  function handleChecked(category, mealIndex, value) {
-    console.log("originally " + value)
-    console.log("should now be " +  !value)
+  function handleChecked(category, mealKey, value, mealIndex, categoryIndex) {
+    // const newValue = !value
+    const db = getDatabase()
+
+    const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+category+"/meals/"+mealKey+"/completed")
+    set(mealRef, !value)
+    setRefresh(true)
   }
 
   useEffect(()=> {
     const db = getDatabase()
+    if (refresh) {
+      // Reference to categories in the meal plan
+      const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
+      let arrMeals = []
+      // Stores all of the meal categories and pushes them to an array
+      onValue(categoryRef, (snapshot) => {
+        const dataCategories = []
+        const catList = []
+        snapshot.forEach((childsnapshot) => {
+          
+          // pushes meal item to array        
+          let dataMeals = []
+          // Stores all of the meal categories and pushes them to an array
+          dataMeals = []
+          catList.push(childsnapshot.key)
+          // Checks to see if category has any meals associated with it
+          if (!childsnapshot.val().meals) {
+            dataMeals=[]
+          } else {
+            let keys = Object.keys(childsnapshot.val()?.meals);
+            keys.forEach((id) => {
+              dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
+            })
+          }
+          
+          // pushes meal item to array
+          dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+          });
 
-    // Reference to categories in the meal plan
-    const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
-    let arrMeals = []
-    // Stores all of the meal categories and pushes them to an array
-    console.log("use effect")
-    console.log(newMeal)
-    onValue(categoryRef, (snapshot) => {
-      const dataCategories = []
+        setCategories(dataCategories)
+        setCategoriesList(catList)
+      },  {
+        onlyOnce: true
+      });
 
-      snapshot.forEach((childsnapshot) => {
-        
-        // pushes meal item to array        
-        const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
-        let dataMeals = []
-        console.log("child snapshot")
-        console.log(childsnapshot.val())
-        // Stores all of the meal categories and pushes them to an array
-        dataMeals = []
-        let keys = Object.keys(childsnapshot.val().meals);
-        keys.forEach((id) => {
-          dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
-          console.log({key: id, value: childsnapshot.val().meals[id]})
-        })
-        console.log("data meals")
-        console.log(dataMeals)
-        
-        // pushes meal item to array
-        console.log(dataCategories)
-        dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-        console.log({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
-        console.log("category meals " + dataMeals)
-        });
-
-      setCategories(dataCategories)
-      console.log(dataCategories)
-    },  {
-      onlyOnce: true
-    });
-
-    setRefresh(false)
+      setRefresh(false)
+    }
 
     
   }, [refresh])
@@ -134,8 +113,6 @@ const [quotas, setQuotas] = useState([
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
     setCurrentMealDetails(mealInfo)
-    console.log("key" + mealInfo.key.toString())
-    console.log("meal Info " + mealInfo.value)
     setCurrentMealIndex(mealIndex)
     setShowViewMealPopup(true)
   }
@@ -146,13 +123,68 @@ const [quotas, setQuotas] = useState([
     setQuotaIndex(index)
   }
 
+  function handleClear() {
+      const db = getDatabase()
+
+      // Reference to categories in the meal plan
+      const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
+      let arrMeals = []
+      // Stores all of the meal categories and pushes them to an array
+      onValue(categoryRef, (snapshot) => {
+        const dataCategories = []
+        const catList = []
+      
+        snapshot.forEach((childsnapshot) => {
+          
+          // pushes meal item to array        
+          const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals")
+          let dataMeals = []
+          // Stores all of the meal categories and pushes them to an array
+          dataMeals = []
+          catList.push(childsnapshot.key)
+          // Checks to see if category has any meals associated with it
+          if (!childsnapshot.val().meals) {
+            dataMeals=[]
+          } else {
+              
+            let keys = Object.keys(childsnapshot.val()?.meals);
+            keys.forEach((id) => {
+                if (childsnapshot.val().meals[id].completed) {
+                  set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+childsnapshot.key+"/meals/"+id), null)
+                } else {
+                  dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
+                }
+            })
+
+             
+          }
+          
+          // pushes meal item to array
+          dataCategories.push({key: childsnapshot.key, quota: childsnapshot.val().quota, length: dataMeals.length, meals: dataMeals})
+          });
+
+        setCategories(dataCategories)
+        setCategoriesList(catList)
+      },  {
+        onlyOnce: true
+      });
+    }
 
 return (
   <Container fluid="md" className="p-0">
     
     <div className="title">
         <Row>
-            <h1>Meal Plan</h1>
+            
+                        
+            <Button variant="primary" className="clear-button" onClick={handleClear}>
+              Clear meals
+            </Button>
+                
+              <h1>Meal Plan</h1>
+
+
+            
         </Row>      
     </div>
 
@@ -193,7 +225,7 @@ return (
             name="lang"
             value={x}
             checked={x.value.completed}
-            onChange={handleChecked(category.key, i, x.value.completed)}
+            onChange={()=>handleChecked(category.key, x.key, x.value.completed, i, j)}
             /> 
             
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
@@ -242,11 +274,15 @@ return (
     setRecipes={props.setRecipes}
     personalGroceryList={props.itemsInPersonalGL} 
     addToGL={props.addPersonalItemGL}
+    refresh={refresh}
+    setRefresh={setRefresh}
+    categoriesList={categoriesList}
+    setCategoriesList={setCategoriesList}
   />
 
   {/* Displays popup to edit category name and quota for the selected category. */}
   {editCategory && <EditMealCategory open={editCategory} onClose={setEdit} categoryIndex={quotaIndex} setCategoryIndex={setQuotaIndex}
-           categories={categories} setCategories={setCategories} />}
+           categories={categories} setCategories={setCategories} refresh={refresh} setRefresh={setRefresh} categoriesList={categoriesList} setCategoriesList={setCategoriesList}/>}
 </Container>
   );
 };
