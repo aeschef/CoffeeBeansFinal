@@ -23,19 +23,17 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s, accessCode, refresh, setRefresh }) => {
+const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, accessCode, refresh, setRefresh }) => {
     //console.log("SHOW TAB");
     //console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
     const handlePersonal = () => {
-        console.log("personal button pressed");
         setPersonal(true)
         setKey('personal');
     };
     const handleShared = () => {
-        console.log("shared button pressed");
         setPersonal(false)
         setKey('shared');
     };
@@ -56,32 +54,16 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
+            <ListCategory
                 user={authentication}
                 databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
-            <AddItem list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
-                addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}
+            <AddItem
                 database={database}
                 authentication={authentication}
                 databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
                 accessCode={showPersonal ? 0 : accessCode}
                 refresh={refresh}
                 setRefresh={setRefresh}></AddItem>
-            {/*<Row>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handlePersonal}>personal</Button>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handleShared}>shared</Button>
-                    </div>
-                </Col>
-            </Row>
-            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonalInv : itemsInSharedInv} 
-    addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}></AddItem>*/}
         </Container>
     );
 
@@ -91,10 +73,8 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ list, user, databaseArr }) {
+function ListCategory({ user, databaseArr }) {
     let count = 0;
-    console.log("LIST CATEGORY");
-    console.log(databaseArr);
 
     return (
 
@@ -129,31 +109,6 @@ function ListCategory({ list, user, databaseArr }) {
 
     );
 
-    {/*return (
-        
-        <div className="category-rectangle">
-            <Row>
-
-                <Col>
-                    <span>category name</span>
-                </Col>
-                <Col>
-                    <CategorysPopup></CategorysPopup>
-                </Col>
-
-            </Row>
-            {list.map((x, i) =>
-                <Row>
-                    <label key={i}>
-                        {x.label}
-                    </label>
-                </Row>
-            )}
-            <Row>
-
-            </Row>
-            </div>
-    );*/}
 }
 
 /**
@@ -175,7 +130,7 @@ const RemoveItem = () => {
  * list -> list that contains items
  * addtoList-> function that allows list to be alteredd
  */
-const AddItem = ({ list, addToList, database, authentication, databaseArr, accessCode, refresh, setRefresh }) => {
+const AddItem = ({ database, authentication, databaseArr, accessCode, refresh, setRefresh }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
@@ -186,12 +141,13 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr, acces
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
         setShow(false)
-        const item = { value: itemName, label: itemName }
+        /*const item = { value: itemName, label: itemName }
         console.log(item)
         addToList([
             ...list,
-            { value: itemName, label: itemName }])
+            { value: itemName, label: itemName }])*/
     };
+    
 
     const handleShow = () => setShow(true);
 
@@ -303,21 +259,24 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr, acces
 };
 
 
-const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, accessCode }) => {
+const InventoryHome = ({ props, accessCode }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
     const [categories_i, setCategory_i] = useState([]);
     const [categories_is, setCategory_is] = useState([]);
     const [accessCode_s, setAccess] = useState("");
 
+    /**
+     * Controls when the page will refresh to display the list of items
+     * Prevents the infinite population issue
+     */
     const [refresh, setRefresh] = useState(true);
-    //console.log("Inventory Home")
-    //console.log(databaseArray_p);
 
+    /**
+     * Creates the array that is later used to display the shared inventory
+     */
     useEffect(() => {
-        //console.log("BYYYEEE " + accessCode_s);
         if (accessCode_s) {
-            console.log("INSIDEEE ACCESSS");
             const dbRefS = ref(db, '/groups/' + accessCode_s + '/inventory/categories/');
             onValue(dbRefS, (snapshot) => {
                 const accessData = []
@@ -326,15 +285,12 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                     let dataI = []
                     const childData = childSnapshot.val();
                     let keys = Object.keys(childSnapshot.val());
-                    //console.log(keys);
                     keys.forEach((id) => {
                         dataI.push({ key: id, item_name: childData[id].item_name })
                     })
                     accessData.push({ value: childSnapshot.key, data: dataI })
                 });
                 setCategory_is(accessData);
-                console.log("Access Data: ")
-                console.log(accessData)
             }, {
                 onlyOnce: true
             });
@@ -342,28 +298,24 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
         setRefresh(false);
     }, [accessCode_s, refresh])
 
+    /**
+     * Creates array that is used to display personal inventory
+     */
     useEffect(() => {
-        console.log("EFFECT");
         const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
         onValue(dbRefP, (snapshot) => {
-            console.log("EFFECT INSIDE");
             const dataCat = []
             snapshot.forEach((childSnapshot) => {
                 const dbRefC = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/' + childSnapshot.key);
                 let dataI = []
                 const childData = childSnapshot.val();
                 let keys = Object.keys(childSnapshot.val());
-                //console.log(keys);
                 keys.forEach((id) => {
                     dataI.push({ key: id, item_name: childData[id].item_name })
                     console.log("Item_name: " + childData[id].item_name)
                 })
-                //console.log("DATAI: ")
-                //console.log(dataI);
                 dataCat.push({ value: childSnapshot.key, data: dataI })
             });
-            //console.log("DATACAT: ")
-            //console.log(dataCat);
             setCategory_i(dataCat);
         }, {
             onlyOnce: true
@@ -371,8 +323,6 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
         setAccess(accessCode);
         setRefresh(false);
     }, [refresh])
-    console.log("IDK MAN");
-    console.log(categories_i);
 
     return (
         <Container fluid="md">
@@ -384,14 +334,7 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                     <FilterPopup></FilterPopup>
                 </Col>
             </Row>
-            <ShowTab itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                addSharedItemGL={addSharedItemGL}
-                itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                addPersonalItemInv={addPersonalItemInv}
-                addSharedItemInv={addSharedItemInv}
+            <ShowTab
                 database={db}
                 authentication={auth}
                 databaseArr_p={categories_i}

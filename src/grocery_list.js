@@ -62,17 +62,15 @@ function IncDec() {
 /**
  * TO DO: Have the items in shared inventory and such figured out
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArray_p, databaseArray_s, accessCode, refresh, setRefresh }) => {
+const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, accessCode, refresh, setRefresh }) => {
     const [key, setKey] = useState('personal');
     // state determining if we should show personal tab
     const [showPersonal, setPersonal] = useState(true);
     const handlePersonal = () => {
-        console.log("personal button pressed");
         setPersonal(true)
         setKey('personal');
     };
     const handleShared = () => {
-        console.log("shared button pressed");
         setPersonal(false)
         setKey('shared');
     };
@@ -101,13 +99,10 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory groceryList={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
+            <ListCategory
                 user={authentication}
-                database={showPersonal ? databaseArray_p : databaseArray_s}
-                inventoryList={showPersonal ? itemsInPersonalInv : itemsInSharedInv}
-                addtoInventory={showPersonal ? addPersonalItemInv : addSharedItemInv}></ListCategory>
-            <AddItem list={showPersonal ? itemsInPersonalGL : itemsInSharedGL}
-                addToList={showPersonal ? addPersonalItemGL : addSharedItemGL}
+                database={showPersonal ? databaseArray_p : databaseArray_s}></ListCategory>
+            <AddItem
                 database={database}
                 auth={authentication}
                 databaseArr={showPersonal ? databaseArray_p : databaseArray_s}
@@ -123,12 +118,12 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({ groceryList, user, database, inventoryList, addtoInventory }) {
+function ListCategory({ user, database }) {
     console.log("LIST CATEGORY");
     console.log(database);
    
     const handleCheck = (event) => {
-        if (event.target.checked) {
+        {/*if (event.target.checked) {
             const itemName = event.target.value;
             const item = { value: itemName, label: itemName };
             console.log(item + "added to inventory");
@@ -139,7 +134,7 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
 
         } else {
             //TODO remove from inventory
-        }
+        }*/}
     }
 
     let count = 0;
@@ -178,27 +173,6 @@ function ListCategory({ groceryList, user, database, inventoryList, addtoInvento
                         </div>
                     )}
 
-                    {/*{groceryList.map((x, i) =>
-                        <div className="left-spacing">
-                            <Row>
-                                <Col>
-                                    <label key={i}>
-                                        <input
-                                            type="checkbox"
-                                            name="lang"
-                                            value={x.value}
-                                            onChange={handleCheck}
-                                        />
-                                        {x.label}
-                                    </label>
-                                </Col>
-                                <Col xs={{ span: 4 }}>
-                                    <IncDec></IncDec>
-                                </Col>
-                            </Row>
-                        </div>
-                    )}*/}
-
                 </Row>
             )}
 
@@ -229,7 +203,7 @@ const RemoveItem = () => {
  * addToList -> function that allows altering of state variable
  */
 
-const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, refresh, setRefresh }) => {
+const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh }) => {
     //console.log("Add Item");
     //console.log(databaseArr);
     /** constants storing state for this page until we have a database */
@@ -244,14 +218,14 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, ref
 
     };
 
-    const handleSave = () => {
+    /*const handleSave = () => {
         setShow(false);
         const item = { value: itemName, label: itemName }
         console.log(item)
         addToList([
             ...list,
             { value: itemName, label: itemName }]);
-    };
+    };*/
 
     const handleShow = () => setShow(true);
 
@@ -377,24 +351,25 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, ref
     );
 };
 
-/**
- * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
- */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, accessCode }) => {
+
+const GroceryListHome = ({ props, accessCode }) => {
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
     const [categories, setCategory] = useState([]);
     const [categories_s, setCategory_s] = useState([]);
     const [accessCode_s, setAccess] = useState("");
-    console.log("HIIIII " + accessCode_s);
-    console.log("COOOODE: " + accessCode)
 
+    /**
+     * Controls when the page will refresh to display the list of items
+     * Prevents the infinite population issue
+     */
     const [refresh, setRefresh] = useState(true);
 
+    /**
+     * Creates the array that is later used to display the shared grocery list
+     */
     useEffect(() => {
-        console.log("BYYYEEE " + accessCode_s);
         if (accessCode_s) {
-            console.log("INSIDEEE ACCESSS");
             const dbRefS = ref(db, '/groups/' + accessCode_s + '/grocery_list/categories');
             onValue(dbRefS, (snapshot) => {
                 const accessData = []
@@ -404,8 +379,6 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                     accessData.push({value: childKey, data: childData})
                 });
                 setCategory_s(accessData);
-                console.log("Access Data: ")
-                console.log(accessData)
             }, {
                 onlyOnce: true
             });
@@ -413,11 +386,12 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
         setRefresh(false);
     }, [accessCode_s, refresh])
 
+    /**
+     * Creates array that is used to display personal GL
+     */
     useEffect(() => {
-        //console.log("EFFECT");
         const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
         onValue(dbRefP, (snapshot) => {
-            //console.log("EFFECT INSIDE");
             const dataCat = []
             snapshot.forEach((childSnapshot) => {
                 const childKey = childSnapshot.key;
@@ -425,19 +399,14 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                 const childData = childSnapshot.val();
                 dataGL = { childData };
                 dataCat.push({ value: childKey, data: childData })
-                //console.log("DATACAT: ");
-                //console.log(dataCat);
             });
             setCategory(dataCat);
-            //console.log(categories);
         }, {
             onlyOnce: true
         });
         setAccess(accessCode);
         setRefresh(false);
     }, [refresh])
-    //console.log("IDK MAN");
-    //console.log(categories);
 
     return (
         <Container fluid="md">
@@ -446,18 +415,11 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
                     <h1>Grocery List</h1>
                 </Col>
                 <Col xs={{ span: 2 }}>
-                    <FilterPopup itemsInPersonalGL={itemsInPersonalGL}
-                        itemsInSharedGL={itemsInSharedGL}></FilterPopup>
+                    <FilterPopup itemsInPersonalGL={categories}
+                        itemsInSharedGL={categories_s}></FilterPopup>
                 </Col>
             </Row>
-            <ShowTab itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                addSharedItemGL={addSharedItemGL}
-                itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                addPersonalItemInv={addPersonalItemInv}
-                addSharedItemInv={addSharedItemInv}
+            <ShowTab
                 database={db}
                 authentication={auth}
                 databaseArray_p={categories}
