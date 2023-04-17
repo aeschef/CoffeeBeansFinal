@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useState, Component } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
@@ -23,9 +23,9 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s }) => {
-    console.log("SHOW TAB");
-    console.log(databaseArr_p);
+const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, database, authentication, databaseArr_p, databaseArr_s, refresh, setRefresh}) => {
+    //console.log("SHOW TAB");
+    //console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
@@ -63,7 +63,9 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}
                 database={database}
                 authentication={authentication}
-                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></AddItem>
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
+                refresh={refresh}
+                setRefresh={setRefresh}></AddItem>
             {/*<Row>
                 <Col>
                     <div className="d-grid gap-2">
@@ -90,8 +92,8 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  */
 function ListCategory({ list, user, databaseArr }) {
     let count = 0;
-    //console.log("LIST CATEGORY");
-    //console.log(databaseArr);
+    console.log("LIST CATEGORY");
+    console.log(databaseArr);
 
     return (
 
@@ -107,20 +109,18 @@ function ListCategory({ list, user, databaseArr }) {
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
-                    {console.log("Category data")}
-                    {console.log(categories.data)}
-                    {categories.map((cat, i) =>
+                    {categories.data.map((cat, i) =>
                         <div className="left-spacing">
                             {console.log("WTF")}
                             <Row>
                                 <Col>
-                                    <label key= {i}>
+                                    <label key={i}>
                                         {cat.item_name}
                                     </label>
                                 </Col>
                             </Row>
                         </div>
-            )}
+                    )}
                 </Row>
             )}
 
@@ -174,7 +174,7 @@ const RemoveItem = () => {
  * list -> list that contains items
  * addtoList-> function that allows list to be alteredd
  */
-const AddItem = ({ list, addToList, database, authentication, databaseArr }) => {
+const AddItem = ({ list, addToList, database, authentication, databaseArr, refresh, setRefresh }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
@@ -223,6 +223,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                 found = true;
             }
             count_c += 1;
+            setRefresh(true);
         })
         if (!found) {
             let obj = {};
@@ -232,7 +233,7 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
                 item_name: itemName
             })
             //TODO: figure out to push
-
+            setRefresh(true);
         }
     }
 
@@ -282,11 +283,77 @@ const AddItem = ({ list, addToList, database, authentication, databaseArr }) => 
 };
 
 
-const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArray_p, databaseArray_s, accessCode }) => {
+const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, accessCode }) => {
     const db = getDatabase(props.app)
     const auth = getAuth(props.app)
-    console.log("Inventory Home")
-    console.log(databaseArray_p);
+    const [categories_i, setCategory_i] = useState([]);
+    const [categories_is, setCategory_is] = useState([]);
+    const [accessCode_s, setAccess] = useState("");
+
+    const [refresh, setRefresh] = useState(true);
+    //console.log("Inventory Home")
+    //console.log(databaseArray_p);
+
+    useEffect(() => {
+        //console.log("BYYYEEE " + accessCode_s);
+        if (accessCode_s) {
+            console.log("INSIDEEE ACCESSS");
+            const dbRefS = ref(db, '/groups/' + accessCode_s + '/inventory/categories/');
+            onValue(dbRefS, (snapshot) => {
+                const accessData = []
+                snapshot.forEach((childSnapshot) => {
+                    const dbRefS = ref(db, '/groups/' + accessCode_s + '/inventory/categories/' + childSnapshot.key);
+                    let dataI = []
+                    const childData = childSnapshot.val();
+                    let keys = Object.keys(childSnapshot.val());
+                    //console.log(keys);
+                    keys.forEach((id) => {
+                        dataI.push({ key: id, item_name: childData[id].item_name })
+                    })
+                    accessData.push({ value: childSnapshot.key, data: dataI })
+                });
+                setCategory_is(accessData);
+                console.log("Access Data: ")
+                console.log(accessData)
+            }, {
+                onlyOnce: true
+            });
+        }
+        setRefresh(false);
+    }, [accessCode_s, refresh])
+
+    useEffect(() => {
+        console.log("EFFECT");
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        onValue(dbRefP, (snapshot) => {
+            console.log("EFFECT INSIDE");
+            const dataCat = []
+            snapshot.forEach((childSnapshot) => {
+                const dbRefC = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/' + childSnapshot.key);
+                let dataI = []
+                const childData = childSnapshot.val();
+                let keys = Object.keys(childSnapshot.val());
+                //console.log(keys);
+                keys.forEach((id) => {
+                    dataI.push({ key: id, item_name: childData[id].item_name })
+                    console.log("Item_name: " +  childData[id].item_name)
+                })
+                //console.log("DATAI: ")
+                //console.log(dataI);
+                dataCat.push({ value: childSnapshot.key, data: dataI })
+            });
+            //console.log("DATACAT: ")
+            //console.log(dataCat);
+            setCategory_i(dataCat);
+        }, {
+            onlyOnce: true
+        });
+        setAccess(accessCode);
+        setRefresh(false);
+    }, [refresh])
+    console.log("IDK MAN");
+    console.log(categories_i);
+
     return (
         <Container fluid="md">
             <Row>
@@ -307,8 +374,11 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                 addSharedItemInv={addSharedItemInv}
                 database={db}
                 authentication={auth}
-                databaseArr_p={databaseArray_p}
-                databaseArr_s={databaseArray_s}></ShowTab>
+                databaseArr_p={categories_i}
+                databaseArr_s={categories_is}
+                accessCode={accessCode_s}
+                refresh={refresh}
+                setRefresh={setRefresh}></ShowTab>
 
 
         </Container>

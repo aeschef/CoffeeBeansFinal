@@ -169,7 +169,7 @@ function NavbarElements(props) {
         console.log(categories);
     }*/
     if (doAgain_i) {
-        const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        /*const dbRefIP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
         onValue(dbRefIP, (snapshot) => {
             snapshot.forEach((childSnapshot) => {
                 const childKey = childSnapshot.key;
@@ -178,7 +178,7 @@ function NavbarElements(props) {
                 console.log(childKey);
                 console.log(childData);
             });
-        })
+        })*/
         {/*if (doAgain_is) {
             const dbRefS = ref(db, '/groups/' + accessCode + '/inventory/categories');
             onValue(dbRefS, (snapshot) => {
@@ -190,8 +190,8 @@ function NavbarElements(props) {
             })
             setDoAgain_is(false);
         }*/}
-        setDoAgain_i(false);
-        console.log(categories_i);
+        //setDoAgain_i(false);
+        //console.log(categories_i);
         console.log("HIII");
     }
 
@@ -243,7 +243,7 @@ function NavbarElements(props) {
                         addSharedItemInv={addSharedItemInv}
                         props={props}
                         //databaseArr_p={categories}
-                        databaseArr_s={categories_s}
+                        //databaseArr_s={categories_s}
                         accessCode={accessCode}></GroceryListHome>
                 } />
                 <Route path="/inventory.js" element={
@@ -256,8 +256,8 @@ function NavbarElements(props) {
                         addPersonalItemGL={addPersonalItemGL}
                         addSharedItemGL={addSharedItemGL}
                         props={props}
-                        databaseArray_p={categories_i}
-                        databaseArray_s={categories_is}
+                        //databaseArray_p={categories_i}
+                        //databaseArray_s={categories_is}
                         accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={

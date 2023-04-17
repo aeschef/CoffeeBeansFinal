@@ -124,6 +124,9 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * takes in the list of items in the gorcery list currently
  */
 function ListCategory({ groceryList, user, database, inventoryList, addtoInventory }) {
+    console.log("LIST CATEGORY");
+    console.log(database);
+   
     const handleCheck = (event) => {
         if (event.target.checked) {
             const itemName = event.target.value;
@@ -374,32 +377,16 @@ const AddItem = ({ list, addToList, database, auth, databaseArr, accessCode, ref
 /**
  * Top level component for this page... simply holds title and the components that manage the rest of the pages functionality
  */
-const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, databaseArr_s, accessCode }) => {
+const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL, props, accessCode }) => {
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
     const [categories, setCategory] = useState([]);
     const [categories_s, setCategory_s] = useState([]);
     const [accessCode_s, setAccess] = useState("");
-    const [categories_i, setCategory_i] = useState([]);
-    const [categories_is, setCategory_is] = useState([]);
     console.log("HIIIII " + accessCode_s);
     console.log("COOOODE: " + accessCode)
 
     const [refresh, setRefresh] = useState(true);
-
-    const getAccessCode = () => {
-        get(child(db, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-            if (snapshot.exists()) {
-                setAccess(snapshot.val());
-                console.log("HI" + accessCode_s + snapshot.val());
-                console.log()
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error(error);
-        });   
-    }
 
     useEffect(() => {
         console.log("BYYYEEE " + accessCode_s);
@@ -424,10 +411,10 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
     }, [accessCode_s, refresh])
 
     useEffect(() => {
-        console.log("EFFECT");
+        //console.log("EFFECT");
         const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
         onValue(dbRefP, (snapshot) => {
-            console.log("EFFECT INSIDE");
+            //console.log("EFFECT INSIDE");
             const dataCat = []
             snapshot.forEach((childSnapshot) => {
                 const childKey = childSnapshot.key;
@@ -443,22 +430,10 @@ const GroceryListHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItem
         }, {
             onlyOnce: true
         });
-        /*get(child(db, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
-            if (snapshot.exists()) {
-                setAccess(snapshot.val());
-                console.log("HI" + accessCode_s + snapshot.val());
-                console.log()
-            } else {
-                console.log("No data available");
-            }
-        }).catch((error) => {
-            console.error(error);
-        });*/
-        //getAccessCode();
         setAccess(accessCode);
         setRefresh(false);
     }, [refresh])
-    console.log("IDK MAN");
+    //console.log("IDK MAN");
     //console.log(categories);
 
     return (
