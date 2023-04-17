@@ -176,7 +176,7 @@ export default function ViewRecipePopup(props) {
               
               {/* modal header with title, edit button, and close button */}
               <Modal.Header closeButton>
-                  <Modal.Title>Recipe Title</Modal.Title>
+                  <Modal.Title>{currentRecipe?.title}</Modal.Title>
                   <button onClick={() => handleOpenEditPopup(props.indexOfRecipeToView)}>Edit</button>
               </Modal.Header>
               
