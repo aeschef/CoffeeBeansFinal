@@ -24,8 +24,10 @@ import CategorysPopup from './modals/EditGLICategories';
  * Handles incrementing and decrementing the number of items 
  * needed from the grocery store
  */
-function IncDec() {
+function IncDec(val) {
     let [num, setNum] = useState(0);
+    //console.log(val);
+    //console.log("NUM: " + val);
     let inc_num = () => {
         setNum(Number(num) + 1);
     }
@@ -121,7 +123,7 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
 function ListCategory({ user, database }) {
     console.log("LIST CATEGORY");
     console.log(database);
-   
+
     const handleCheck = (event) => {
         {/*if (event.target.checked) {
             const itemName = event.target.value;
@@ -139,6 +141,32 @@ function ListCategory({ user, database }) {
 
     let count = 0;
 
+    function DummyItem({ item_name, i, item_num }) {
+        if (item_name.length === 0) {
+            return null;
+        }
+        return (
+            <div className="left-spacing">
+                <Row>
+                    <Col>
+                        <label key={i}>
+                            <input
+                                type="checkbox"
+                                name="lang"
+                                value={item_name}
+                                onChange={handleCheck}
+                            />
+                            {item_name}
+                        </label>
+                    </Col>
+                    <Col xs={{ span: 4 }}>
+                        <IncDec></IncDec>
+                    </Col>
+                </Row>
+            </div>
+        )
+    }
+
     return (
 
         <div className="category-rectangle">
@@ -155,7 +183,10 @@ function ListCategory({ user, database }) {
                     {category.data.map((cat, i) =>
                         <div className="left-spacing">
                             <Row>
-                                <Col>
+                                <DummyItem item_name={cat.item_name}
+                                i={i}
+                                item_num={cat.item_num}></DummyItem>
+                                {/*<Col>
                                     <label key={i}>
                                         <input
                                             type="checkbox"
@@ -164,11 +195,12 @@ function ListCategory({ user, database }) {
                                             onChange={handleCheck}
                                         />
                                         {cat.item_name}
+                                        {console.log(cat.item_name + " AND " + cat.item_name.length)}
                                     </label>
                                 </Col>
                                 <Col xs={{ span: 4 }}>
-                                    <IncDec></IncDec>
-                                </Col>
+                                    <IncDec val={cat.item_num}></IncDec>
+                    </Col>*/}
                             </Row>
                         </div>
                     )}
@@ -299,7 +331,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
             //set(ref(database, use + '/inventory/categories/'), categoryName);
             let invAdd = {};
-            let dummy = {item_name: ""};
+            let dummy = { item_name: "" };
             invAdd[0] = dummy;
             update(ref(database, use + '/inventory/categories/' + categoryName), invAdd);
             setRefresh(true);
@@ -376,7 +408,7 @@ const GroceryListHome = ({ props, accessCode }) => {
                 snapshot.forEach((childSnapshot) => {
                     const childKey = childSnapshot.key;
                     const childData = childSnapshot.val();
-                    accessData.push({value: childKey, data: childData})
+                    accessData.push({ value: childKey, data: childData })
                 });
                 setCategory_s(accessData);
             }, {
@@ -427,7 +459,7 @@ const GroceryListHome = ({ props, accessCode }) => {
                 accessCode={accessCode_s}
                 refresh={refresh}
                 setRefresh={setRefresh}
-                ></ShowTab>
+            ></ShowTab>
 
 
         </Container>

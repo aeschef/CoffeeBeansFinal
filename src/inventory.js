@@ -208,7 +208,10 @@ const AddItem = ({ database, authentication, databaseArr, accessCode, refresh, s
             push(dbRefIC, {
                 item_name: itemName
             })
-            
+            let glAdd = {};
+            let dummy = {item_name: ""};
+            glAdd[0] = dummy;
+            update(ref(database, use + '/grocery_list/categories/' + categoryName), glAdd);
             setRefresh(true);
         }
     }
