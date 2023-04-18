@@ -5,6 +5,9 @@ import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import "../recipes.css";
 import { createPath } from 'react-router-dom';
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+
 
 function DeleteAlert() {
     const [show, setShow] = useState(false);
@@ -103,9 +106,15 @@ export default function EditRecipePopup(props) {
         if (props.inputs.ingredients.length !== props.inputs.ingredients.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
-            const nextRecipes = props.recipes;
-            nextRecipes[props.indexOfRecipeToEdit] = props.inputs;
-            props.setRecipes(nextRecipes);
+            
+            // database info
+            const auth = getAuth(props.app)
+            const db = getDatabase(props.app)
+            
+            // getting a reference to the 'recipes' section of this user's area of the database
+            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.inputs.key + '/');
+            set(dbRecipeRef, props.inputs)
+
             props.handleCloseEditPopup();
         }
     }

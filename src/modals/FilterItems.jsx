@@ -10,6 +10,16 @@ const FilterPopup = () => {
     const handleExit = () => setShow(false);
     const handleAppear = () => setShow(true);
 
+    function handleFilter({itemsInPersonalGL}){
+        setShow(false);
+        {/*var newArr = [];
+        for (let i=0; i< itemsInPersonalGL.length; i++){
+            if(itemsInPersonalGL[i].checked != true){
+
+            }
+        }*/}
+    }
+
     return (
         <>
             <Button variant="primary" value="filtering" onClick={handleAppear}>filter</Button>
@@ -18,7 +28,7 @@ const FilterPopup = () => {
                     <Modal.Title>Filter Options</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <Button variant="secondary" onClick={handleExit}>Filter out checked off buttons</Button>
+                <Button variant="secondary" onClick={handleFilter}>Filter out checked off buttons</Button>
                 </Modal.Body>
             </Modal>
         </>
