@@ -88,7 +88,7 @@ export default function ViewRecipePopup(props) {
                   <h6>Notes</h6>
                   <p id="notes">{currentRecipe?.notes}</p>
                     <HandleAddtoMealPlan 
-                        auth={props.auth} 
+                        app={props.app} 
                         recipes={props.recipes}
                         index={props.indexOfRecipeToView}
                         ></HandleAddtoMealPlan>

@@ -184,8 +184,7 @@ export default function RecipesHome(props) {
             setRecipes={props.setRecipes} 
             view={true} 
             groceryList={props.personalGroceryList}
-            addToGL={props.addToGL}
-            auth={props.userAuth}> </ViewRecipePopup>
+            addToGL={props.addToGL}> </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
