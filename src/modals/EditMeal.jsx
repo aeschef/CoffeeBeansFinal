@@ -287,7 +287,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                   <Row className="my-3">
 
                     {/* Displays card for the recipe associated with the meal*/}
-                    <RecipeCards recipes={recipes.filter((recipe, index) => (index === mealDetails))} 
+                    <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
                     setRecipes={setRecipes} onClickFunction={()=>setViewRecipe(true)} groceryList={groceryList} addToGL={addToGL} view={true}/>
                   
                     {/* Modal that appears if the user selects the view button recipe. 

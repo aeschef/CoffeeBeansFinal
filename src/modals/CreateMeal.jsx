@@ -16,7 +16,7 @@ import { getAuth} from "firebase/auth";
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
 const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, setNewMeal, addedMeal, setAddedMeal,
-   meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL, refresh, setRefresh, categoriesList, setCategoriesList}) => {
+   meal_category, setMealCategory, meal, setMeal, personalGroceryList, addToGL, refresh, setRefresh, categoriesList, setCategoriesList}) => {
   const auth = getAuth(app);
   
   // Will be updated when user chooses a meal, stores either "Ingredients" or "Recipes"
@@ -42,6 +42,8 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
   // Stores the index of the recipe that the user wants to use
   const [addedRecipe, setAddedRecipe] = useState(0)
+
+  const [recipes, setRecipes] = useState([])
 
   // Determines which screen of creating meal the user is viewing
   const [tab, setTab] = useState(0)
@@ -127,10 +129,14 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     let arrMeals = []
     // Stores all of the meal categories and pushes them to an array
     onValue(recipesRef, (snapshot) => {
-      const data = snapshot.val()
-      console.log(snapshot.val())
-      console.log("data is " + data)
-      setRecipes(snapshot.val())
+      const allRecipesObject = snapshot.val();
+      const allRecipesKeys = Object.keys(allRecipesObject);
+      const allRecipesArray = allRecipesKeys.map((key) => {
+          const singleRecipeCopy = {...allRecipesObject[key]}; // copying the element at that key
+          singleRecipeCopy.key = key; // save the key string so you have it later
+          return singleRecipeCopy;
+      })
+      setRecipes(allRecipesArray);
       // snapshot.forEach((childsnapshot) => {
       //   data.push({key: childsnapshot.key, value: childsnapshot.val()})
         
@@ -139,6 +145,8 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     },  {
       onlyOnce: true
     });
+
+  
 
   }, [])
 
@@ -206,12 +214,21 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails, type: type, notes:"", completed: false})
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: recipes[mealDetails].key, type: type, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
     }
   }
 
+  const sortFunction = (recipeA, recipeB) => { 
+    const titleA = recipeA.title.toLowerCase();
+    const titleB = recipeB.title.toLowerCase();
+    return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+  }
+
+  const shouldBeShown = (recipe) => {
+   return true;
+  }
 
   return (
     <>
@@ -274,8 +291,10 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
           {type === "Recipe" && !openChooseMeal && 
             <>
             <Form.Label>Recipe</Form.Label>
-            <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
-            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} groceryList={personalGroceryList} addToGL={addToGL} view={true}/>
+            <RecipeCards recipes={recipes.filter((recipe, i) => i === mealDetails ? recipe : null)} 
+            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} view={true} searchInput={recipes[mealDetails]?.title}
+            sortFunction={sortFunction}
+            shouldBeShown={shouldBeShown} />
           </>
           }
           </Form.Group>

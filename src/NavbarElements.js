@@ -193,7 +193,7 @@ function NavbarElements(props) {
                         addSharedItemGL={addSharedItemGL}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
-                    <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
+                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
                 } />
                 <Route path="/recipes.js" element={
                 <RecipesHome 

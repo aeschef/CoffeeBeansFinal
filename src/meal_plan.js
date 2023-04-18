@@ -50,6 +50,8 @@ const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealD
 
 const [categoriesList, setCategoriesList] = useState([])
 
+const [recipes, setRecipes] = useState([])
+
 const [refresh, setRefresh] = useState(true)
 
   // Stores category names after retrieving from database
@@ -67,6 +69,43 @@ const [refresh, setRefresh] = useState(true)
     setRefresh(true)
   }
 
+  // Retrieves the recipes
+  useEffect(() => {
+    const db = getDatabase()
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes")
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(recipesRef, (snapshot) => {
+      const allRecipesObject = snapshot.val();
+      const allRecipesKeys = Object.keys(allRecipesObject);
+      allRecipesKeys.forEach((key) => {
+        arrMeals.push({key: key, value: allRecipesObject[key]})
+      })
+      setRecipes(arrMeals);
+      // snapshot.forEach((childsnapshot) => {
+      //   data.push({key: childsnapshot.key, value: childsnapshot.val()})
+        
+      // });
+
+    },  {
+      onlyOnce: true
+    });
+
+  }, [])
+
+  // Populates the title of a meal or the title of a recipe based on what is stored in the database
+  function populateText(meal) {
+    if (meal.value.type === "Ingredients") {
+      return (<p>{meal.value.label}</p>)
+    } else {
+      recipes.forEach((recipe) => {
+        if (recipe.key === meal.value.label) {
+          return (<p>{recipe.value.title}</p>)
+        }
+      })
+      return null
+    }
+  }
   useEffect(()=> {
     const db = getDatabase()
     if (refresh) {
@@ -113,8 +152,13 @@ const [refresh, setRefresh] = useState(true)
   // Populates state variables with needed information to display view meal popup once the meal is selected. 
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
+    // TODO: change back to this once recipe page is hooked up to database
     setCurrentMealDetails(mealInfo)
+
+
+    // TODO: change back to this once recipe page is hooked up to database
     setCurrentMealIndex(mealIndex)
+
     setShowViewMealPopup(true)
   }
 
@@ -172,7 +216,7 @@ const [refresh, setRefresh] = useState(true)
     }
 
 return (
-  <Container fluid="md" className="p-0">
+  <Container fluid="md">
     
     <div className="title">
         <Row>
@@ -201,7 +245,7 @@ return (
         </Col>
 
         <Col>
-            <div className="d-flex justify-content-end pr-1">
+            <div className="d-flex justify-content-end">
                 {/* Displays number of meals planned out of quota amount */}
 
                 {category.quota !== 0 ? category.length + " out of " + category.quota : null}
@@ -236,7 +280,7 @@ return (
             <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key: x.key, value: x.value}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.value.type === "Ingredients" ? x.value.label : x.value.tags}
+              {x.value.type === "Ingredients" ? x.value.label : "recipe title shown here"}
             </div>
           </div>
         </div>
@@ -250,8 +294,8 @@ return (
 
     {/* Shows meal details if the meal is selected. */}
     {showViewMealPopup &&
-       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={categories} setCategories={setCategories} quotaIndex={quotaIndex} setQuotaIndex={setQuotaIndex}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={props.recipes} setRecipes={props.setRecipes} 
+       <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={categories} setCategories={setCategories}
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes} 
           refresh={refresh} setRefresh={setRefresh}/>}
  
   {/* Displays modal to create a meal if the add button is pressed */}
@@ -274,8 +318,6 @@ return (
     setMealCategory={setMealCategory}
     meal={meal}
     setMeal={setMeal}
-    recipes={props.recipes}
-    setRecipes={props.setRecipes}
     personalGroceryList={props.itemsInPersonalGL} 
     addToGL={props.addPersonalItemGL}
     refresh={refresh}
