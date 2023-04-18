@@ -204,7 +204,7 @@ const HandleAddtoMealPlan = (props) =>{
                     <h6>Category</h6>
                     <select defaultValue="default" onChange={(event) => setSelectedCategory(event.target.value)}>
                         <option value="default" hidden> </option>
-                        {categories.map((category) => <option value={category}>{category}</option>)}
+                        {categories.map((category, index) => <option key={index} value={category}>{category}</option>)}
                     </select>
 
                     <h6>Day</h6>
