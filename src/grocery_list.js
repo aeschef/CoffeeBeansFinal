@@ -110,7 +110,7 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
     return (
         <Container>
             <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
-                <Tab eventKey='personal' title="personal" onSelect={handlePersonal}>
+                <Tab eventKey='personal' title="personal" onSelect={handlePersonal} className="nav-tabs">
                 </Tab>
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>

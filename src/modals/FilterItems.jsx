@@ -22,7 +22,7 @@ const FilterPopup = () => {
 
     return (
         <>
-            <Button variant="primary" value="filtering" onClick={handleAppear}>filter</Button>
+            <Button className="filter"  variant="primary" value="filtering" onClick={handleAppear}>filter</Button>
             <Modal show={show} onHide={handleExit} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Filter Options</Modal.Title>

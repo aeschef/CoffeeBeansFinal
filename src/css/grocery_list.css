@@ -72,3 +72,14 @@
     margin-right: 0%;
     justify-content: center;
 }
+
+.nav-tabs {
+    color: #729701;
+   /* background-color: #E3EACC; */
+}
+
+.filter {
+    background-color: #729701;
+    margin-top: 10%;
+}
+
