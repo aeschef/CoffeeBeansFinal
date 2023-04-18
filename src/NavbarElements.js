@@ -215,11 +215,11 @@ function NavbarElements(props) {
                     <Col>
                         <Row className="justify-content-md-center">
                             <a href="#" className="">
-                                <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" />
+                                <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" className='navbar-icon grocery_list'/>
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                            <Link to="/grocery_list.js" className='nav-link active'>List</Link>
                         </Row>
                     </Col>
                 </span>
@@ -227,7 +227,7 @@ function NavbarElements(props) {
                     <Col>
                         <Row className="justify-content-md-center">
                             <a href="#" >
-                                <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon try" />
+                                <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon inventory" />
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
@@ -240,7 +240,7 @@ function NavbarElements(props) {
                     <Col>
                         <Row className="justify-content-md-center">
                             <a href="#" className="">
-                                <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon" />
+                                <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon meal_plan" />
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
@@ -253,7 +253,7 @@ function NavbarElements(props) {
                     <Col>
                         <Row className="justify-content-md-center">
                             <a href="#" className="">
-                                <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon" />
+                                <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon recipes" />
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
@@ -266,16 +266,14 @@ function NavbarElements(props) {
                     <Col>
                         <Row className="justify-content-md-center">
                             <a href="#" className="">
-                                <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon" />
+                                <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon account" />
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/account.js" className='nav-link'>Account</Link>
+                            <Link to="/account.js" className='nav-link' id="account">Account</Link>
                             { }
                         </Row>
                     </Col>
-
-
                 </span>
             </nav>
             <div>
