@@ -13,6 +13,7 @@ import {
 } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import Modal from 'react-bootstrap/Modal';
+import { getDatabase, ref, set, onValue, push } from 'firebase/database';
 
 
 // Screen that is displayed when user is first logging in
@@ -44,6 +45,7 @@ const LoginHome = ({login, setLogin, auth}) => {
           // auth.currentUser keeps track of who is currently logged in 
           console.log("current user is " + auth.currentUser)
           console.log(auth.currentUser.uid)
+
         })
 
         // If the user entered the wrong email or password:

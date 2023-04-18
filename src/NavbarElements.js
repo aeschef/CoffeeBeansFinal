@@ -143,7 +143,6 @@ function NavbarElements(props) {
                 } />
                 <Route path="/meal_plan.js" element={
                     <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
-                    // TODO: change this for julia (the recipes are no longer passed in!!)
                 } />
                 <Route path="/recipes.js" element={
                 <RecipesHome 
