@@ -28,14 +28,14 @@ const LoginHome = ({login, setLogin, auth}) => {
   // Handles login errors and user verification. 
   const handleLogin = () => {
     if (password && user) {
-      console.log(auth.currentUser.uid);
+      // console.log(auth.currentUser.uid);
       // Method ensures that hte entered email and password are valid. 
       // Has to concatenate fake domain name to the user's username in order to login
         signInWithEmailAndPassword(auth, user, password)
         
         // If the login was valid: 
         .then(() => {
-          console.log(auth.currentUser.uid);
+          // console.log(auth.currentUser.uid);
           // auth.currentUser keeps track of who is currently logged in 
           setUser(auth.currentUser)
 
@@ -44,7 +44,7 @@ const LoginHome = ({login, setLogin, auth}) => {
 
           // auth.currentUser keeps track of who is currently logged in 
           console.log("current user is " + auth.currentUser)
-          console.log(auth.currentUser.uid)
+          // console.log(auth.currentUser.uid)
 
         })
 

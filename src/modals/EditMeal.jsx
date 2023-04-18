@@ -15,7 +15,7 @@ import RemoveMealWarning from './removeMealWarning';
 // Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes,
   refresh, setRefresh,
-  groceryList, addToGL, categoriesList, setCategoriesList}) => {
+  groceryList, addToGL, categoriesList, setCategoriesList, indexRecipe}) => {
   const auth = getAuth()
 
   // Popup that appears when user attempts to delete a meal
@@ -99,10 +99,15 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
-    if (mealDetails !== currentMealDetails.value.description) {
-      setMealDetailsChanged(true)
+    if (currentMealDetails.value.type === "Recipe") {
+      setMealDetails(indexRecipe)
     } else {
-      setMealDetailsChanged(false)
+      if (mealDetails !== currentMealDetails.value.description) {
+        setMealDetailsChanged(true)
+      } else {
+        
+        setMealDetailsChanged(false)
+      }
     }
   }, [mealDetails])
 
@@ -223,6 +228,18 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   }
 
+
+
+  const sortFunction = (recipeA, recipeB) => { 
+    const titleA = recipeA.title.toLowerCase();
+    const titleB = recipeB.title.toLowerCase();
+    return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+  }
+
+  const shouldBeShown = (recipe) => {
+    return true;
+  }
+
  
   return (
     <>
@@ -252,7 +269,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
               {currentMealDetails.value.type === "Recipe" && 
               <Row>
                 <Form.Label>
-                  {recipes[mealDetails].title}
+                  {recipes[indexRecipe].title}
                 </Form.Label>
               </Row> }
           
@@ -287,16 +304,21 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                   <Row className="my-3">
 
                     {/* Displays card for the recipe associated with the meal*/}
-                    <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
-                    setRecipes={setRecipes} onClickFunction={()=>setViewRecipe(true)} groceryList={groceryList} addToGL={addToGL} view={true}/>
+                    <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === currentMealDetails.value.label))} 
+                    setRecipes={setRecipes} 
+                    onClickFunction={()=>setViewRecipe(true)} 
+                    sortFunction={sortFunction}
+                    shouldBeShown={shouldBeShown}
+                    searchInput={""}
+                    groceryList={groceryList} addToGL={addToGL} view={true}/>
                   
                     {/* Modal that appears if the user selects the view button recipe. 
                         Displays recipe information. */}
                     <ViewRecipePopup 
-                    recipes={recipes} showViewPopup={viewRecipe} 
-                    handleCloseViewPopup={()=>setViewRecipe(false)} 
-                    indexOfRecipeToView={mealDetails} 
-                    setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
+                      recipes={recipes} showViewPopup={viewRecipe} 
+                      handleCloseViewPopup={()=>setViewRecipe(false)} 
+                      indexOfRecipeToView={indexRecipe} 
+                      setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
                   </Row>
             }
 

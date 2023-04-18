@@ -76,12 +76,17 @@ const [refresh, setRefresh] = useState(true)
     let arrMeals = []
     // Stores all of the meal categories and pushes them to an array
     onValue(recipesRef, (snapshot) => {
+            
+      // getting data from the spot in the db that changes
+      // good source: https://info340.github.io/firebase.html#firebase-arrays
       const allRecipesObject = snapshot.val();
       const allRecipesKeys = Object.keys(allRecipesObject);
-      allRecipesKeys.forEach((key) => {
-        arrMeals.push({key: key, value: allRecipesObject[key]})
+      const allRecipesArray = allRecipesKeys.map((key) => {
+          const singleRecipeCopy = {...allRecipesObject[key]}; // copying the element at that key
+          singleRecipeCopy.key = key; // save the key string so you have it later
+          return singleRecipeCopy;
       })
-      setRecipes(arrMeals);
+      setRecipes(allRecipesArray);
       // snapshot.forEach((childsnapshot) => {
       //   data.push({key: childsnapshot.key, value: childsnapshot.val()})
         
@@ -93,19 +98,7 @@ const [refresh, setRefresh] = useState(true)
 
   }, [])
 
-  // Populates the title of a meal or the title of a recipe based on what is stored in the database
-  function populateText(meal) {
-    if (meal.value.type === "Ingredients") {
-      return (<p>{meal.value.label}</p>)
-    } else {
-      recipes.forEach((recipe) => {
-        if (recipe.key === meal.value.label) {
-          return (<p>{recipe.value.title}</p>)
-        }
-      })
-      return null
-    }
-  }
+
   useEffect(()=> {
     const db = getDatabase()
     if (refresh) {
@@ -153,6 +146,7 @@ const [refresh, setRefresh] = useState(true)
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
     // TODO: change back to this once recipe page is hooked up to database
+    console.log(mealInfo.value)
     setCurrentMealDetails(mealInfo)
 
 
@@ -215,6 +209,21 @@ const [refresh, setRefresh] = useState(true)
       });
     }
 
+  // Populates recipe title in meal plan list
+  const handleRecipe = (item) => {
+      let index = -1
+      recipes.forEach((recipe, i)=> {
+        if (recipe.key === item.value.label) {
+          index = i
+        }
+      })
+      if (index !== -1) {
+        return (recipes[index].title)
+      } else {
+        return "Recipe not found"
+      }
+  }
+
 return (
   <Container fluid="md">
     
@@ -275,10 +284,10 @@ return (
           </div>
           <div>   
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key: x.key, value: x.value}, i)}>
+            <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key:x.key, value:x.value}, i)}>
             
-              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as index to find the title for recipe */}
-              {x.value.type === "Ingredients" ? x.value.label : "recipe title shown here"}
+              {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as key to retrieve index to return the title for recipe */}
+              {x.value.type === "Ingredients" ? x.value.label : handleRecipe(x)}
             </div>
           </div>
         </div>
