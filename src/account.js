@@ -10,7 +10,41 @@ import Stack from 'react-bootstrap/Stack'
 import Alert from 'react-bootstrap/Alert';
 
 
+function ViewHelpPage() {
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
+    return (
+        <Row>
+            <Button className="category-header " onClick={handleShow}>Frequently Asked Questions</Button>
+            <Modal show={show} fullscreen={true} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Frequently Asked Questions</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ol>
+                        <li class="questions">What does the energy stand for?
+                            <ul>
+                                <li class="answers">Answer</li>
+                            </ul>
+                        </li>
+                        <li class="questions">Can I edit the categories?
+                            <ul>
+                                <li class="answers">Answer</li>
+                            </ul>
+                        </li>
+                        <li class="questions">How do I add a new recipe?
+                            <ul>
+                                <li class="answers">Answer</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </Modal.Body>
+            </Modal>
+        </Row>
+    );
+}
 
 /**
  * renders button to view roommates 
@@ -19,34 +53,32 @@ function ViewRoommates() {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
- 
+
     /** TODO starting next week roommate information will be retrieved through the database 
      * via a randomly generated access code BUT for now I will simply use dummy information*/
     const roommieList = ["Annabelle", "Luis", "Mirya", "Jane"];
 
-   
+
 
     return (
         <Row>
-            <Button onClick={handleShow}>Roommates</Button>
-            <Modal show={show} fullscreen={true}>
-                <Modal.Header>
+            <Button className="category-header" onClick={handleShow}>Roommates</Button>
+            <Modal show={show} fullscreen={true} onHide={handleClose}>
+                <Modal.Header closeButton>
                     <Modal.Title>Roommates</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container>
                         <Row>
-                        <ol>
-                            <Stack gap={5}>
-                                {roommieList.map(reptile => (
-                                    <li key={reptile}>{reptile}</li>
-                                ))}
-                            </Stack>
-                        </ol>
+                            <ol>
+                                <Stack gap={5}>
+                                    {roommieList.map(reptile => (
+                                        <li key={reptile}>{reptile}</li>
+                                    ))}
+                                </Stack>
+                            </ol>
                         </Row>
                     </Container>
-
-                    
                     <Button onClick={handleClose}>Leave</Button>
                 </Modal.Body>
             </Modal>
@@ -55,24 +87,25 @@ function ViewRoommates() {
 }
 
 /*render's signoutbutton and ability */
-function SignOut({setLogin}){
+function SignOut({ setLogin }) {
     // bump user back to login page!
     const handleSignout = () => {
         setLogin(false);
-    };    
+    };
 
     return (
         <Row className="justify-content-md-center">
-            <Col>
-                <Button onClick={handleSignout}>Sign Out</Button>
+            <Col className="justify-content-md-center">
+                <div class="text-center">
+                <Button className="sign_out" onClick={handleSignout}>Sign Out</Button>
+                </div>
             </Col>
-            
         </Row>
     );
 }
 
-function ChangePassword(){
-    
+function ChangePassword() {
+
     const placeholderPassword = "abc123";
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
@@ -87,12 +120,12 @@ function ChangePassword(){
 
     /* checks to see if password change is valid and handles that */
     const handlePassChange = () => {
-        if(oldPass !== placeholderPassword){
+        if (oldPass !== placeholderPassword) {
             alert("not valid login");
-        } else if(pass1 === pass2){
+        } else if (pass1 === pass2) {
             setNew(pass1);
             handleClose();
-        } else{
+        } else {
             alert("passwords don't match");
         }
     };
@@ -105,24 +138,24 @@ function ChangePassword(){
         setShow(false);
     };
 
-    const setOldPassword = (event)=>{
+    const setOldPassword = (event) => {
         setOld(event.target.value);
     };
 
-    const setFirst = (event)=>{
+    const setFirst = (event) => {
         setPass1(event.target.value);
     };
 
-    const setSecond = (event)=>{
+    const setSecond = (event) => {
         setPass2(event.target.value);
     };
 
 
-    
+
 
     return (
         <Row>
-            <Button onClick={handleShow}>Password</Button>
+            <Button className="category-header" onClick={handleShow}>Password</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Password</Modal.Title>
@@ -159,7 +192,7 @@ function ChangePassword(){
                 </Modal.Body>
             </Modal>
 
-            
+
         </Row>
     );
 }
@@ -167,45 +200,46 @@ function ChangePassword(){
 function Profile() {
     return (
         <Row>
-            <Button>Profile</Button>
+            <Button className="category-header">Profile</Button>
         </Row>
     );
 }
 
-const AccountHome = ({login, setLogin}) => {
+const AccountHome = ({ login, setLogin, accessCode }) => {
     return (
         <Container fluid>
-            <Row>
+            {/*<Row>
                 <Col>
                     <h1>Account</h1>
                 </Col>
-            </Row>
+    </Row>*/}
             <Row>
                 <Col>
+                <div className='row' id='header'>
+                <div className='col-3'>
+                </div>
+                <div className='col-6'>
                     <h1>Hi Mirya!</h1>
+                </div>
+            </div>
                 </Col>
             </Row>
-            
+
             <Row>
-                <Stack gap={4} >
+                <Stack gap={2} >
                     <ViewRoommates></ViewRoommates>
                     <Profile></Profile>
                     <ChangePassword></ChangePassword>
+                    <ViewHelpPage></ViewHelpPage>
+                    <Alert key='success' variant='success'>
+                        Access Code: {accessCode}
+                    </Alert>
                 </Stack>
             </Row>
-        
-            <Row>
-            <Alert key='success' variant='success'>
-                Access Code: 
-            </Alert>
-            </Row>
             <SignOut login={login} setLogin={setLogin}></SignOut>
-            
-            
-    
         </Container>
     );
-        
+
 };
 
 export default AccountHome;
