@@ -25,16 +25,20 @@ export default function RecipesHome(props) {
     // parameters: snapshot
     // returns: list
     const inventoryListHelper = ((snapshot) => {
-        var outputList = [];
+
+        if (snapshot.val()) {
+            var outputList = [];
         
-        const allCategoriesObject = snapshot.val();
-        const allCategoriesKeys = Object.keys(allCategoriesObject);
-        for (const categoryKey of allCategoriesKeys) {
-            const allItemsInCategoryObject = {...allCategoriesObject[categoryKey]};
-            const allItemsInCategoryKeys = Object.keys(allItemsInCategoryObject);
-            for (const itemInCategoryKey of allItemsInCategoryKeys) {
-                const itemObject = {...allItemsInCategoryObject[itemInCategoryKey]};
-                outputList.push(itemObject.item_name);
+            const allCategoriesObject = snapshot.val();
+            console.log(allCategoriesObject);
+            const allCategoriesKeys = Object.keys(allCategoriesObject);
+            for (const categoryKey of allCategoriesKeys) {
+                const allItemsInCategoryObject = {...allCategoriesObject[categoryKey]};
+                const allItemsInCategoryKeys = Object.keys(allItemsInCategoryObject);
+                for (const itemInCategoryKey of allItemsInCategoryKeys) {
+                    const itemObject = {...allItemsInCategoryObject[itemInCategoryKey]};
+                    outputList.push(itemObject.item_name);
+                }
             }
         }
 
@@ -151,8 +155,8 @@ export default function RecipesHome(props) {
             const timeInMinsB = recipeB.minsRequired + (recipeB.hoursRequired * 60);
             return timeInMinsA - timeInMinsB;
         } else if (sortRule == sortRules["inventory"]) {
-            const inInventoryA = recipeA.ingredients.filter((ingredient) => (itemsInSharedInventory.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
-            const inInventoryB = recipeB.ingredients.filter((ingredient) => (itemsInSharedInventory.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryA = recipeA.ingredients.filter((ingredient) => (itemsInSharedInventory?.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryB = recipeB.ingredients.filter((ingredient) => (itemsInSharedInventory?.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
             const numIngredientsA = recipeA.ingredients.length;
             const numIngredientsB = recipeB.ingredients.length;
             const inventoryPercentageA = inInventoryA / numIngredientsA;
