@@ -5,15 +5,14 @@
 .nav-link {
     display: inline;
     text-align: center;
+    padding: 2%;
 }
 
 .navbar-text{
     font-size: 14px;
     color: #525252;
-    padding-top:3%;
     padding: 3%;
-    border: #525252;
-    border-style: dashed;
+    padding-top: 1%;
     justify-content: center;
     align-content: center;
 }
@@ -26,9 +25,59 @@
     align-content: center;
 }
 
-.try {
+.inventory {
     align-self: center;
     justify-content: center;
-    padding-left: 3%;
+    padding-left: 10%;
+    margin-left: 15%;
+    margin-top: 10%;
 }
 
+.grocery_list {
+    align-self: center;
+    justify-content: center;
+    margin-left: 10%;
+    width: 90%;
+    margin-top: 35%;
+}
+
+.meal_plan {
+    align-self: center;
+    justify-content: center;
+    margin-left: 20%;
+    padding-bottom: 0%;
+    margin-top: 5%;
+}
+
+.recipes {
+    align-self: center;
+    justify-content: center;
+    margin-left: 22%;
+    margin-top: 5%;
+}
+
+.account {
+    align-self: center;
+    justify-content: center;
+    margin-left: 20%;
+    width: 70%;
+    padding-bottom: 0%;
+    margin-top: 20%;
+}
+
+#account {
+    padding-top: 0%;
+}
+
+#navbar-background {
+    height: 12%;
+}
+
+.nav-link.active {
+    fill: #729701;
+    color: #729701;
+}
+
+.text-style {
+    color: #729701;
+}
