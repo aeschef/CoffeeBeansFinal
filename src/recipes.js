@@ -222,7 +222,15 @@ export default function RecipesHome(props) {
 
             {/* popups */}
             <AddRecipePopup app={props.app} recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup app={props.app} recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
+            <ViewRecipePopup app={props.app} 
+            recipes={recipes} 
+            showViewPopup={showViewPopup} 
+            handleCloseViewPopup={handleCloseViewPopup} 
+            indexOfRecipeToView={indexOfRecipeToView} 
+            setRecipes={props.setRecipes} 
+            view={true} 
+            groceryList={props.personalGroceryList}
+            addToGL={props.addToGL}> </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
