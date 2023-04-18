@@ -54,8 +54,28 @@ function NavbarElements(props) {
     }
     const [accessCode, setAccess] = useState("");
     //array for inventory personal items
+    const [categories, setCategory] = useState([]);
 
-
+     /**
+     * Creates array that is used to display personal GL
+     */
+     useEffect(() => {
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/grocery_list/categories/');
+        onValue(dbRefP, (snapshot) => {
+            const dataCat = []
+            snapshot.forEach((childSnapshot) => {
+                const childKey = childSnapshot.key;
+                let dataGL = []
+                const childData = childSnapshot.val();
+                dataGL = { childData };
+                dataCat.push({ value: childKey, data: childData })
+            });
+            setCategory(dataCat);
+        }, {
+            onlyOnce: true
+        });
+        setAccess(accessCode);
+    })
 
     // Populates pages with data for the current user
     useEffect(() => {
@@ -152,6 +172,8 @@ function NavbarElements(props) {
                     itemsInSharedInventory={itemsInSharedInv}
                     itemsInPersonalInventory={itemsInPersonalInv} 
                     app={props.app}
+                    databaseCatGL={categories} 
+                    userAuth={auth}
                 /> 
             } />
                 <Route path="/account.js" element={

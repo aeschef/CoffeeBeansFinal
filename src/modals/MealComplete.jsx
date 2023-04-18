@@ -22,7 +22,6 @@ const IngredientItems = ({ingredients, setIngredients, recipeRef, }) => {
     let ingredientRef = ref(database, recipeRef);
     const [checked, setChecked] = useState(false);
     return (
-        
         <>
             {/* for every ingredient in ingredients list check database */}
             {onValue(ingredientRef, (snapshot) => {
@@ -76,7 +75,7 @@ const HandleAddtoMealPlan = (props) =>{
     };
 
     const handleSave = () => {
-        const database = getDatabase(props.app);
+        const database = getDatabase();
         if(remInv){
             let inventoryRef = ref(database, '/user/' + props.auth.currentUser.uid + '/inventory/');
             // for every ingredient in ingredients list check database
@@ -155,7 +154,7 @@ const HandleAddtoMealPlan = (props) =>{
 
              {/* add to GL popup modal */}
             <Modal show={show} onHide={handleClose} centered  
-                    backdrop="static" keyboard={false} >
+                    keyboard={false} >
               
               {/* modal header with title */}
               <Modal.Header closeButton>
@@ -166,7 +165,6 @@ const HandleAddtoMealPlan = (props) =>{
               <Modal.Body>
                 <Container> 
                     <Button> Select All </Button>
-                   
                     <IngredientItems ingredients={ingredients} 
                                 setIngredients={setIngredients} 
                                 recipeRef={props.recipeRef}>stuff</IngredientItems>
@@ -204,9 +202,6 @@ const HandleAddtoMealPlan = (props) =>{
                                 <Button variant="success" onClick={handleSave}>Save</Button>
                             </Col>
                         </Row>
-
-
-
                 </Container>
               </Modal.Body>
           </Modal>
