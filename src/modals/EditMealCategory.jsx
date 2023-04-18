@@ -48,6 +48,7 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
         // If the category does not exist in database, add it.
         } else {
             // Creates basic structure for new category
+  
             const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+mealCategory)
             set(categoryRef, copyData);     
           
@@ -61,6 +62,7 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
       // If the category did not change, just update old category's quota amount
       } else {
         // Reference to categories in the meal plan
+        console.log("meal quota contains  "+ mealQuota)
         set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key + "/quota"), 
         mealQuota);
 

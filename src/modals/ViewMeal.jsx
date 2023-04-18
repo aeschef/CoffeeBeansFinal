@@ -15,9 +15,41 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
 
   // Saves either meal title or the index of the recipe
   const mealDetails = currentMealDetails.value.label
-
+  console.log("meal details " + currentMealDetails.value.label)
   // Used to indicate when a popup should open to view recipe
   const [viewRecipe, setViewRecipe] = useState(false)
+
+  const [indexRecipe, setIndexRecipe] = useState(-1)
+  const handleRecipe = () => {
+    if (currentMealDetails.value.type === "Recipe") {
+      let index = -1
+      recipes.forEach((recipe, i)=> {
+        if (recipe.key === currentMealDetails.value.label) {
+          index = i
+        }
+      })
+      if (index !== -1) {
+        return (recipes[index].title)
+      } else {
+        return "Recipe not found"
+      }
+    }
+  }
+  useEffect(()=> {
+    if (currentMealDetails.value.type === "Recipe") {
+      let index = -1
+      recipes.forEach((recipe, i)=> {
+        if (recipe.key === currentMealDetails.value.label) {
+          index = i
+        }
+      })
+      if (index !== -1) {
+        console.log("in use effect")
+        setIndexRecipe(index)
+      } 
+    }
+  }, [])
+
 
   // Indicates when modal should appear to edit the meal details
   const [editMeal, setEditMeal] = useState(false)
@@ -43,7 +75,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
             <Row>
               <Form.Label>
                 {/* If the meal is made by ingredients, will just display meal title. Otherwise, will index into recipes list to find recipe title. */}
-                {currentMealDetails.value.type === "Ingredients" ? currentMealDetails.value.label : recipes[mealDetails].title}
+                {currentMealDetails.value.type === "Ingredients" ? currentMealDetails.value.label : recipes[indexRecipe]?.title}
               </Form.Label>
             </Row> 
           
@@ -64,7 +96,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
                     <ViewRecipePopup 
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
-                      indexOfRecipeToView={currentMealDetails.value.label} 
+                      indexOfRecipeToView={indexRecipe} 
                       setRecipes={setRecipes}> 
                     </ViewRecipePopup>
                   </Row>
@@ -78,9 +110,15 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
               <Row><Form.Label>{currentMealDetails.value.notes}</Form.Label></Row>
             </>}
           {/* Modal that will appear if the user wants to edit a meal's information. */}   
-          {editMeal && <EditMeal viewPopup={open} closeViewPopup={onClose} open={editMeal} onClose={()=>setEditMeal(false)} categories={categories} setCategories={setCategories}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes}
-          refresh={refresh} setRefresh={setRefresh}/>}
+          {editMeal && 
+          <EditMeal viewPopup={open} closeViewPopup={onClose} 
+          open={editMeal} onClose={()=>setEditMeal(false)}
+          categories={categories} setCategories={setCategories}
+          currentCategoryIndex={currentCategoryIndex} 
+          currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} 
+          recipes={recipes} setRecipes={setRecipes}
+          refresh={refresh} setRefresh={setRefresh} 
+          indexRecipe={indexRecipe}/>}
         
           </Form.Group>
         </Form> 
