@@ -28,6 +28,14 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
   // Stores recipe index if user chooses a recipe
   const [chosenRecipe, setChosenRecipe] = useState(-1)
 
+
+  const sortRules = {
+    title: "Title (A to Z)", 
+    energy: "Energy Required (Low to High)", 
+    time: "Time Required (Low to High)", 
+    inventory: "Percent of Owned Ingredients (High to Low)"
+  };
+
   // If the user chooses a recipe, then by default it will deselect the custom meal that they were entering, unless they
   // click it again. 
   useEffect(()=> {
@@ -49,14 +57,26 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
     onClose()
 
   }
+
   useEffect(() => {
     if (tab === 0) {
       onClose()
     }
   }, [tab])
+
   function handleCustom () {
       setCustom(true)
       setChosenRecipe(-1)
+  }
+
+  const sortFunction = (recipeA, recipeB) => { 
+    const titleA = recipeA.title.toLowerCase();
+    const titleB = recipeB.title.toLowerCase();
+    return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+  }
+
+  const shouldBeShown = (recipe) => {
+    return true;
   }
 
   return (
@@ -72,9 +92,8 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
           <Form.Group className="mb-3">
             <h4 className="edit-modal-header">Custom Meal</h4>
               <div className={custom  ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={handleCustom} key="custom">
-              <div className='col-6 align-self-center' id='image'>Photo</div>
 
-                <div className='col-6' id='recipe-info'>
+                <div className='col-12' id='recipe-info'>
                 <Form.Label>Meal idea</Form.Label>
 
                 <Form.Control
@@ -96,15 +115,24 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
          
             <h4 className="edit-modal-header">Choose Recipe</h4>
             <div className="d-flex justify-content-between p-2">
+              Search
               <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput}></RecipeSearchBar>
-              <FilterPopup showFilterPopup={showFilterPopup} handleCloseFilterPopup={()=>setShowFilterPopup(false)}></FilterPopup>
             </div>
 
+          <div>
+            <RecipeCards 
+              recipes={recipes}
+              setRecipes={setRecipes} 
+              view={false}
+              searchInput={searchInput}
+              sortFunction={sortFunction}
+              shouldBeShown={shouldBeShown}
+              addedRecipe={chosenRecipe} setAddedRecipe={setChosenRecipe} 
+              custom={custom} setCustom={setCustom}
+              />
+          </div>
+
             {/* Only displays recipes if the user is not creating a custom meal. */}
-            <div>
-              <RecipeCards recipes={recipes.filter((recipe) => (recipe.title.toLowerCase().match(searchInput.toLowerCase())))} setRecipes={setRecipes} 
-              addedRecipe={chosenRecipe} setAddedRecipe={setChosenRecipe} view={false} custom={custom} setCustom={setCustom} />
-            </div>
 
 
           </Form.Group>

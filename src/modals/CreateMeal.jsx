@@ -7,11 +7,17 @@ import '../recipes.css'
 import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
 import React from 'react'
+import Select from 'react-select';
+
+import Creatable from 'react-select/creatable'
+import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/database';
+import { getAuth} from "firebase/auth";
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
-const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, addedMeal, setAddedMeal,
-   meal_category, setMealCategory, meal, setMeal, recipes, setRecipes, personalGroceryList, addToGL}) => {
+const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, setNewMeal, addedMeal, setAddedMeal,
+   meal_category, setMealCategory, meal, setMeal, personalGroceryList, addToGL, refresh, setRefresh, categoriesList, setCategoriesList}) => {
+  const auth = getAuth(app);
   
   // Will be updated when user chooses a meal, stores either "Ingredients" or "Recipes"
   const [type, setType] = useState(null)
@@ -23,7 +29,7 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   const [openChooseMeal, setOpenChooseMeal] = useState(false)
 
   // Saves category selected when planning a meal
-  const [selectedCategory, setCategory] = useState(quota[0].id)
+  const [selectedCategory, setCategory] = useState([])
 
   // Saves the day selected when planning a meal
   const [selectedDay, setDay] = useState("Monday")
@@ -37,42 +43,112 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   // Stores the index of the recipe that the user wants to use
   const [addedRecipe, setAddedRecipe] = useState(0)
 
+  const [recipes, setRecipes] = useState([])
+
   // Determines which screen of creating meal the user is viewing
   const [tab, setTab] = useState(0)
 
+
   // Days of the week used for tag names, but users can also add their own 
-  const [tags, setTags] = useState([{value: "Monday", label: "Monday"}, {value: "Tuesday", label:"Tuesday"}, {value:"Wednesday", label: "Wednesday"}])
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+  const [tags, setTags] = useState([])
+
+  // Stores list of categories so we know where to add the meal
+  
+  // When page first loads, populates meals with information from user's database
+  useEffect(()=> {
+    if (refresh) {
+      const db = getDatabase()
+
+      // updates tags state variable so that it stores the saved tags from the user's database
+      const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+      onValue(tagRef, (snapshot) => {
+        const data = snapshot.val();
+        setTags(data);
+
+      });
+    }
+
+  }, [refresh])
+
+  
+  // Will store the tag that the user selects for the new meal
+  const [selectedTags, setSelectedTags] = useState([])
 
   // Once the user is done entering the information to create a meal, this function is called to then add the meal 
   // to the quota list for the specified category.
-  function addNewMeal(categoryIndex) {
+  function addNewMeal(categoryName) {
 
-    // TODO:  ERROR CHECKING - Check if category name already exists
-    // TODO: Make sure that quota amount is an integer and is greater than or equal to 0
-      
-     // Make a shallow copy of the items
-     let quotas= [...quota];
-      
-     // Make a shallow copy of the category that we are adding a meal to 
-     let item = {...quotas[categoryIndex]};
+    const copyMeal = {
+      label:addedMeal.description,
+      tags:addedMeal.tags,
+      notes: addedMeal.notes,
+      type:addedMeal.type,
+      completed: addedMeal.completed }
+    const db = getDatabase()
 
-    // Update the current category's array of meals so that it stores the new meal
-    let copyMeals = [...item.items, 
-      {value:addedMeal.description, label:addedMeal.description, day:addedMeal.day, notes: addedMeal.notes, type:type}]
-    item.items = copyMeals
-    console.log(item.items)
+    // Updates categories array in the case that a new category was added
+    if ((Array.isArray(categoriesList) && categoriesList.indexOf(categoryName) <= -1) || categoriesList === categoryName) {
 
-    // Put the copy of the category info back into the array
-    quotas[categoryIndex] = item;
-    console.log(quotas)
-    
-    // Set the state to our new copy
-    setQuota(quotas)
+      // Creates basic structure for new category
+      const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName)
+      const newCategory = {
+        quota: 0,
+        meals: []
+      }
+     set(categoryRef, newCategory);     
+    }
+
+    // Pushes meal to the new category's array of meals
+    const mealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+categoryName+"/meals")
+
+    // Creates key to push new meal to
+    const newMealRef = push(mealRef);
+
+    // Sets meal information to the new generated key
+    set(newMealRef,copyMeal)
+
+    // If tag did not already exist, add it to the database that stores the list of tags.
+    if (tags.indexOf(copyMeal.tags) <= -1) {
+      let arr = [...tags, copyMeal.tags]
+
+      const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
+      set(tagRef, arr)
+    }
+
+    // Indicates that state variable should be refreshed
+    setRefresh(true)
 
     // Closes the modal for adding a meal
     onClose(false)
   }
+
+
+  useEffect(()=> {
+    const db = getDatabase()
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes")
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(recipesRef, (snapshot) => {
+      const allRecipesObject = snapshot.val();
+      const allRecipesKeys = Object.keys(allRecipesObject);
+      const allRecipesArray = allRecipesKeys.map((key) => {
+          const singleRecipeCopy = {...allRecipesObject[key]}; // copying the element at that key
+          singleRecipeCopy.key = key; // save the key string so you have it later
+          return singleRecipeCopy;
+      })
+      setRecipes(allRecipesArray);
+      // snapshot.forEach((childsnapshot) => {
+      //   data.push({key: childsnapshot.key, value: childsnapshot.val()})
+        
+      // });
+
+    },  {
+      onlyOnce: true
+    });
+
+  
+
+  }, [])
 
   // Manages switching between modals
   useEffect(()=> {
@@ -83,6 +159,9 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
     }
   }, [tab])
 
+  useEffect(()=> {
+    console.log(selectedTags)
+  }, [selectedTags])
   // When the modal is closed, the fields are reset. 
   useEffect(()=> {
     if (!open) {
@@ -94,20 +173,9 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
   // Executed whenever the user is ready to add the new meal, meaning that they had selected the "add meal" button
   useEffect(()=> {
     if (newMeal) {
-      console.log(addedMeal)
 
-      // If meal category is the first in the categories list, adds meal to breakfast state array
-      if (addedMeal.id === quota[0].id) {
-        addNewMeal(0)
-      
-      // If meal category is lunch, adds meal to the lunch state array
-      } else if (addedMeal.id  === quota[1].id) {
-        addNewMeal(1)
-      
-        // If meal category is dinner, adds meal to the dinner state array
-      } else if (addedMeal.id  === quota[2].id) {
-        addNewMeal(2)
-      }
+      // Adds meal to assigned category in database
+      addNewMeal(addedMeal.id)
 
       // Sets new meal to false once the meal is added
       setNewMeal(false)
@@ -132,25 +200,35 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
 
     // TODO: Check for any errors
     const allErrors = {}
-    if (mealDetails === null || selectedCategory === null || selectedDay === null) {
+    if (mealDetails === null || selectedCategory === null || selectedTags === null) {
       console.log("error creating meal")
       return null
     }
 
     // If the user is adding meal from ingredients:
     else if (type === "Ingredients"){
-      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails.mealIdea, notes: mealDetails.notes})
+      console.log("category before updating " + selectedCategory.label)
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails.mealIdea, type: type, notes: mealDetails.notes, completed: false})
       console.log("added ingredients")
       setNewMeal(true)
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
-      setAddedMeal({id: selectedCategory, day:selectedDay, description: mealDetails, notes:""})
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: recipes[mealDetails].key, type: type, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
     }
   }
 
+  const sortFunction = (recipeA, recipeB) => { 
+    const titleA = recipeA.title.toLowerCase();
+    const titleB = recipeB.title.toLowerCase();
+    return (titleA < titleB) ? -1 : (titleA > titleB) ? 1 : 0;
+  }
+
+  const shouldBeShown = (recipe) => {
+   return true;
+  }
 
   return (
     <>
@@ -165,43 +243,26 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
             <Form.Label className="edit-modal-header">Category</Form.Label>
             
             {/* Populates a dropdown menu that contains the list of categories for user to choose from. */}
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedCategory}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setCategory(e.target.value);
-              }}
-                >
-                {quota.map(option => (
-                      <option
-                        value={option.id}>
-                        {option.id}
-                      </option>
-                    ))}
-            </Form.Select>
-            
+            <Creatable 
+
+                  defaultValue={{value: selectedCategory, label: selectedCategory}}
+                  value={selectedCategory}
+                  options={categories?.map(category => ({ label: category.key, value: category.key}))}
+                  onChange={opt =>setCategory(opt)}
+
+            />
+
             <Form.Label className="edit-modal-header">Day</Form.Label>
-            
+            {console.log(categories)}
+
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}
-            <Form.Select 
-              aria-label="Default select example" 
-              as="select"
-              value={selectedDay}
-              onChange={e => {
-                console.log("e.target.value", e.target.value);
-                setDay(e.target.value);
-              }}
-              >
-                {days.map(day => (
-                      <option key={day}
-                        value={day}>
-                        {day}
-                      </option>
-                    ))}
-                <option value="None">None</option>
-            </Form.Select>
+
+            <Creatable 
+                  options={tags.map(opt => ({ label: opt, value: opt}))}
+                  onChange={opt =>setSelectedTags(opt)}
+
+            />
+
 
             {/* If the type of the meal is a meal idea, then the meal idea and note input will be displayed. */}
             {type === "Ingredients" && !openChooseMeal && 
@@ -230,8 +291,10 @@ const CreateMeal = ({ open, onClose, quota, setQuota, newMeal, setNewMeal, added
           {type === "Recipe" && !openChooseMeal && 
             <>
             <Form.Label>Recipe</Form.Label>
-            <RecipeCards recipes={recipes.filter((recipe, index) => (index === mealDetails))} 
-            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} groceryList={personalGroceryList} addToGL={addToGL} view={true}/>
+            <RecipeCards recipes={recipes.filter((recipe, i) => i === mealDetails ? recipe : null)} 
+            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} view={true} searchInput={recipes[mealDetails]?.title}
+            sortFunction={sortFunction}
+            shouldBeShown={shouldBeShown} />
           </>
           }
           </Form.Group>

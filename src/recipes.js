@@ -14,9 +14,36 @@ export default function RecipesHome(props) {
 
     const [recipes, setRecipes] = useState([]);
 
+    const [itemsInPersonalInventory, setItemsInPersonalInventory] = useState([]);
+    const [itemsInSharedInventory, setItemsInSharedInventory] = useState([]);
+
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
+
+    // helper to get a list of items from a snapshot of an inventory
+    // parameters: snapshot
+    // returns: list
+    const inventoryListHelper = ((snapshot) => {
+
+        if (snapshot.val()) {
+            var outputList = [];
+        
+            const allCategoriesObject = snapshot.val();
+            console.log(allCategoriesObject);
+            const allCategoriesKeys = Object.keys(allCategoriesObject);
+            for (const categoryKey of allCategoriesKeys) {
+                const allItemsInCategoryObject = {...allCategoriesObject[categoryKey]};
+                const allItemsInCategoryKeys = Object.keys(allItemsInCategoryObject);
+                for (const itemInCategoryKey of allItemsInCategoryKeys) {
+                    const itemObject = {...allItemsInCategoryObject[itemInCategoryKey]};
+                    outputList.push(itemObject.item_name);
+                }
+            }
+        }
+
+        return outputList;
+    })
 
     // getting data from dp
     useEffect(() => {
@@ -38,6 +65,28 @@ export default function RecipesHome(props) {
             })
             setRecipes(allRecipesArray);
         });
+
+        // getting personal inventory from db!
+        const dbPersonalListRef = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        onValue(dbPersonalListRef, (snapshot) => {
+            const newItemsInPersonalInventory = inventoryListHelper(snapshot);
+            setItemsInPersonalInventory(newItemsInPersonalInventory);
+        })
+
+        // getting group id from db
+        var groupID;
+        const dbGroupRef = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
+        onValue(dbGroupRef, (snapshot) => {
+            groupID = snapshot.val();
+        })
+
+        // getting shared inventory from db!
+        const dbSharedListRef = ref(db, '/groups/' + groupID + '/inventory/categories/');
+        onValue(dbSharedListRef, (snapshot) => {
+            const newItemsInSharedInventory = inventoryListHelper(snapshot);
+            setItemsInSharedInventory(newItemsInSharedInventory);
+        })
+        
     }, []);
 
     // searchInput for the search bar
@@ -106,10 +155,8 @@ export default function RecipesHome(props) {
             const timeInMinsB = recipeB.minsRequired + (recipeB.hoursRequired * 60);
             return timeInMinsA - timeInMinsB;
         } else if (sortRule == sortRules["inventory"]) {
-            const listOfItemsInSharedInventory = props.itemsInSharedInventory.map((item) => item.value);
-            const listOfItemsInPersonalInventory = props.itemsInPersonalInventory.map((item) => item.value);
-            const inInventoryA = recipeA.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
-            const inInventoryB = recipeB.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryA = recipeA.ingredients.filter((ingredient) => (itemsInSharedInventory?.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryB = recipeB.ingredients.filter((ingredient) => (itemsInSharedInventory?.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
             const numIngredientsA = recipeA.ingredients.length;
             const numIngredientsB = recipeB.ingredients.length;
             const inventoryPercentageA = inInventoryA / numIngredientsA;
@@ -118,7 +165,6 @@ export default function RecipesHome(props) {
         }
     }
 
-    // TODO: edit
     const shouldBeShown = (recipe) => {
         if (showAllRecipes) {
             return true;
@@ -249,8 +295,6 @@ function AddRecipePopup(props) {
             var newRecipePostRef = push(dbRecipesRef);
 
             set(newRecipePostRef, newRecipe);
-
-            // TODO: is this where i need to get the id for julia?
         }
     }
 
@@ -333,8 +377,14 @@ function AddRecipePopup(props) {
                         </div>
                         
 
-                        {/* tags entry - TODO: format differently */}
+                        {/* tags entry */}
                         <Form.Label>Tags:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                            </div>
+                        </div>
                         <Form.Control 
                             type="text" 
                             name="tags"
@@ -342,12 +392,12 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
 
-                        {/* ingredients entry - TODO: format differently */}
+                        {/* ingredients entry */}
                         <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
                             </div>
                         </div>
                         <Form.Control 
@@ -358,8 +408,14 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
 
-                        {/* steps entry - TODO: format differently */}
+                        {/* steps entry */}
                         <Form.Label>Steps:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Each step should be on its own line.</span>
+                            </div>
+                        </div>
                         <Form.Control 
                             type="text"
                             as="textarea" 
@@ -473,13 +529,6 @@ function FilterPopup(props) {
                     
                     {/* filtering options */}
                     <h6>Filter by Tags:</h6>
-                    {/* <p>Energy Required</p>
-                    <div>{energyLevelCheckboxes}</div>
-                    <p>Time Required</p>
-                    <div>{timeLevelCheckboxes}</div>
-                    <p>Ingredients Already Owned</p>
-                    <div>{inventoryLevelCheckboxes}</div> */}
-                    {/* TODO: 'deselect all' button */}
                     <div className="form-check">
                         <input className="form-check-input" type="checkbox" id="select-all" checked={props.showAllRecipesCheckboxValue} onChange={handleShowAllCheckboxChange}></input>
                         <label className="form-check-label" htmlFor="select-all">

@@ -200,6 +200,12 @@ export default function EditRecipePopup(props) {
 
                         {/* tags input */}
                         <Form.Label>Tags:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                            </div>
+                        </div>
                         <Form.Control
                             type="text"
                             name="tags"
@@ -212,7 +218,7 @@ export default function EditRecipePopup(props) {
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">Put the focus word or phrase in all caps (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in all caps (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
                             </div>
                         </div>
                         <Form.Control
@@ -225,6 +231,12 @@ export default function EditRecipePopup(props) {
 
                         {/* steps input */}
                         <Form.Label>Steps:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Each step should be on its own line.</span>
+                            </div>
+                        </div>
                         <Form.Control
                             type="text"
                             as="textarea"

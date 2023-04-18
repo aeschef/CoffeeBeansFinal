@@ -92,22 +92,7 @@ function NavbarElements(props) {
         }).catch((error) => {
             console.error(error);
         });
-
-    // Dummy items for now lol   
-    const [itemsInPersonalInv, addPersonalItemInv] = useState([
-        {value:"bone broth", label:"bone broth"},
-        {value:"rice", label: "rice"},
-        {value:"egg yolks", label: "egg yolks"},
-        {value:"lemon juice", label: "lemon juice"},
-        {value:"chicken", label: "chicken"},
-        {value:"flour", label: "flour"},
-        {value:"sugar", label: "sugar"},
-        ]);
-    
-    const [itemsInSharedInv, addSharedItemInv] = useState([
-        {value:"baking powder", label: "baking powder"}
-        ]);
-
+        
     // Dummy items for now lol
     const [itemsInPersonalGL, addPersonalItemGL] = useState([
         { value: "hummus", label: "hummus" },
@@ -140,14 +125,11 @@ function NavbarElements(props) {
                 } />
                 <Route path="/meal_plan.js" element={
                     <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
-                    // TODO: change this for julia (the recipes are no longer passed in!!)
                 } />
                 <Route path="/recipes.js" element={
                 <RecipesHome 
                     personalGroceryList={itemsInPersonalGL} 
                     addToGL={addPersonalItemGL}
-                    itemsInSharedInventory={itemsInSharedInv}
-                    itemsInPersonalInventory={itemsInPersonalInv} 
                     app={props.app}
                 /> 
             } />
