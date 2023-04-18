@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import EditRecipePopup from './EditRecipe'
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -36,7 +34,22 @@ export default function ViewRecipePopup(props) {
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
   // TODO: megan's code starts here
-  const currentRecipe = props.recipes[props.indexOfRecipeToView];
+  const [currentRecipe, setCurrentRecipe] =useState([])
+
+  useEffect(()=> {
+    const db = getDatabase()
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.indexOfRecipeToView)
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(recipesRef, (snapshot) => {
+        
+      setCurrentRecipe(snapshot.val())
+        
+    },  {
+      onlyOnce: true
+    });
+
+  }, [])
   // TODO: megan's code ends here
 
 // TODO: julia's code starts here

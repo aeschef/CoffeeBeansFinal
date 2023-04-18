@@ -18,6 +18,31 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   groceryList, addToGL, categoriesList, setCategoriesList, indexRecipe}) => {
   const auth = getAuth()
 
+  const [currRecipe, setCurrRecipe] = useState([])
+
+  useEffect(()=> {
+    const db = getDatabase()
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes")
+    let arrMeals = []
+    // Stores all of the meal categories and pushes them to an array
+    onValue(recipesRef, (snapshot) => {
+            
+      // getting data from the spot in the db that changes
+      // good source: https://info340.github.io/firebase.html#firebase-arrays
+      const allRecipesObject = snapshot.val();
+      const allRecipesKeys = Object.keys(allRecipesObject);
+      allRecipesKeys.forEach((key)=> {
+        if (key === indexRecipe) {
+          setCurrRecipe(allRecipesObject[key])
+        }
+      })
+
+    },  {
+      onlyOnce: true
+    });
+
+  })
+
   // Popup that appears when user attempts to delete a meal
   const [openWarning, setOpenWarning] = useState(false)
 
@@ -269,7 +294,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
               {currentMealDetails.value.type === "Recipe" && 
               <Row>
                 <Form.Label>
-                  {recipes[indexRecipe].title}
+                  {currRecipe.title}
                 </Form.Label>
               </Row> }
           
