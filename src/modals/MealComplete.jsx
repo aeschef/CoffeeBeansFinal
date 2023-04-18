@@ -9,40 +9,29 @@ import { getDatabase, ref, child, push, update, get, query, orderByChild, onValu
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
-const addIngredient = ({ingredient, ingredients, setIngredients}) => {
-    setIngredients([
-        ...ingredients,
-        ingredient
-    ]);
-}
+
 
 /* Retrieve ingredients for thsi recipe from the database Display in the */
-const IngredientItems = ({ingredients, setIngredients, recipeRef, }) => {
-    let database = getDatabase();        
-    let ingredientRef = ref(database, recipeRef);
-    const [checked, setChecked] = useState(false);
+const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
+
+    const addIngredient = (event) => {
+        setIngredients([
+            ...ingList,
+            event.target.value
+        ]);
+    }
+
     return (
         <>
-            {/* for every ingredient in ingredients list check database */}
-            {onValue(ingredientRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) =>{
-                    childSnapshot.forEach((ingredient) =>{
-                        <Row>
-                            <ToggleButton
-                                className="mb-2"
-                                id="toggle-check"
-                                type="checkbox"
-                                variant="outline-secondary"
-                                checked={checked}
-                                value="1"
-                                onChange={() => addIngredient(ingredient, ingredients, setIngredients)}
-                            >
-                                {ingredient}
-                            </ToggleButton>
-                    </Row>
-                    });
-                });
-            })}
+            {recipes[index].ingredients.map((ingredient)=>(
+               <label>
+               <input type="checkbox"
+                value={ingredient.focus}
+                onChange={addIngredient}
+               />
+               {ingredient.focus}
+           </label> 
+            ))}
         </>
     )
 }
@@ -50,6 +39,7 @@ const IngredientItems = ({ingredients, setIngredients, recipeRef, }) => {
 const HandleAddtoMealPlan = (props) =>{
     
     const [show, setShow] = useState(false);
+
     const [ingredients, setIngredients] = useState([]);
     const [remInv, setRemInv] = useState(false);
 
@@ -79,7 +69,8 @@ const HandleAddtoMealPlan = (props) =>{
             setCategories(allCategoriesKeys);
         });
     }, []);
-
+    
+    const [ingList, setIngredients] = useState([]);
 
     const showModal = () => {
         setShow(true);
@@ -89,53 +80,30 @@ const HandleAddtoMealPlan = (props) =>{
         setShow(false);
     };
 
-    const handleAddGL = () => {
-        setRemInv(!remInv);
-    };
-
-    const handleRemInv = () =>{
-        setAddToGL(!addToGL);
+    const handleSelect = () =>{
+        setIngredients(props.recipes[props.index].ingredients);
     };
 
     const handleSave = () => {
+        const auth = getAuth(props.app)
         const database = getDatabase();
-        if(remInv){
-            let inventoryRef = ref(database, '/user/' + props.auth.currentUser.uid + '/inventory/');
-            // for every ingredient in ingredients list check database
-            onValue(inventoryRef, (snapshot) => {
-                ingredients.map( item => {
-                    snapshot.forEach((childSnapshot) =>{
-                        if(item === childSnapshot.val()){
+        let inventoryRef = ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories');
+        // for every ingredient in ingredients list check database
+        onValue(inventoryRef, (snapshot) => {
+            console.log("inv" + snapshot.val());
+            ingList.map( item => {
+                console.log("map" + item);
+                snapshot.forEach((childSnapshot) =>{
+                    let category = childSnapshot.key;
+                    childSnapshot.forEach((thing)=>{
+                        console.log("thing: " + thing.val().item_name)
+                        if(item === thing.val().item_name){
+                            console.log("removing" + '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key);
                             // remove
-                            remove(ref(database, '/user/' + props.auth.currentUser.uid + '/inventory/'+ childSnapshot.key));
-                        }
-                    });
-                }); 
-            });
-        } 
 
-        // Add items in ingredients to the grocery list
-        if(addToGL){
-            let found  = false;
-            let count_c = 0;
-            // retrieve the categories from the database
-            props.databaseCatGL.map(category => {
-                let lowerCaseCategory = category.value.toLowerCase();
-                // found category we need?
-                if(lowerCaseCategory === 'ingredients'){
-                    let count = 0;
-                    //count the items already in the GL
-                    category.data.map((cat, i) => {
-                        count = cat;
-                    })
-                    console.log(count);
-                    //need to do for every ingredient in..ingredients
-                    ingredients.map( (itemName) => {
-                        const item = {item_name: itemName, item_num: 1};
-                        push(ref(database, '/users/' + props.auth.currentUser.uid + '/grocery_list/categories/Ingredients'), item);
-                        found = true;
-                    })
-                    
+                            remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key));
+                        }
+                    })                    
                 }
                 count_c += 1;
             });
@@ -179,10 +147,11 @@ const HandleAddtoMealPlan = (props) =>{
             tags: selectedDay,
             type: "Recipe"
         });
-    };
-
-
-
+    };                  
+                });
+            }); 
+        });
+    }
 
     return (        
         <>
@@ -219,44 +188,19 @@ const HandleAddtoMealPlan = (props) =>{
                         <option value="Saturday">Saturday</option>
                     </select>
 
-                    <Button> Select All </Button>
-                    <IngredientItems ingredients={ingredients} 
-                                setIngredients={setIngredients} 
-                                recipeRef={props.recipeRef}>stuff</IngredientItems>
-
-                    
+                    <Button onClick={handleSelect}> Select All </Button>
+                    <IngredientItems ingList={ingList} 
+                                setIngredients={setIngredients}
+                                recipes={props.recipes}
+                                index={props.index}></IngredientItems>
                     <Row>
-                        {/* checkbox */}
-                        <label >
-                            <input
-                                type="checkbox"
-                                name="lang"
-                                // value={x.value}
-                                onChange={handleRemInv}
-                            />
-                            Remove this ingredient from my inventory.
-                        </label>
+                        <Col>
+                            <Button variant="danger" onClick={handleClose}>Cancel</Button>
+                        </Col>
+                        <Col>
+                            <Button variant="success" onClick={handleSave}>Save</Button>
+                        </Col>
                     </Row>
-                    <Row>
-                        {/* checkbox */}
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="lang"
-                                // value={}
-                                onChange={handleAddGL}
-                            />
-                            Add this ingredient to my grocery list.
-                        </label>
-                    </Row>
-                    <Row>
-                            <Col>
-                                <Button variant="danger">Cancel</Button>
-                            </Col>
-                            <Col>
-                                <Button variant="success" onClick={handleSave}>Save</Button>
-                            </Col>
-                        </Row>
                 </Container>
               </Modal.Body>
           </Modal>
