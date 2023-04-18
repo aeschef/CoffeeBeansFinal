@@ -258,9 +258,7 @@ return (
         </Col>
       </div>
 
-     
-
-      {category.meals?.map((x, i) => (
+     {category.meals?.map((x, i) => (
       <div className="left-spacing">
           <div className="box-custom"> 
             <div>

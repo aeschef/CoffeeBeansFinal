@@ -115,6 +115,7 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
          
             <h4 className="edit-modal-header">Choose Recipe</h4>
             <div className="d-flex justify-content-between p-2">
+              Search
               <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput}></RecipeSearchBar>
             </div>
 
