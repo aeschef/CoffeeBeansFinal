@@ -219,7 +219,7 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/grocery_list.js" className='nav-link active'>List</Link>
+                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
                         </Row>
                     </Col>
                 </span>
