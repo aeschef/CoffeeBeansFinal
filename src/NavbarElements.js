@@ -1,6 +1,6 @@
 import React, { useState, Component, useEffect } from 'react'
 import { Navbar, Nav } from 'react'
-import './nav_bar.css';
+import './css/nav_bar.css';
 import {
     BrowserRouter as Router,
     Routes,
@@ -8,7 +8,15 @@ import {
     Link,
     BrowserRouter
 } from "react-router-dom";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
+import InventoryIcon from './svg/inventory.svg'
+import MealPlanIcon from './svg/meal_plan.svg'
+import RecipeIcon from './svg/recipes.svg'
+import GroceryListIcon from './svg/grocery_list.svg'
+import AccountIcon from './svg/account.svg'
 
 import GroceryListHome from './grocery_list.js';
 import InventoryHome from './inventory.js';
@@ -23,13 +31,6 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
-
-    const [doAgain, setDoAgain] = useState(true);
-    const [doAgain_s, setDoAgain_s] = useState(true);
-    const [doAgain_i, setDoAgain_i] = useState(true);
-    const [doAgain_is, setDoAgain_is] = useState(true);
-
-
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
 
@@ -76,7 +77,6 @@ function NavbarElements(props) {
                 console.log("user does not yet have information")
             }
         })
-        //const dbRefA = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
     }, [])
 
 
@@ -98,14 +98,18 @@ function NavbarElements(props) {
 
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
-        { value: "carrots", label: "carrots" },
-        { value: "fruit snacks", label: "fruit snacks" }
-    ]);
-
+        {value:"bone broth", label:"bone broth"},
+        {value:"rice", label: "rice"},
+        {value:"egg yolks", label: "egg yolks"},
+        {value:"lemon juice", label: "lemon juice"},
+        {value:"chicken", label: "chicken"},
+        {value:"flour", label: "flour"},
+        {value:"sugar", label: "sugar"},
+        ]);
+    
     const [itemsInSharedInv, addSharedItemInv] = useState([
-        { value: "oat milk", label: "oat milk" },
-        { value: "rice", label: "rice" }
-    ]);
+        {value:"baking powder", label: "baking powder"}
+        ]);
 
     // Dummy items for now lol
     const [itemsInPersonalGL, addPersonalItemGL] = useState([
@@ -115,17 +119,10 @@ function NavbarElements(props) {
         { value: "milk", label: "milk" }
     ]);
 
-    const PersonalGLCopy = [...itemsInPersonalGL];
-
     const [itemsInSharedGL, addSharedItemGL] = useState([
         { value: "almond milk", label: "almond milk" },
         { value: "flour", label: "flour" }
     ]);
-
-    // mock database of recipes - TODO: make the pictures actual pictures!
-    let [recipes, setRecipes] = useState([{ title: "Lemon Dill Chicken Soup", picture: "R1 Picture", energyRequired: "Medium Energy", timeRequired: "35 min", tags: ["lunch", "soup season"], ingredients: ["5 cups bone broth (or low-sodium chicken broth)", "2 cups cooked rice", "2 egg yolks", "1/3 cup lemon juice", "2 cups chopped cooked chicken", "2 Tablespoons chopped fresh dill", "Salt and pepper (to taste)"], steps: ["In a large saucepan, bring the broth to a simmer and season with salt and pepper, to taste.", "Add ½ cup rice, egg yolks and lemon juice to a blender, slowly stream in 1 cup of hot broth and puree until smooth.", "Stir the puree into the simmering stock along with the chopped chicken and remaining rice", "Simmer until slightly thickened, approximately 10 minutes.", "Stir in the fresh dill and serve"], notes: "" },
-    { title: "Alfredo Pasta", picture: "R2 Picture", energyRequired: "Low Energy", timeRequired: "15 min", tags: ["lunch", "dinner"], ingredients: ["8 ounce pasta", "4 tablespoon butter", "2 cloves garlic minced", "1 1/2 cups milk", "1 cup heavy cream", "1/2 cup Parmesan cheese shredded", "1/4 teaspoon salt or to taste", "1/4 teaspoon pepper or to taste", "2 tabelspoon fresh parsley chopped"], steps: ["Cook the pasta according to the package instructions.", "Melt the butter in a large skillet over medium high heat.", "Add the garlic and cook for 30 seconds, or until fragrant.", "Pour in the milk and cream. Stir consistently to avoid burning on the bottom of the pan until the mixture comes to a boil", "Turn the heat down to medium, and mix in the parmesan cheese, salt, and pepper.", "Adjust the seasoning to your own taste", "Remove the pan from the heat and mix in the cooked pasta until the sauce begins to thicken.", "Garnish with parsley, and serve."], notes: "You can use a larger ratio of milk to cream if you'd like to cut down on calories. This can be served with chicken or mushrooms to add some protein." },
-    { title: "Pancakes", picture: "R3 Picture", energyRequired: "Medium Energy", timeRequired: "20 min", tags: ["breakfast", "comfort food"], ingredients: ["1 1/2 cups all-purpose flour", "3 1/2 teaspoons baking powder", "1 tablespoon white sugar", "1/4 teaspoon salt, or more to taste", "1 1/4 cups milk", "3 tablespoons butter, melted", "1 egg", "1/4 teaspoon pepper or to taste"], steps: ["Sift flour, baking powder, sugar, and salt together in a large bowl.", "Make a well in the center and add milk, melted butter, and egg; mix until smooth.", "Heat a lightly oiled griddle or pan over medium-high heat", "Pour or scoop the batter onto the griddle, using approximately 1/4 cup for each pancake", ">Cook until bubbles form and the edges are dry, about 2 to 3 minutes", "Flip and cook until browned on the other side", "Repeat with remaining batter"], notes: "" }]);
 
     return (
         <BrowserRouter>
@@ -145,36 +142,87 @@ function NavbarElements(props) {
                         accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
-                    <MealPlanHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
+                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
+                    // TODO: change this for julia (the recipes are no longer passed in!!)
                 } />
                 <Route path="/recipes.js" element={
-                    <RecipesHome recipes={recipes} setRecipes={setRecipes} personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
-                } />
+                <RecipesHome 
+                    personalGroceryList={itemsInPersonalGL} 
+                    addToGL={addPersonalItemGL}
+                    itemsInSharedInventory={itemsInSharedInv}
+                    itemsInPersonalInventory={itemsInPersonalInv} 
+                    app={props.app}
+                /> 
+            } />
                 <Route path="/account.js" element={
-                    <AccountHome login={props.login} setLogin={props.setLogin} />
+                    <AccountHome login={props.login} setLogin={props.setLogin}/>
                 } />
             </Routes>
 
-            <nav className="navbar fixed-bottom navbar-light">
+            <nav className="navbar fixed-bottom  navbar-light" id="navbar-background">
                 <span className="navbar-text">
-                    <img src="grocery_list.png"></img>
-                    <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <Link to="/inventory.js" className='nav-link'>Inventory</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" >
+                                <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon try" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/inventory.js" className='nav-link text-style'>Inventory</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <Link to="/recipes.js" className='nav-link'>Recipes</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/recipes.js" className='nav-link'>Recipes</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
                 <span className="navbar-text">
-                    <Link to="/account.js" className='nav-link'>Account</Link>
-                    { }
+                    <Col>
+                        <Row className="justify-content-md-center">
+                            <a href="#" className="">
+                                <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon" />
+                            </a>
+                        </Row>
+                        <Row className="justify-content-md-center">
+                            <Link to="/account.js" className='nav-link'>Account</Link>
+                            { }
+                        </Row>
+                    </Col>
                 </span>
             </nav>
             <div>
@@ -184,30 +232,3 @@ function NavbarElements(props) {
 }
 
 export default NavbarElements
-
-//     //<div>
-//     <nav class="navbar fixed-bottom navbar-light">
-//     <span class="navbar-text">
-//         <img src="grocery_list.png"></img>
-//         <Link to="/grocery_list" className='nav-link'>List</Link>
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/inventory" className='nav-link'>Inventory</Link>
-//         {/*<a class="nav-link" href="inventory.js">Inventory</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/meal_plan" className='nav-link'>Meal Plan</Link>
-//         {/*<a class="nav-link" href="meal_plan.js">Meal Plan</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/recipes" className='nav-link'>Recipes</Link>
-//         {/*<a class="nav-link" href="recipes.js">Recipes</a>*/}
-//     </span>
-//     <span class="navbar-text">
-//         <Link to="/account" className='nav-link'>Account</Link>
-//         {/*<a class="nav-link" href="account.js">Account</a>*/}
-//     </span>
-// </nav>
-// <div>
-// </div>
-// </div>
