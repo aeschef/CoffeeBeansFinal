@@ -9,40 +9,36 @@ import { getDatabase, ref, child, push, update, get, query, orderByChild, onValu
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
-const addIngredient = ({ingredient, ingredients, setIngredients}) => {
+const addIngredient = ({item, ingredients, setIngredients}) => {
+    console.log({ingredients});
+    console.log("adding " +{ item})
     setIngredients([
         ...ingredients,
-        ingredient
+        {item}
     ]);
 }
 
 /* Retrieve ingredients for thsi recipe from the database Display in the */
-const IngredientItems = ({ingredients, setIngredients, recipeRef, }) => {
-    let database = getDatabase();        
-    let ingredientRef = ref(database, recipeRef);
-    const [checked, setChecked] = useState(false);
+const IngredientItems = ({ setIngredients, recipes, index}) => {
+    let database = getDatabase();  
+    //let ing = recipes[index];
+    let ing = recipes[index].ingredients.map((ingredient) => ingredient.focus).join(" ");
+    console.log(ing);
+
+
+    //let ingredientRef = ref(database, recipeRef);
+    // const [checked, setChecked] = useState(false);
     return (
         <>
-            {/* for every ingredient in ingredients list check database */}
-            {onValue(ingredientRef, (snapshot) => {
-                snapshot.forEach((childSnapshot) =>{
-                    childSnapshot.forEach((ingredient) =>{
-                        <Row>
-                            <ToggleButton
-                                className="mb-2"
-                                id="toggle-check"
-                                type="checkbox"
-                                variant="outline-secondary"
-                                checked={checked}
-                                value="1"
-                                onChange={() => addIngredient(ingredient, ingredients, setIngredients)}
-                            >
-                                {ingredient}
-                            </ToggleButton>
-                    </Row>
-                    });
-                });
-            })}
+            {recipes[index].ingredients.map((ingredient)=>(
+               <label>
+               <input type="checkbox"
+               name={ingredient.focus}
+            //    onChange={() => addIngredient(ingredient.focus, ingredients, setIngredients)}
+               />
+               {ingredient.focus}
+           </label> 
+            ))}
         </>
     )
 }
@@ -54,9 +50,6 @@ const HandleAddtoMealPlan = (props) =>{
     const [remInv, setRemInv] = useState(false);
 
     const [addToGL, setAddToGL] = useState(false);
-
-
-
 
     const showModal = () => {
         setShow(true);
@@ -166,42 +159,17 @@ const HandleAddtoMealPlan = (props) =>{
                 <Container> 
                     <Button> Select All </Button>
                     <IngredientItems ingredients={ingredients} 
-                                setIngredients={setIngredients} 
-                                recipeRef={props.recipeRef}>stuff</IngredientItems>
-
-                    
+                                setIngredients={setIngredients}
+                                recipes={props.recipes}
+                                index={props.index}></IngredientItems>
                     <Row>
-                        {/* checkbox */}
-                        <label >
-                            <input
-                                type="checkbox"
-                                name="lang"
-                                // value={x.value}
-                                onChange={handleRemInv}
-                            />
-                            Remove this ingredient from my inventory.
-                        </label>
+                        <Col>
+                            <Button variant="danger">Cancel</Button>
+                        </Col>
+                        <Col>
+                            <Button variant="success" onClick={handleSave}>Save</Button>
+                        </Col>
                     </Row>
-                    <Row>
-                        {/* checkbox */}
-                        <label>
-                            <input
-                                type="checkbox"
-                                name="lang"
-                                // value={}
-                                onChange={handleAddGL}
-                            />
-                            Add this ingredient to my grocery list.
-                        </label>
-                    </Row>
-                    <Row>
-                            <Col>
-                                <Button variant="danger">Cancel</Button>
-                            </Col>
-                            <Col>
-                                <Button variant="success" onClick={handleSave}>Save</Button>
-                            </Col>
-                        </Row>
                 </Container>
               </Modal.Body>
           </Modal>
