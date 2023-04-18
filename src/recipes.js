@@ -1,14 +1,44 @@
 import Button from 'react-bootstrap/Button';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe';
 import RecipeCards from './RecipeCards';
 import RecipeSearchBar from './RecipeSearchBar';
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
+
+    const [recipes, setRecipes] = useState([]);
+
+    // database info
+    const auth = getAuth(props.app)
+    const db = getDatabase(props.app)
+
+    // getting data from dp
+    useEffect(() => {
+                
+        // getting a reference to the 'recipes' section of this user's area of the database
+        const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
+        
+        // runs upon startup and every time the data changes
+        onValue(dbRecipeRef, (snapshot) => {
+            
+            // getting data from the spot in the db that changes
+            // good source: https://info340.github.io/firebase.html#firebase-arrays
+            const allRecipesObject = snapshot.val();
+            const allRecipesKeys = Object.keys(allRecipesObject);
+            const allRecipesArray = allRecipesKeys.map((key) => {
+                const singleRecipeCopy = {...allRecipesObject[key]}; // copying the element at that key
+                singleRecipeCopy.key = key; // save the key string so you have it later
+                return singleRecipeCopy;
+            })
+            setRecipes(allRecipesArray);
+        });
+    }, []);
 
     // searchInput for the search bar
     const [searchInput, setSearchInput] = useState("");
@@ -39,7 +69,7 @@ export default function RecipesHome(props) {
     
     const handleOpenFilterPopup = () => {
         const newTags = tags.slice();
-        for (const recipe of props.recipes) {
+        for (const recipe of recipes) {
             for (const tag of recipe.tags) {
                 if (!(newTags.map(tag => tag.name).includes(tag))) {
                     newTags.push({name: tag, show: false});
@@ -129,7 +159,8 @@ export default function RecipesHome(props) {
             {/* recipe cards */}
             <div className='recipe-cards'>
                 <RecipeCards 
-                    recipes={props.recipes}
+                    app={props.app}
+                    recipes={recipes}
                     setRecipes={props.setRecipes} 
                     onClickFunction={handleOpenViewPopup} 
                     groceryList={props.personalGroceryList} 
@@ -144,15 +175,19 @@ export default function RecipesHome(props) {
             <button id='add-button' onClick={handleOpenAddPopup}>add</button>
 
             {/* popups */}
-            <AddRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup recipes={props.recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
-            <FilterPopup recipes={props.recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
+            <AddRecipePopup app={props.app} recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
+            <ViewRecipePopup app={props.app} recipes={recipes} showViewPopup={showViewPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} view={true} groceryList={props.personalGroceryList} addToGL={props.addToGL}> </ViewRecipePopup>
+            <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
 }
 
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
+
+    // database info
+    const auth = getAuth(props.app)
+    const db = getDatabase(props.app)
 
     // form inputs
     const [inputs, setInputs] = useState({});
@@ -183,7 +218,7 @@ function AddRecipePopup(props) {
         if (!("hoursRequired" in inputs)) {
             setInputs(values => ({...values, ["hoursRequired"]: 0}))
         }
-        const nextRecipes = [...props.recipes, {
+        const newRecipe = {
             title: inputs.title, 
             picture: inputs.picture, 
             energyRequired: inputs.energyRequired, 
@@ -199,13 +234,23 @@ function AddRecipePopup(props) {
                         "focus": findQuotedWord(ingredientPhrase)
                     })) || [], 
             steps: inputs.steps?.split("\n").map(s => s.trim()) || [],
-            notes: inputs.notes}];
+            notes: inputs.notes
+        };
         
-        if (nextRecipes[nextRecipes.length - 1].ingredients?.length !== nextRecipes[nextRecipes.length - 1].ingredients?.filter((ingredient) => ingredient.focus).length) {
+        if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else {
             props.handleCloseAddPopup();
-            props.setRecipes(nextRecipes);
+                    
+            // getting a reference to the 'recipes' section of this user's area of the database
+            const dbRecipesRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
+
+            // getting a reference to new place to post
+            var newRecipePostRef = push(dbRecipesRef);
+
+            set(newRecipePostRef, newRecipe);
+
+            // TODO: is this where i need to get the id for julia?
         }
     }
 
