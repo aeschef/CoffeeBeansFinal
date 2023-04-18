@@ -2,10 +2,10 @@
     position: fixed;
     top: 80%;
     left: 80%;
-    height: 60px;
-    width: 60px;
+    height: 50px;
+    width: 50px;
     border-radius: 100%;
-    background-color: darkgray;
+    background-color: white;
 }
 
 .add-space {
@@ -54,7 +54,21 @@
     right: 8%;
 }
 
+.num_button {
+    border: none;
+    background-color: white;
+}
+
 
 .edit-modal-header {
     margin-top: 1rem;
+}
+
+.input_group {
+    justify-content: inline;
+}
+
+.val {
+    margin-right: 0%;
+    justify-content: center;
 }
