@@ -1,143 +1,17 @@
-import Button from 'react-bootstrap/Button';
 import React, { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import EditRecipePopup from './EditRecipe'
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import "../recipes.css";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Row';
+import Dropdown from 'react-bootstrap/DropDown';
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
-
-function HandleAddtoMealPlan({groceryList, addToGL}) {
-    const [isShowing, setShow] = useState(false);
-    const [newList, addtoList] = useState([]);
-
-    const list = [{value:"bonebroth", label:"bonebroth"},
-    {value:"rice", label:"rice"},
-    {value:"lemon juice", label:"lemon juice"},
-    {value:"eggs", label:"eggs"},
-    {value:"chicken", label:"chicken"},
-    {value:"dill", label:"dil"}];
-
-    const handleOpen =()=> {
-        console.log(groceryList[0])
-        setShow(true);
-    };
-    
-    const closePopup =() => {
-        setShow(false);
-    };
-    
-    const handleSave = () => {
-        addToGL([
-            ...newList,
-            ...groceryList
-           ]);
-        setShow(false);
-    };
-
-    const handleSaveAll = () => {
-        addToGL([
-            ...groceryList,
-            ...list
-        ]);
-        setShow(false);
-    };
-
-
-    const handleCheck = (event) => {
-        if(event.target.checked){
-        const itemName = event.target.value;
-           const item = {value:itemName, label:itemName};
-           console.log(item + "added to inventory");
-           addtoList([
-            ...newList,
-            {value:itemName, label:itemName}
-           ]);
-        }
-    };
-    return (
-        <>
-            <button onClick={handleOpen}>Add Recipe to Meal Plan</button>
-            <Modal show={isShowing} onHide={closePopup} centered>
-                <Modal.Header closeButton> Add to Grocery List? </Modal.Header>
-                <Modal.Body>
-                    <Container>
-                        <Row>
-                            <Button variant="secondary" onClick={handleSaveAll}>Select All & Add </Button>
-                        </Row>
-                        <Row>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="bone broth"
-                                onChange={handleCheck}
-                                />
-                                bone broth
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="rice"
-                                onChange={handleCheck}
-                                />
-                                rice
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="eggs"
-                                onChange={handleCheck}
-                                />
-                                eggs
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="lemon juice"
-                                onChange={handleCheck}
-                                />
-                                lemon juice
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="chicken"
-                                onChange={handleCheck}
-                                />
-                                chicken
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                name="lang"
-                                value="dill"
-                                onChange={handleCheck}
-                                />
-                                dill
-                            </label>
-                            
-                        </Row>
-                        <Row>
-                            <Col>
-                                <Button variant="danger">Cancel</Button>
-                            </Col>
-                            <Col>
-                                <Button variant="success" onClick={handleSave}>Save</Button>
-                            </Col>
-                        </Row>
-                    </Container>
-
-                </Modal.Body>
-            </Modal>
-        </>
-    );
-}
+import HandleAddtoMealPlan from './MealComplete';
 
 // popup for viewing a recipe
 export default function ViewRecipePopup(props) {
