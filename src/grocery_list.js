@@ -148,7 +148,7 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
  * displays the category name and the elements it contains
  * takes in the list of items in the gorcery list currently
  */
-function ListCategory({ user, database, set, refresh, setRefresh, accessCode, auth, data}) {
+function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, data}) {
     //console.log("LIST CATEGORY");
     //console.log(database);
 
