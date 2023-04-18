@@ -159,13 +159,20 @@ export default function ViewRecipePopup(props) {
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
-  // saving a reference to the current recipe being viewed
-  const [currentRecipe, setCurrentRecipe] = useState([])
+  // TODO: megan's code starts here
+  const currentRecipe = props.recipes[props.indexOfRecipeToView];
+  // TODO: megan's code ends here
 
-  useEffect(()=> {
-    let item = props.recipes.filter((recipe) => recipe.key === props.indexOfRecipeToView)
-    setCurrentRecipe(item)
-  }, [])
+// TODO: julia's code starts here
+// TODO: before committing new code, pls double check that both meal plan and recipes RecipeCards work! thank youuu
+//   // saving a reference to the current recipe being viewed
+//   const [currentRecipe, setCurrentRecipe] = useState([])
+
+//   useEffect(()=> {
+//     let item = props.recipes.filter((recipe) => recipe.key === props.indexOfRecipeToView)
+//     setCurrentRecipe(item)
+//   }, [])
+// TODO: julia's code ends here
 
   const recipeIngredients = currentRecipe?.ingredients?.map(
           (ingredient, index) => <li key={index}>{ingredient.phrase.replaceAll("\"", "")}</li>);
