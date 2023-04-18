@@ -172,17 +172,12 @@ function Profile() {
     );
 }
 
-const AccountHome = ({login, setLogin}) => {
+const AccountHome = ({login, setLogin, accessCode}) => {
     return (
         <Container fluid>
             <Row>
                 <Col>
                     <h1>Account</h1>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <h1>Hi Mirya!</h1>
                 </Col>
             </Row>
             
@@ -196,7 +191,7 @@ const AccountHome = ({login, setLogin}) => {
         
             <Row>
             <Alert key='success' variant='success'>
-                Access Code: 
+                Access Code: {accessCode}
             </Alert>
             </Row>
             <SignOut login={login} setLogin={setLogin}></SignOut>
