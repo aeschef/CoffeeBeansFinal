@@ -165,7 +165,6 @@ export default function RecipesHome(props) {
         }
     }
 
-    // TODO: edit
     const shouldBeShown = (recipe) => {
         if (showAllRecipes) {
             return true;
@@ -296,8 +295,6 @@ function AddRecipePopup(props) {
             var newRecipePostRef = push(dbRecipesRef);
 
             set(newRecipePostRef, newRecipe);
-
-            // TODO: is this where i need to get the id for julia?
         }
     }
 
@@ -380,8 +377,14 @@ function AddRecipePopup(props) {
                         </div>
                         
 
-                        {/* tags entry - TODO: format differently */}
+                        {/* tags entry */}
                         <Form.Label>Tags:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                            </div>
+                        </div>
                         <Form.Control 
                             type="text" 
                             name="tags"
@@ -389,12 +392,12 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
 
-                        {/* ingredients entry - TODO: format differently */}
+                        {/* ingredients entry */}
                         <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
                         <div className='information'>
                             <div className='info-tooltip'>
                                 &#x1F6C8;
-                                <span className="info-tooltip-text">Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
                             </div>
                         </div>
                         <Form.Control 
@@ -405,8 +408,14 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
 
-                        {/* steps entry - TODO: format differently */}
+                        {/* steps entry */}
                         <Form.Label>Steps:</Form.Label>
+                        <div className='information'>
+                            <div className='info-tooltip'>
+                                &#x1F6C8;
+                                <span className="info-tooltip-text">Each step should be on its own line.</span>
+                            </div>
+                        </div>
                         <Form.Control 
                             type="text"
                             as="textarea" 
@@ -520,13 +529,6 @@ function FilterPopup(props) {
                     
                     {/* filtering options */}
                     <h6>Filter by Tags:</h6>
-                    {/* <p>Energy Required</p>
-                    <div>{energyLevelCheckboxes}</div>
-                    <p>Time Required</p>
-                    <div>{timeLevelCheckboxes}</div>
-                    <p>Ingredients Already Owned</p>
-                    <div>{inventoryLevelCheckboxes}</div> */}
-                    {/* TODO: 'deselect all' button */}
                     <div className="form-check">
                         <input className="form-check-input" type="checkbox" id="select-all" checked={props.showAllRecipesCheckboxValue} onChange={handleShowAllCheckboxChange}></input>
                         <label className="form-check-label" htmlFor="select-all">
