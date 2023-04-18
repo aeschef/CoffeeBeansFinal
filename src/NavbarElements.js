@@ -23,7 +23,7 @@ import InventoryHome from './inventory.js';
 import MealPlanHome from './meal_plan';
 import RecipesHome from './recipes';
 import AccountHome from './account';
-import { getDatabase, ref, set, child, get, update, getReference, push } from "firebase/database";
+import { getDatabase, ref, set, child, get, update, getReference, push, onValue } from "firebase/database";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -31,7 +31,6 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     console.log(db)
     const auth = getAuth(props.app)
-
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
 
@@ -53,6 +52,9 @@ function NavbarElements(props) {
             }
         })
     }
+    const [accessCode, setAccess] = useState("");
+    //array for inventory personal items
+
 
 
     // Populates pages with data for the current user
@@ -76,6 +78,23 @@ function NavbarElements(props) {
             }
         })
     }, [])
+
+
+    const dbRef = ref(db);
+        get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
+            if (snapshot.exists()) {
+                setAccess(snapshot.val());
+                console.log("HI" + accessCode + snapshot.val());
+                console.log()
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+
+
+
 
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
@@ -105,29 +124,22 @@ function NavbarElements(props) {
         { value: "flour", label: "flour" }
     ]);
 
-
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/grocery_list.js" element={
-                    <GroceryListHome itemsInPersonalGL={itemsInPersonalGL}
-                        itemsInSharedGL={itemsInSharedGL}
-                        addPersonalItemGL={addPersonalItemGL}
-                        addSharedItemGL={addSharedItemGL}
-                        itemsInPersonalInv={itemsInPersonalInv}
-                        itemsInSharedInv={itemsInSharedInv}
-                        addPersonalItemInv={addPersonalItemInv}
-                        addSharedItemInv={addSharedItemInv}> </GroceryListHome>
+                    <GroceryListHome
+                        props={props}
+                        //databaseArr_p={categories}
+                        //databaseArr_s={categories_s}
+                        accessCode={accessCode}></GroceryListHome>
                 } />
                 <Route path="/inventory.js" element={
-                    <InventoryHome itemsInPersonalInv={itemsInPersonalInv}
-                        itemsInSharedInv={itemsInSharedInv}
-                        addPersonalItemInv={addPersonalItemInv}
-                        addSharedItemInv={addSharedItemInv}
-                        itemsInPersonalGL={itemsInPersonalGL}
-                        itemsInSharedGL={itemsInSharedGL}
-                        addPersonalItemGL={addPersonalItemGL}
-                        addSharedItemGL={addSharedItemGL}>  </InventoryHome>
+                    <InventoryHome
+                        props={props}
+                        //databaseArray_p={categories_i}
+                        //databaseArray_s={categories_is}
+                        accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="/meal_plan.js" element={
                     <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
@@ -211,8 +223,6 @@ function NavbarElements(props) {
                             { }
                         </Row>
                     </Col>
-
-
                 </span>
             </nav>
             <div>

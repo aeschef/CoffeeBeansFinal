@@ -2,12 +2,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useState, Component } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
 import './css/inventory.css';
@@ -21,13 +23,20 @@ import CategorysPopup from './modals/EditGLICategories';
  * Component determines which tab to show and calls 
  * the components necessary to display that tab. 
  */
-const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
-
+const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, accessCode, refresh, setRefresh }) => {
+    //console.log("SHOW TAB");
+    //console.log(databaseArr_p);
     const [key, setKey] = useState('personal');
     // stores if we should be showing the personal or shared tab
     const [showPersonal, setPersonal] = useState(true);
-    const handlePersonal = () => setPersonal(true);
-    const handleShared = () => setPersonal(false);
+    const handlePersonal = () => {
+        setPersonal(true)
+        setKey('personal');
+    };
+    const handleShared = () => {
+        setPersonal(false)
+        setKey('shared');
+    };
     // displays the toggle buttons and handles switching functionality
     const handleSelect = (key) => {
         if (key == 'personal') {
@@ -45,24 +54,16 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
-            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonalInv : itemsInSharedInv} 
-    addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}></AddItem>
-            {/*<Row>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handlePersonal}>personal</Button>
-                    </div>
-                </Col>
-                <Col>
-                    <div className="d-grid gap-2">
-                        <Button onClick={handleShared}>shared</Button>
-                    </div>
-                </Col>
-            </Row>
-            <ListCategory list={showPersonal ? itemsInPersonalInv : itemsInSharedInv}></ListCategory>
-            <AddItem  list={showPersonal ? itemsInPersonalInv : itemsInSharedInv} 
-    addToList={showPersonal ? addPersonalItemInv : addSharedItemInv}></AddItem>*/}
+            <ListCategory
+                user={authentication}
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
+            <AddItem
+                database={database}
+                authentication={authentication}
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
+                accessCode={showPersonal ? 0 : accessCode}
+                refresh={refresh}
+                setRefresh={setRefresh}></AddItem>
         </Container>
     );
 
@@ -72,31 +73,42 @@ const ShowTab = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, add
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ list }) {
+function ListCategory({ user, databaseArr }) {
+    let count = 0;
+
     return (
+
         <div className="category-rectangle">
-            <Row>
-
-                <Col>
-                    <span>category name</span>
-                </Col>
-                <Col>
-                    <CategorysPopup></CategorysPopup>
-                </Col>
-
-            </Row>
-            {list.map((x, i) =>
+            {databaseArr.map(categories =>
                 <Row>
-                    <label key={i}>
-                        {x.label}
-                    </label>
+                    {console.log(categories)}
+                    <div className="d-flex justify-between category-header">
+                        <Col>
+                            <div className="mr-auto">
+                                {categories.value}
+                            </div>
+                        </Col>
+                        <CategorysPopup></CategorysPopup>
+                    </div>
+                    {categories.data.map((cat, i) =>
+                        <div className="left-spacing">
+                            {console.log("WTF")}
+                            <Row>
+                                <Col>
+                                    <label key={i}>
+                                        {cat.item_name}
+                                    </label>
+                                </Col>
+                            </Row>
+                        </div>
+                    )}
                 </Row>
             )}
-            <Row>
 
-            </Row>
         </div>
+
     );
+
 }
 
 /**
@@ -118,7 +130,7 @@ const RemoveItem = () => {
  * list -> list that contains items
  * addtoList-> function that allows list to be alteredd
  */
-const AddItem = ({ list, addToList }) => {
+const AddItem = ({ database, authentication, databaseArr, accessCode, refresh, setRefresh }) => {
 
     /** constants storing state for this page until we have a database */
     const [show, setShow] = useState(false);
@@ -129,20 +141,80 @@ const AddItem = ({ list, addToList }) => {
     /* Closes the modal and saves the state to the list*/
     const handleClose = () => {
         setShow(false)
-        const item = { value: itemName, label: itemName }
+        /*const item = { value: itemName, label: itemName }
         console.log(item)
         addToList([
             ...list,
-            { value: itemName, label: itemName }])
+            { value: itemName, label: itemName }])*/
     };
+    
 
     const handleShow = () => setShow(true);
+
     const setItemName = (event) => {
         setName(event.target.value);
     };
+
     const setCategoryName = (event) => {
-        setCategory(event.target.value);
+        let lowerCase = event.target.value.toLowerCase();
+        setCategory(lowerCase);
     };
+
+    const addToDatabase = () => {
+        setShow(false);
+        let found = false;
+        let count_c = 0;
+        databaseArr.map(category => {
+            let normal = category.value;
+            let lowerCaseCategory = category.value.toLowerCase();
+            if (categoryName === lowerCaseCategory) {
+                category.value = normal;
+                found = true;
+                let count = 0;
+                category.data.map((cat, i) => {
+                    count += 1;
+                })
+                //const item = { item_name: itemName };
+                let users = '/users/' + authentication.currentUser.uid;
+                let group = '/groups/' + accessCode;
+                let use = "";
+                if (("" + accessCode).length === 1) {
+                    use = users;
+                } else {
+                    use = group;
+                }
+                //TODO: figure out how to do push
+                const dbRefIP = ref(database, use + '/inventory/categories/' + category.value);
+                push(dbRefIP, {
+                    item_name: itemName
+                })
+
+            }
+            count_c += 1;
+            setRefresh(true);
+        })
+        if (!found) {
+            let obj = {};
+            obj[count_c] = categoryName;
+            let users = '/users/' + authentication.currentUser.uid;
+            let group = '/groups/' + accessCode;
+            let use = "";
+            if (("" + accessCode).length === 1) {
+                use = users;
+            } else {
+                use = group;
+            }
+            const dbRefIC = ref(database, use + '/inventory/categories/' + categoryName);
+            push(dbRefIC, {
+                item_name: itemName
+            })
+            let glAdd = {};
+            let dummy = {item_name: ""};
+            glAdd[0] = dummy;
+            update(ref(database, use + '/grocery_list/categories/' + categoryName), glAdd);
+            setRefresh(true);
+        }
+    }
 
     // modal to add element to inventory
     return (
@@ -168,7 +240,6 @@ const AddItem = ({ list, addToList }) => {
                                 type="text"
                                 placeholder="Category Name"
                                 onChange={setCategoryName}
-                                autoFocus
                             />
                         </Form.Group>
                     </Form>
@@ -183,7 +254,7 @@ const AddItem = ({ list, addToList }) => {
                     >
                         Filter out checked off buttons
                     </ToggleButton>
-                    <Button variant="primary" onClick={handleClose}>Save</Button>
+                    <Button variant="primary" onClick={addToDatabase}>Save</Button>
                 </Modal.Body>
             </Modal>
         </>
@@ -191,10 +262,70 @@ const AddItem = ({ list, addToList }) => {
 };
 
 
-const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemInv, addSharedItemInv, itemsInPersonalGL, itemsInSharedGL, addPersonalItemGL, addSharedItemGL }) => {
+const InventoryHome = ({ props, accessCode }) => {
+    const db = getDatabase(props.app)
+    const auth = getAuth(props.app)
+    const [categories_i, setCategory_i] = useState([]);
+    const [categories_is, setCategory_is] = useState([]);
+    const [accessCode_s, setAccess] = useState("");
 
+    /**
+     * Controls when the page will refresh to display the list of items
+     * Prevents the infinite population issue
+     */
+    const [refresh, setRefresh] = useState(true);
 
+    /**
+     * Creates the array that is later used to display the shared inventory
+     */
+    useEffect(() => {
+        if (accessCode_s) {
+            const dbRefS = ref(db, '/groups/' + accessCode_s + '/inventory/categories/');
+            onValue(dbRefS, (snapshot) => {
+                const accessData = []
+                snapshot.forEach((childSnapshot) => {
+                    const dbRefS = ref(db, '/groups/' + accessCode_s + '/inventory/categories/' + childSnapshot.key);
+                    let dataI = []
+                    const childData = childSnapshot.val();
+                    let keys = Object.keys(childSnapshot.val());
+                    keys.forEach((id) => {
+                        dataI.push({ key: id, item_name: childData[id].item_name })
+                    })
+                    accessData.push({ value: childSnapshot.key, data: dataI })
+                });
+                setCategory_is(accessData);
+            }, {
+                onlyOnce: true
+            });
+        }
+        setRefresh(false);
+    }, [accessCode_s, refresh])
 
+    /**
+     * Creates array that is used to display personal inventory
+     */
+    useEffect(() => {
+        const dbRefP = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        onValue(dbRefP, (snapshot) => {
+            const dataCat = []
+            snapshot.forEach((childSnapshot) => {
+                const dbRefC = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/' + childSnapshot.key);
+                let dataI = []
+                const childData = childSnapshot.val();
+                let keys = Object.keys(childSnapshot.val());
+                keys.forEach((id) => {
+                    dataI.push({ key: id, item_name: childData[id].item_name })
+                    console.log("Item_name: " + childData[id].item_name)
+                })
+                dataCat.push({ value: childSnapshot.key, data: dataI })
+            });
+            setCategory_i(dataCat);
+        }, {
+            onlyOnce: true
+        });
+        setAccess(accessCode);
+        setRefresh(false);
+    }, [refresh])
 
     return (
         <Container fluid="md">
@@ -206,14 +337,14 @@ const InventoryHome = ({ itemsInPersonalInv, itemsInSharedInv, addPersonalItemIn
                     <FilterPopup></FilterPopup>
                 </Col>
             </Row>
-            <ShowTab itemsInPersonalGL={itemsInPersonalGL}
-                itemsInSharedGL={itemsInSharedGL}
-                addPersonalItemGL={addPersonalItemGL}
-                addSharedItemGL={addSharedItemGL}
-                itemsInPersonalInv={itemsInPersonalInv}
-                itemsInSharedInv={itemsInSharedInv}
-                addPersonalItemInv={addPersonalItemInv}
-                addSharedItemInv={addSharedItemInv}></ShowTab>
+            <ShowTab
+                database={db}
+                authentication={auth}
+                databaseArr_p={categories_i}
+                databaseArr_s={categories_is}
+                accessCode={accessCode_s}
+                refresh={refresh}
+                setRefresh={setRefresh}></ShowTab>
 
 
         </Container>
