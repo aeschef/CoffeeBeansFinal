@@ -36,11 +36,10 @@ const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
     )
 }
 
-const HandleAddtoMealPlan = (props) =>{
+const HandleAddtoMealPlan = (props) => {
     
     const [show, setShow] = useState(false);
 
-    const [ingredients, setIngredients] = useState([]);
     const [remInv, setRemInv] = useState(false);
 
     const [addToGL, setAddToGL] = useState(false);
@@ -85,6 +84,7 @@ const HandleAddtoMealPlan = (props) =>{
     };
 
     const handleSave = () => {
+        handleClose();
         const auth = getAuth(props.app)
         const database = getDatabase();
         let inventoryRef = ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories');
@@ -98,41 +98,15 @@ const HandleAddtoMealPlan = (props) =>{
                     childSnapshot.forEach((thing)=>{
                         console.log("thing: " + thing.val().item_name)
                         if(item === thing.val().item_name){
-                            console.log("removing" + '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key);
+                            console.log("removing" + '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.key);
                             // remove
 
-                            remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key));
+                            remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.key));
                         }
                     })                    
-                }
-                count_c += 1;
-            });
-
-            // We did not already have ingredient tab... make one!
-            if(!found){
-                // add category + item
-                let add={};
-                const item = {item_name: ingredients[0], item_num:1};
-                add[count_c] = {value: 'Ingredients'};
-                console.log(add);
-                let itemAdd= {};
-                itemAdd[0] = item;
-                update(ref(database, '/users/' + props.auth.currentUser.uid + '/grocery_list/categories/Ingredients'), item);
-                //THEN add the rest of the items
-                let count = 0;
-                ingredients.map( (itemName) => {
-                    //skip the first
-                    if(count != 0){
-                        // add the rest
-                        const item = {item_name: itemName, item_num: 1};
-                        update(ref(database, '/users/' + props.auth.currentUser.uid + '/grocery_list/categories/Ingredients'), item);
-                        found = true;
-                    }
-                    count += 1;
                 })
-
-            }
-        }
+            });
+        })
 
         // getting a reference to the 'meals' section of the selected category
         const dbCategoryMealsRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/categories/' + selectedCategory + '/meals/');
@@ -148,10 +122,6 @@ const HandleAddtoMealPlan = (props) =>{
             type: "Recipe"
         });
     };                  
-                });
-            }); 
-        });
-    }
 
     return (        
         <>
