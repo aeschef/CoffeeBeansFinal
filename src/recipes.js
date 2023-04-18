@@ -14,9 +14,32 @@ export default function RecipesHome(props) {
 
     const [recipes, setRecipes] = useState([]);
 
+    const [itemsInPersonalInventory, setItemsInPersonalInventory] = useState([]);
+    const [itemsInSharedInventory, setItemsInSharedInventory] = useState([]);
+
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
+
+    // helper to get a list of items from a snapshot of an inventory
+    // parameters: snapshot
+    // returns: list
+    const inventoryListHelper = ((snapshot) => {
+        var outputList = [];
+        
+        const allCategoriesObject = snapshot.val();
+        const allCategoriesKeys = Object.keys(allCategoriesObject);
+        for (const categoryKey of allCategoriesKeys) {
+            const allItemsInCategoryObject = {...allCategoriesObject[categoryKey]};
+            const allItemsInCategoryKeys = Object.keys(allItemsInCategoryObject);
+            for (const itemInCategoryKey of allItemsInCategoryKeys) {
+                const itemObject = {...allItemsInCategoryObject[itemInCategoryKey]};
+                outputList.push(itemObject.item_name);
+            }
+        }
+
+        return outputList;
+    })
 
     // getting data from dp
     useEffect(() => {
@@ -38,6 +61,28 @@ export default function RecipesHome(props) {
             })
             setRecipes(allRecipesArray);
         });
+
+        // getting personal inventory from db!
+        const dbPersonalListRef = ref(db, '/users/' + auth.currentUser.uid + '/inventory/categories/');
+        onValue(dbPersonalListRef, (snapshot) => {
+            const newItemsInPersonalInventory = inventoryListHelper(snapshot);
+            setItemsInPersonalInventory(newItemsInPersonalInventory);
+        })
+
+        // getting group id from db
+        var groupID;
+        const dbGroupRef = ref(db, '/users/' + auth.currentUser.uid + '/account/groupID');
+        onValue(dbGroupRef, (snapshot) => {
+            groupID = snapshot.val();
+        })
+
+        // getting shared inventory from db!
+        const dbSharedListRef = ref(db, '/groups/' + groupID + '/inventory/categories/');
+        onValue(dbSharedListRef, (snapshot) => {
+            const newItemsInSharedInventory = inventoryListHelper(snapshot);
+            setItemsInSharedInventory(newItemsInSharedInventory);
+        })
+        
     }, []);
 
     // searchInput for the search bar
@@ -106,10 +151,8 @@ export default function RecipesHome(props) {
             const timeInMinsB = recipeB.minsRequired + (recipeB.hoursRequired * 60);
             return timeInMinsA - timeInMinsB;
         } else if (sortRule == sortRules["inventory"]) {
-            const listOfItemsInSharedInventory = props.itemsInSharedInventory.map((item) => item.value);
-            const listOfItemsInPersonalInventory = props.itemsInPersonalInventory.map((item) => item.value);
-            const inInventoryA = recipeA.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
-            const inInventoryB = recipeB.ingredients.filter((ingredient) => (listOfItemsInSharedInventory.includes(ingredient.focus) || listOfItemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryA = recipeA.ingredients.filter((ingredient) => (itemsInSharedInventory.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
+            const inInventoryB = recipeB.ingredients.filter((ingredient) => (itemsInSharedInventory.includes(ingredient.focus) || itemsInPersonalInventory.includes(ingredient.focus))).length;
             const numIngredientsA = recipeA.ingredients.length;
             const numIngredientsB = recipeB.ingredients.length;
             const inventoryPercentageA = inInventoryA / numIngredientsA;
