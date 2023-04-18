@@ -93,9 +93,6 @@ function NavbarElements(props) {
             console.error(error);
         });
 
-
-
-
     // Dummy items for now lol   
     const [itemsInPersonalInv, addPersonalItemInv] = useState([
         {value:"bone broth", label:"bone broth"},
@@ -168,7 +165,7 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/grocery_list.js" className='nav-link'>List</Link>
+                            <Link to="/grocery_list.js" className='nav-link text-style'>List</Link>
                         </Row>
                     </Col>
                 </span>
@@ -193,7 +190,7 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/meal_plan.js" className='nav-link'>Meal Plan</Link>
+                            <Link to="/meal_plan.js" className='nav-link text-style'>Meal Plan</Link>
                             { }
                         </Row>
                     </Col>
@@ -206,7 +203,7 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/recipes.js" className='nav-link'>Recipes</Link>
+                            <Link to="/recipes.js" className='nav-link text-style'>Recipes</Link>
                             { }
                         </Row>
                     </Col>
@@ -219,7 +216,7 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/account.js" className='nav-link' id="account">Account</Link>
+                            <Link to="/account.js" className='nav-link text-style' id="account">Account</Link>
                             { }
                         </Row>
                     </Col>
