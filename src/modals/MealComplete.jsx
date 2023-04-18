@@ -126,7 +126,7 @@ const HandleAddtoMealPlan = (props) => {
     return (        
         <>
             {/*  */}
-            <Button id='ran-out-of-ingredient' onClick={showModal}> Run out of something? click here! </Button>
+            <Button id='ran-out-of-ingredient' onClick={showModal}>Recipe Complete</Button>
 
              {/* add to GL popup modal */}
             <Modal show={show} onHide={handleClose} centered  
@@ -134,12 +134,13 @@ const HandleAddtoMealPlan = (props) => {
               
               {/* modal header with title */}
               <Modal.Header closeButton>
-                  <Modal.Title>Add Items to Grocery List?</Modal.Title>
+                  <Modal.Title>Recipe Complete</Modal.Title>
               </Modal.Header> 
 
               {/* modal body with dropdown checkers and submit button */}
               <Modal.Body>
                 <Container> 
+                    <h5>Add to Meal Plan</h5>
                     <h6>Category</h6>
                     <select defaultValue="default" onChange={(event) => setSelectedCategory(event.target.value)}>
                         <option value="default" hidden> </option>
@@ -157,6 +158,9 @@ const HandleAddtoMealPlan = (props) => {
                         <option value="Friday">Friday</option>
                         <option value="Saturday">Saturday</option>
                     </select>
+
+                    <br></br>
+                    <h5>Remove Ingredients from Inventory</h5>
 
                     <Button onClick={handleSelect}> Select All </Button>
                     <IngredientItems ingList={ingList} 

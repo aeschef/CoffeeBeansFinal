@@ -94,7 +94,6 @@ export default function ViewRecipePopup(props) {
                         recipes={props.recipes}
                         index={props.indexOfRecipeToView}
                         ></HandleAddtoMealPlan>
-                  <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
           <EditRecipePopup app={props.app} recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
