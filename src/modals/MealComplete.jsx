@@ -49,6 +49,10 @@ const HandleAddtoMealPlan = (props) =>{
         setShow(false);
     };
 
+    const handleSelect = () =>{
+        setIngredients(props.recipes[props.index].ingredients);
+    };
+
     const handleSave = () => {
         const auth = getAuth(props.app)
         const database = getDatabase();
@@ -59,11 +63,17 @@ const HandleAddtoMealPlan = (props) =>{
             ingList.map( item => {
                 console.log("map" + item);
                 snapshot.forEach((childSnapshot) =>{
-                    console.log("child" + childSnapshot.val());
-                    if(item === childSnapshot.val()){
-                        // remove
-                        remove(ref(database, '/user/' + auth.currentUser.uid + '/inventory/'+ childSnapshot.key));
-                    }
+                    let category = childSnapshot.key;
+                    childSnapshot.forEach((thing)=>{
+                        console.log("thing: " + thing.val().item_name)
+                        if(item === thing.val().item_name){
+                            console.log("removing" + '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key);
+                            // remove
+
+                            remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.val().key));
+                        }
+                    })
+                   
                 });
             }); 
         });
@@ -86,14 +96,14 @@ const HandleAddtoMealPlan = (props) =>{
               {/* modal body with dropdown checkers and submit button */}
               <Modal.Body>
                 <Container> 
-                    <Button> Select All </Button>
+                    <Button onClick={handleSelect}> Select All </Button>
                     <IngredientItems ingList={ingList} 
                                 setIngredients={setIngredients}
                                 recipes={props.recipes}
                                 index={props.index}></IngredientItems>
                     <Row>
                         <Col>
-                            <Button variant="danger">Cancel</Button>
+                            <Button variant="danger" onClick={handleClose}>Cancel</Button>
                         </Col>
                         <Col>
                             <Button variant="success" onClick={handleSave}>Save</Button>
