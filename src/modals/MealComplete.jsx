@@ -174,14 +174,11 @@ const HandleAddtoMealPlan = (props) =>{
 
         set(newMealPostRef, {
             completed: false,
-            label: "hey",
+            label: props.recipeTitle,
             notes: "",
             tags: selectedDay,
             type: "Recipe"
         });
-
-        console.log(selectedCategory);
-        console.log(selectedDay);
     };
 
 

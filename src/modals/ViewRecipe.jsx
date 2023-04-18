@@ -88,7 +88,7 @@ export default function ViewRecipePopup(props) {
                   <h6>Notes</h6>
                   <p id="notes">{currentRecipe?.notes}</p>
                     <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
-                        auth={props.auth}></HandleAddtoMealPlan>
+                        auth={props.auth} recipeTitle={currentRecipe?.title}></HandleAddtoMealPlan>
                   <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
