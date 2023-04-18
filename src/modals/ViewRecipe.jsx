@@ -181,7 +181,7 @@ export default function ViewRecipePopup(props) {
               
               {/* modal header with title, edit button, and close button */}
               <Modal.Header closeButton>
-                  <Modal.Title>Recipe Title</Modal.Title>
+                  <Modal.Title>{currentRecipe?.title}</Modal.Title>
                   <button onClick={() => handleOpenEditPopup(props.indexOfRecipeToView)}>Edit</button>
               </Modal.Header>
               
@@ -222,7 +222,7 @@ export default function ViewRecipePopup(props) {
                   <button>Recipe Complete</button>
               </Modal.Body>
           </Modal>
-          <EditRecipePopup recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
+          <EditRecipePopup app={props.app} recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       
