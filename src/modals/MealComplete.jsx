@@ -1,11 +1,11 @@
 import Button from 'react-bootstrap/Button';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Container from 'react-bootstrap/Row';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
@@ -55,7 +55,30 @@ const HandleAddtoMealPlan = (props) =>{
 
     const [addToGL, setAddToGL] = useState(false);
 
+    // database info
+    const auth = getAuth(props.app)
+    const db = getDatabase(props.app)
 
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [selectedDay, setSelectedDay] = useState(null);
+
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        // getting a reference to the 'meal plan - categories' section of this user's area of the database
+        const dbMPCategoriesRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/categories/');
+
+        // runs upon startup and every time the data changes
+        onValue(dbMPCategoriesRef, (snapshot) => {
+            
+            // getting data from the spot in the db that changes
+            // good source: https://info340.github.io/firebase.html#firebase-arrays
+            const allCategoriesObject = snapshot.val();
+            const allCategoriesKeys = Object.keys(allCategoriesObject);
+            console.log(allCategoriesKeys);
+            setCategories(allCategoriesKeys);
+        });
+    }, []);
 
 
     const showModal = () => {
@@ -142,6 +165,23 @@ const HandleAddtoMealPlan = (props) =>{
 
             }
         }
+
+        // getting a reference to the 'meals' section of the selected category
+        const dbCategoryMealsRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/categories/' + selectedCategory + '/meals/');
+
+        // getting a reference to new place to post
+        var newMealPostRef = push(dbCategoryMealsRef);
+
+        set(newMealPostRef, {
+            completed: false,
+            label: "hey",
+            notes: "",
+            tags: selectedDay,
+            type: "Recipe"
+        });
+
+        console.log(selectedCategory);
+        console.log(selectedDay);
     };
 
 
@@ -164,6 +204,24 @@ const HandleAddtoMealPlan = (props) =>{
               {/* modal body with dropdown checkers and submit button */}
               <Modal.Body>
                 <Container> 
+                    <h6>Category</h6>
+                    <select defaultValue="default" onChange={(event) => setSelectedCategory(event.target.value)}>
+                        <option value="default" hidden> </option>
+                        {categories.map((category) => <option value={category}>{category}</option>)}
+                    </select>
+
+                    <h6>Day</h6>
+                    <select defaultValue="default" onChange={(event) => setSelectedDay(event.target.value)}>
+                        <option value="default" hidden> </option>
+                        <option value="Sunday">Sunday</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                    </select>
+
                     <Button> Select All </Button>
                     <IngredientItems ingredients={ingredients} 
                                 setIngredients={setIngredients} 

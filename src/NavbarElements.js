@@ -29,7 +29,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 function NavbarElements(props) {
     const db = getDatabase(props.app)
-    console.log(db)
+    //console.log(db)
     const auth = getAuth(props.app)
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
@@ -104,7 +104,7 @@ function NavbarElements(props) {
         get(child(dbRef, '/users/' + auth.currentUser.uid + '/account/groupID')).then((snapshot) => {
             if (snapshot.exists()) {
                 setAccess(snapshot.val());
-                console.log("HI" + accessCode + snapshot.val());
+    //            console.log("HI" + accessCode + snapshot.val());
                 console.log()
             } else {
                 console.log("No data available");
