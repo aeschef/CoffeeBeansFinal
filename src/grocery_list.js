@@ -33,7 +33,6 @@ function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, a
         let updateNum = num + 1;
         updateDatabase(updateNum);
         //console.log(num + 1);
-
     }
 
     let dec_num = () => {
@@ -355,6 +354,8 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
             console.log("not found");
             let itemAdd = {};
             itemAdd[0] = item;
+
+            
             let users = '/users/' + auth.currentUser.uid;
             let group = '/groups/' + accessCode;
             let use = "";
@@ -363,11 +364,13 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
             } else {
                 use = group;
             }
+            
             {/*if (("" + accessCode).length == 1) {
                 update(ref(database, '/users/' + auth.currentUser.uid + '/grocery_list/categories/' + categoryName), itemAdd);
             } else {
                 update(ref(database, '/groups/' + accessCode + '/grocery_list/categories/' + categoryName), itemAdd);
             }*/}
+
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
             //set(ref(database, use + '/inventory/categories/'), categoryName);
             let invAdd = {};
