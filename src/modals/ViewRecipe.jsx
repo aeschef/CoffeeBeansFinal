@@ -13,6 +13,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 import HandleAddtoMealPlan from './AddToMealPlan';
 import CompleteRecipe from './CompleteRecipe';
+import OutOfIngredients from './AlternateButton';
 
 // popup for viewing a recipe
 export default function ViewRecipePopup(props) {
@@ -59,7 +60,7 @@ export default function ViewRecipePopup(props) {
     
       <>
           {/* view popup modal */}
-          <Modal show={props.showViewPopup} onHide={props.handleCloseViewPopup}>
+          <Modal show={props.showViewPopup} onHide={props.handleCloseViewPopup} fullscreen={true}>
               
               {/* modal header with title, edit button, and close button */}
               <Modal.Header closeButton>
@@ -91,7 +92,14 @@ export default function ViewRecipePopup(props) {
                   
                   {/* recipe ingredients */}
                   <h6>Ingredients</h6>
+                  {/* !!!!! Option B for AB Testing */}
+                  <OutOfIngredients auth={props.auth} 
+                        recipeTitle={currentRecipe?.title}
+                        app={props.app} 
+                        recipes={props.recipes}
+                        index={props.indexOfRecipeToView}></OutOfIngredients>
                   <ul>{recipeIngredients}</ul>
+                  
                   
                   {/* recipes steps */}
                   <h6>Steps</h6>
@@ -102,12 +110,13 @@ export default function ViewRecipePopup(props) {
                   <p id="notes">{currentRecipe?.notes}</p>
 
                 {/* Completed the recipe... run out of anything? */}
-                <CompleteRecipe databaseCatGL={props.databaseCatGL}
+                {/* !!!!!!!!!!! A8 option A !!!!!!!!!!!!!!*/}
+                {/* <CompleteRecipe databaseCatGL={props.databaseCatGL}
                     auth={props.auth} 
                     recipeTitle={currentRecipe?.title}
                     app={props.app} 
                     recipes={props.recipes}
-                    index={props.indexOfRecipeToView}></CompleteRecipe>
+                    index={props.indexOfRecipeToView}></CompleteRecipe> */}
                     
                 {/* Add recipe to my meal plan? */}
                 <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}

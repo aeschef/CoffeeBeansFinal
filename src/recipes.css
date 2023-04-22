@@ -99,3 +99,7 @@ h1 {
 #notes {
     white-space: pre-wrap;
 }
+
+#ran-out-of-ingredient-alt {
+    color:#729701;
+}
