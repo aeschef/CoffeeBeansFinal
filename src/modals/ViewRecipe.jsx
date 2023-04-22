@@ -11,7 +11,8 @@ import Dropdown from 'react-bootstrap/DropDown';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
-import HandleAddtoMealPlan from './MealComplete';
+import HandleAddtoMealPlan from './AddToMealPlan';
+import CompleteRecipe from './CompleteRecipe';
 
 // popup for viewing a recipe
 export default function ViewRecipePopup(props) {
@@ -100,15 +101,34 @@ export default function ViewRecipePopup(props) {
                   <h6>Notes</h6>
                   <p id="notes">{currentRecipe?.notes}</p>
 
-                  <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
-                        auth={props.auth} recipeTitle={currentRecipe?.title}
-                        app={props.app} 
-                        recipes={props.recipes}
-                        index={props.indexOfRecipeToView}
-                        ></HandleAddtoMealPlan>
+                {/* Completed the recipe... run out of anything? */}
+                <CompleteRecipe databaseCatGL={props.databaseCatGL}
+                    auth={props.auth} 
+                    recipeTitle={currentRecipe?.title}
+                    app={props.app} 
+                    recipes={props.recipes}
+                    index={props.indexOfRecipeToView}></CompleteRecipe>
+                    
+                {/* Add recipe to my meal plan? */}
+                <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
+                    auth={props.auth} 
+                    recipeTitle={currentRecipe?.title}
+                    app={props.app} 
+                    recipes={props.recipes}
+                    index={props.indexOfRecipeToView}></HandleAddtoMealPlan>
               </Modal.Body>
-          </Modal>
-          <EditRecipePopup app={props.app} recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
+            </Modal>
+            <EditRecipePopup app={props.app} recipes={props.recipes} 
+                setRecipes={props.setRecipes} showEditPopup={showEditPopup} 
+                handleCloseEditPopup={handleCloseEditPopup} 
+                setInputs={setInputs} inputs={inputs} 
+                indexOfRecipeToEdit={indexOfRecipeToEdit} 
+                tagsInStringForm={tagsInStringForm} 
+                setTagsInStringForm={setTagsInStringForm} 
+                ingredientsInStringForm={ingredientsInStringForm} 
+                setIngredientsInStringForm={setIngredientsInStringForm} 
+                stepsInStringForm={stepsInStringForm} 
+                setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       

@@ -61,7 +61,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
 
   return (
     <>
-    <Modal show={open} onHide={onClose} centered>
+    <Modal show={open} onHide={onClose} centered >
       <Modal.Header closeButton>
         <Modal.Title>View Meal</Modal.Title>
       </Modal.Header>

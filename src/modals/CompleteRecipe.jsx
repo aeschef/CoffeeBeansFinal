@@ -11,9 +11,11 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 
 
 
-/* Retrieve ingredients for thsi recipe from the database Display in the */
+/* Retrieve's the current recipe's ingredients from database and displays them 
+    in an unordered list with checkboxes*/
 const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
 
+    // add ingredient to list if checked
     const addIngredient = (event) => {
         setIngredients([
             ...ingList,
@@ -21,22 +23,27 @@ const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
         ]);
     }
 
+    //display list
     return (
         <>
             {recipes[index].ingredients.map((ingredient)=>(
                <label>
-               <input type="checkbox"
-                value={ingredient.focus}
-                onChange={addIngredient}
-               />
-               {ingredient.focus}
-           </label> 
+                    <input type="checkbox"
+                        value={ingredient.focus}
+                        onChange={addIngredient}
+                    />
+                {ingredient.focus}
+                </label> 
             ))}
         </>
     )
 }
 
-const HandleAddtoMealPlan = (props) => {
+
+/**
+ * In charge of displaying Modal that allows user to add meal to their meal plan.
+ */
+const CompleteRecipe = (props) => {
     
     const [show, setShow] = useState(false);
 
@@ -47,27 +54,6 @@ const HandleAddtoMealPlan = (props) => {
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
-
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [selectedDay, setSelectedDay] = useState(null);
-
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        // getting a reference to the 'meal plan - categories' section of this user's area of the database
-        const dbMPCategoriesRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/categories/');
-
-        // runs upon startup and every time the data changes
-        onValue(dbMPCategoriesRef, (snapshot) => {
-            
-            // getting data from the spot in the db that changes
-            // good source: https://info340.github.io/firebase.html#firebase-arrays
-            const allCategoriesObject = snapshot.val();
-            const allCategoriesKeys = Object.keys(allCategoriesObject);
-            console.log(allCategoriesKeys);
-            setCategories(allCategoriesKeys);
-        });
-    }, []);
     
     const [ingList, setIngredients] = useState([]);
 
@@ -79,48 +65,54 @@ const HandleAddtoMealPlan = (props) => {
         setShow(false);
     };
 
-    const handleSelect = () =>{
-        setIngredients(props.recipes[props.index].ingredients);
-    };
-
-    const handleSave = () => {
+    /* Removes all ingredients of the recipe from the inventory. */
+    const handleSelect = () => {
         handleClose();
+
         const auth = getAuth(props.app)
         const database = getDatabase();
         let inventoryRef = ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories');
-        // for every ingredient in ingredients list check database
+
+        // for every ingredient in the recipe
         onValue(inventoryRef, (snapshot) => {
-            console.log("inv" + snapshot.val());
-            ingList.map( item => {
-                console.log("map" + item);
+            props.recipes[props.index].ingredients.map( item => {
                 snapshot.forEach((childSnapshot) =>{
                     let category = childSnapshot.key;
                     childSnapshot.forEach((thing)=>{
-                        console.log("thing: " + thing.val().item_name)
-                        if(item === thing.val().item_name){
-                            console.log("removing" + '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.key);
+                        // is it a match?
+                        if(item.focus === thing.val().item_name){
                             // remove
-
                             remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.key));
                         }
                     })                    
                 })
             });
-        })
+        })        
+    };
 
-        // getting a reference to the 'meals' section of the selected category
-        const dbCategoryMealsRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/categories/' + selectedCategory + '/meals/');
-
-        // getting a reference to new place to post
-        var newMealPostRef = push(dbCategoryMealsRef);
-
-        set(newMealPostRef, {
-            completed: false,
-            label: props.recipeTitle,
-            notes: "",
-            tags: selectedDay,
-            type: "Recipe"
-        });
+    /**
+     * Removes selected ingredients of the recipe from the inventory
+     */
+    const handleSave = () => {
+        handleClose();
+        const auth = getAuth(props.app)
+        const database = getDatabase();
+        let inventoryRef = ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories');
+        
+        // for every ingredient in ingredients list check database
+        onValue(inventoryRef, (snapshot) => {
+            ingList.map( item => {
+                snapshot.forEach((childSnapshot) =>{
+                    let category = childSnapshot.key;
+                    childSnapshot.forEach((thing)=>{
+                        // is it a match?
+                        if(item === thing.val().item_name){
+                            remove(ref(database, '/users/' + auth.currentUser.uid + '/inventory/categories/' + category +'/' + thing.key));
+                        }
+                    })                    
+                })
+            });
+        })        
     };                  
 
     return (        
@@ -130,7 +122,7 @@ const HandleAddtoMealPlan = (props) => {
 
              {/* add to GL popup modal */}
             <Modal show={show} onHide={handleClose} centered  
-                    keyboard={false} >
+                    fullscreen={true} >
               
               {/* modal header with title */}
               <Modal.Header closeButton>
@@ -140,29 +132,9 @@ const HandleAddtoMealPlan = (props) => {
               {/* modal body with dropdown checkers and submit button */}
               <Modal.Body>
                 <Container> 
-                    <h5>Add to Meal Plan</h5>
-                    <h6>Category</h6>
-                    <select defaultValue="default" onChange={(event) => setSelectedCategory(event.target.value)}>
-                        <option value="default" hidden> </option>
-                        {categories.map((category, index) => <option key={index} value={category}>{category}</option>)}
-                    </select>
-
-                    <h6>Day</h6>
-                    <select defaultValue="default" onChange={(event) => setSelectedDay(event.target.value)}>
-                        <option value="default" hidden> </option>
-                        <option value="Sunday">Sunday</option>
-                        <option value="Monday">Monday</option>
-                        <option value="Tuesday">Tuesday</option>
-                        <option value="Wednesday">Wednesday</option>
-                        <option value="Thursday">Thursday</option>
-                        <option value="Friday">Friday</option>
-                        <option value="Saturday">Saturday</option>
-                    </select>
-
-                    <br></br>
                     <h5>Remove Ingredients from Inventory</h5>
 
-                    <Button onClick={handleSelect}> Select All </Button>
+                    <Button onClick={handleSelect}> Add All </Button>
                     <IngredientItems ingList={ingList} 
                                 setIngredients={setIngredients}
                                 recipes={props.recipes}
@@ -183,7 +155,7 @@ const HandleAddtoMealPlan = (props) => {
     );
 };
 
-export default HandleAddtoMealPlan
+export default CompleteRecipe
 
 
 
