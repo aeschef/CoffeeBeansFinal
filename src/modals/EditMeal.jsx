@@ -13,10 +13,29 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import RemoveMealWarning from './removeMealWarning';
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
-const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes,
+const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, setCurrentMealDetails, currentMealIndex, recipes, setRecipes,
   refresh, setRefresh,
   groceryList, addToGL, categoriesList, setCategoriesList, indexRecipe}) => {
   const auth = getAuth()
+
+  const [currRecipe, setCurrRecipe] = useState([])
+
+  useEffect(()=> {
+      const db = getDatabase()
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/" + indexRecipe)
+      let arrMeals = []
+      // Stores all of the meal categories and pushes them to an array
+      onValue(recipesRef, (snapshot) => {
+              
+        // getting data from the spot in the db that changes
+        // good source: https://info340.github.io/firebase.html#firebase-arrays
+        const allRecipesObject = snapshot.val();
+        setCurrRecipe(allRecipesObject)
+      })
+      
+  }, [])
+
+
 
   // Popup that appears when user attempts to delete a meal
   const [openWarning, setOpenWarning] = useState(false)
@@ -96,6 +115,22 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   }, [notes])
 
 
+  useEffect(()=> {
+    // retrieves updated info for the recipe from the database 
+    const db = getDatabase()
+    console.log("index " + indexRecipe)
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+indexRecipe)
+    let arrMeals = []
+
+    // // Stores all of the meal categories and pushes them to an array
+    // onValue(recipesRef, (snapshot) => {
+    //   console.log("in on aalue")
+    //   console.log({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
+    //   setCurrentMealDetails({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
+          
+    //   }, {
+    //   onlyOnce: true })
+  }, [recipes])
 
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
@@ -269,7 +304,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
               {currentMealDetails.value.type === "Recipe" && 
               <Row>
                 <Form.Label>
-                  {recipes[indexRecipe].title}
+                  {currRecipe.title}
                 </Form.Label>
               </Row> }
           
@@ -318,7 +353,10 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
                       indexOfRecipeToView={indexRecipe} 
-                      setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
+                      currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
+                      setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}
+                      refresh={refresh} setRefresh={setRefresh}>
+                      </ViewRecipePopup>
                   </Row>
             }
 
