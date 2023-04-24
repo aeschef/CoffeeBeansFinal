@@ -115,3 +115,33 @@
   align-content: flex-start;
   flex-direction: row;
 }
+
+
+.edit-tags-link {
+  padding-left: 1rem;
+  color:#729701;
+}
+
+.style-add {
+  margin: .25rem;
+}
+
+.text-tag {
+  padding-left: 1rem
+}
+
+
+
+.error-box {
+  background-color: #ffebee;
+  outline:0.1em solid #990000;
+  margin-bottom: 1rem;
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  border-radius: 10px;
+  color: black;
+  font-size: 14px;
+
+}

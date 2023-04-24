@@ -153,7 +153,9 @@ const [refresh, setRefresh] = useState(true)
                     index = i
                   }
                 })
-                dataMeals.push({key: id, value: childsnapshot.val().meals[id], title: recipes[index].title})
+                if (index !== -1) {
+                  dataMeals.push({key: id, value: childsnapshot.val().meals[id], title: recipes[index].title})
+                }
 
               } else {
                 dataMeals.push({key: id, value: childsnapshot.val().meals[id]})

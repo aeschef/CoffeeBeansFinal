@@ -51,6 +51,8 @@ const HandleAddtoMealPlan = (props) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedDay, setSelectedDay] = useState(null);
 
+    const [tags, setTags] = useState(null)
+
     const [categories, setCategories] = useState([]);
 
     useEffect(() => {
@@ -67,6 +69,12 @@ const HandleAddtoMealPlan = (props) => {
             console.log(allCategoriesKeys);
             setCategories(allCategoriesKeys);
         });
+
+      const tagsRef = ref(db, '/users/' + auth.currentUser.uid + '/meal_plan/tags');
+      onValue(tagsRef, (snapshot)=> {
+        setTags(snapshot.val())
+      }, {onlyOnce: true})
+
     }, []);
     
     const [ingList, setIngredients] = useState([]);
@@ -147,8 +155,9 @@ const HandleAddtoMealPlan = (props) => {
                         {categories.map((category, index) => <option key={index} value={category}>{category}</option>)}
                     </select>
 
-                    <h6>Day</h6>
+                    <h6>Tag</h6>
                     <select defaultValue="default" onChange={(event) => setSelectedDay(event.target.value)}>
+                
                         <option value="default" hidden> </option>
                         <option value="Sunday">Sunday</option>
                         <option value="Monday">Monday</option>

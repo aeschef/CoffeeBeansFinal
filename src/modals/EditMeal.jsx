@@ -11,6 +11,8 @@ import Creatable from 'react-select/creatable';
 import { getDatabase, ref, set, onValue, update, push, child, remove} from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import RemoveMealWarning from './removeMealWarning';
+import EditMealTags from './EditMealTags';
+
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, setCurrentMealDetails, currentMealIndex, recipes, setRecipes,
@@ -19,6 +21,9 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   const auth = getAuth()
 
   const [currRecipe, setCurrRecipe] = useState([])
+
+  // Used to indicate when modal should be displayed to add/edit/delete tags for meal plan
+  const [editTags, setEditTags] = useState(false)
 
   useEffect(()=> {
       const db = getDatabase()
@@ -223,7 +228,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
         // Updates meal in current category so that it stores updated information
 
         // Checks to see if the tags were changed, and if so, will add new tags to the tags list. 
-        if (tagChanged && tags.indexOf(selectedTags.label) <= -1) {
+        if (tagChanged && tags?.indexOf(selectedTags.label) <= -1) {
           let arr = [...tags, selectedTags.label]
 
           const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
@@ -322,14 +327,23 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
             />
 
             
-            <Form.Label className="edit-modal-header">Day</Form.Label>
+            <Form.Label className="edit-modal-header">
+              Tag
+              <a href="#" onClick={()=>setEditTags(true)} className="edit-tags-link">Edit Tags</a>
+            </Form.Label>
             
+            {editTags && <EditMealTags open={editTags} onClose={()=> setEditTags(false)} 
+            tags={tags} setTags={setTags} 
+            refresh={refresh} setRefresh={setRefresh}
+            prevTag={selectedTags} setPrevTag={setSelectedTags}
+            editPopup={open} closeEditPopup={onClose}
+            />}
             {/* Displays the dropdown of tags for te user to choose from. */}
             <Creatable 
 
                   defaultValue={{value: selectedTags, label: selectedTags}}
                   value={selectedTags}
-                  options={tags.map(opt => ({ label: opt, value: opt}))}
+                  options={tags?.map(opt => ({ label: opt, value: opt}))}
                   onChange={opt =>setSelectedTags(opt)}
 
             />

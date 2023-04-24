@@ -11,6 +11,8 @@ import Dropdown from 'react-bootstrap/DropDown';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import OutOfIngredients from './AlternateButton';
+import CompleteRecipe from './CompleteRecipe';
+
 
 import HandleAddtoMealPlan from './MealComplete';
 
@@ -144,14 +146,14 @@ export default function ViewRecipePopup(props) {
 
                 {/* Completed the recipe... run out of anything? */}
                 {/* !!!!!!!!!!! A8 option A !!!!!!!!!!!!!!*/}
-                {/* <CompleteRecipe databaseCatGL={props.databaseCatGL}
+                <CompleteRecipe databaseCatGL={props.databaseCatGL}
                     auth={props.auth} 
                     recipeTitle={currentRecipe?.title}
                     app={props.app} 
                     recipes={props.recipes}
                     currentRecipe={currentRecipe}
-                    index={props.indexOfRecipeToView}></CompleteRecipe> */}
-
+                    index={props.indexOfRecipeToView}></CompleteRecipe>
+                    
                   <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
                         auth={props.auth} recipeTitle={currentRecipe?.title}
                         app={props.app} 

@@ -96,7 +96,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
             <Row><Form.Label>{currentCategoryIndex}</Form.Label></Row>
         
             {/* Displays the tag associated with the meal. */}
-            <Form.Label className="edit-modal-header">Day</Form.Label>
+            <Form.Label className="edit-modal-header">Tag</Form.Label>
             <Row><Form.Label>{currentMealDetails.value.tags}</Form.Label></Row>
 
             {/* If the type of the meal is a recipe, then the view recipe button will be displayed. */}

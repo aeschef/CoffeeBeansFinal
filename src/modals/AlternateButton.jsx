@@ -16,7 +16,7 @@ const IngredientItems = ( { recipes, index, currentRecipe}) => {
     return (
         <>
             {currentRecipe.ingredients.map((ingredient)=>(
-                <Dropdown.Item eventKey={ingredient.focus}>{ingredient.focus}</Dropdown.Item>
+                <Dropdown.Item eventKey={ingredient.focus} key={ingredient.focus}>{ingredient.focus} </Dropdown.Item>
             ))}
         </>
     )
