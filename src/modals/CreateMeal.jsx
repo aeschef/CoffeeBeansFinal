@@ -321,11 +321,11 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
           {type === "Recipe" && !openChooseMeal && 
             <>
             <Form.Label>Recipe</Form.Label>
-            <RecipeCards recipes={recipes.filter((recipe, i) => i === mealDetails ? recipe : null)} 
-            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} view={true} searchInput={recipes[mealDetails]?.title}
+            <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
+            setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} view={true} searchInput={""}
             sortFunction={sortFunction}
             shouldBeShown={shouldBeShown} />
-          </>
+            </>
           }
           </Form.Group>
         </Form>
