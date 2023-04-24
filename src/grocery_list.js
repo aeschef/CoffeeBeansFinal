@@ -158,7 +158,6 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             setIsChecked(checked === 'true');
         }, []);
 
-         
 
         /** when an item is checked, add it to inventory */
         const handleCheck = (event) => {
@@ -172,13 +171,10 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             }
             if(event.target.checked){
                 //checked! Add to Inv
-                console.log('isChecked' + category + ''+ use + '/inventory/categories/' + category);
                 setIsChecked(true);
                 push(ref(getDatabase(), use + '/inventory/categories/' + category), { item_name: item_name} );
-                // update(ref(getDatabase(), use + '/grocery_list/categories/' + category), { item_name: item_name, checked:'true', item_num: cat.item_num})
             } else{
                 //unchecked ACK we need to remove!
-                console.log('acck' + category);
                 setIsChecked(false);
                 
                 // remove this item
@@ -190,8 +186,17 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                         }
                     })
                 });
-
             }
+
+            // set checked in database
+            console.log('accessing ' +  use + '/grocery_list/categories/' + category +'/' + i)
+            set(ref(getDatabase(), use + '/grocery_list/categories/' + category + '/' ), {
+                checked: !checked,
+                item_name: item_name,
+                iten_num: cat.item_num
+            });
+
+                  
 
         }
     
@@ -346,6 +351,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
 
     const addToDatabase = () => {
         setShow(false);
+
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
@@ -537,4 +543,5 @@ const GroceryListHome = ({ props, accessCode }) => {
         </Container>
     );
 }
+
 export default GroceryListHome
