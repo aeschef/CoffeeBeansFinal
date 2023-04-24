@@ -12,7 +12,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 
 
 /* Retrieve ingredients for thsi recipe from the database Display in the */
-const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
+const IngredientItems = ({ ingList, setIngredients, recipes, index, currentRecipe}) => {
 
     const addIngredient = (event) => {
         setIngredients([
@@ -23,7 +23,7 @@ const IngredientItems = ({ ingList, setIngredients, recipes, index}) => {
 
     return (
         <>
-            {recipes[index].ingredients.map((ingredient)=>(
+            {currentRecipe.ingredients.map((ingredient)=>(
                <label>
                <input type="checkbox"
                 value={ingredient.focus}
@@ -80,7 +80,7 @@ const HandleAddtoMealPlan = (props) => {
     };
 
     const handleSelect = () =>{
-        setIngredients(props.recipes[props.index].ingredients);
+        setIngredients(props.currentRecipe.ingredients);
     };
 
     const handleSave = () => {
@@ -116,7 +116,7 @@ const HandleAddtoMealPlan = (props) => {
 
         set(newMealPostRef, {
             completed: false,
-            label: props.recipeTitle,
+            label: props.index,
             notes: "",
             tags: selectedDay,
             type: "Recipe"
@@ -166,7 +166,9 @@ const HandleAddtoMealPlan = (props) => {
                     <IngredientItems ingList={ingList} 
                                 setIngredients={setIngredients}
                                 recipes={props.recipes}
-                                index={props.index}></IngredientItems>
+                                index={props.index}
+                                currentRecipe={props.currentRecipe}>
+                                </IngredientItems>
                     <Row>
                         <Col>
                             <Button variant="danger" onClick={handleClose}>Cancel</Button>

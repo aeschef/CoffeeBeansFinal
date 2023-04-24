@@ -17,6 +17,9 @@ export default function RecipesHome(props) {
     const [itemsInPersonalInventory, setItemsInPersonalInventory] = useState([]);
     const [itemsInSharedInventory, setItemsInSharedInventory] = useState([]);
 
+    // dummy state variable needed in order to pass to the view recipe modal (actually used for meal plan)
+    const [currentMealDetails, setCurrentMealDetails] = useState([])
+
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
@@ -227,10 +230,13 @@ export default function RecipesHome(props) {
             showViewPopup={showViewPopup} 
             handleCloseViewPopup={handleCloseViewPopup} 
             indexOfRecipeToView={indexOfRecipeToView} 
+            currentMealDetails={currentMealDetails}
+            setCurrentMealDetails={setCurrentMealDetails}
             setRecipes={props.setRecipes} 
             view={true} 
             groceryList={props.personalGroceryList}
-            addToGL={props.addToGL}> </ViewRecipePopup>
+            addToGL={props.addToGL}> 
+            </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )

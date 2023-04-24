@@ -11,8 +11,13 @@ export default function RecipeCards(props) {
   const [showPopup, setShowPopup] = useState(false);
   const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
   
+
+  // dummy state variable that needs to be passed as parameter but isn't used
+  const [currentMealDetails, setCurrentMealDetails] = useState([])
+
   // Sets the needed information in order to open the view recipe modal of the selected recipe
   const handleOpenViewPopup = (index) => {
+      console.log("key of recipe " + index)
       setIndexOfRecipeToView(index);
       setShowPopup(true);
   }
@@ -33,7 +38,7 @@ export default function RecipeCards(props) {
       if (props.addedRecipe === index ) {
         props.setAddedRecipe(-1)
       
-      // Otherwise, added recipe will be set to store the index of the selected recipe
+      // Otherwise, added recipe will be set to store the key of the selected recipe
       } else {
         props.setAddedRecipe(index)
 
@@ -65,7 +70,10 @@ export default function RecipeCards(props) {
             </div>
         </div>
       ))}
-      {props.view && <ViewRecipePopup app={props.app} recipes={props.recipes} showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
+      {props.view && <ViewRecipePopup app={props.app} recipes={props.recipes} 
+      currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
+      showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView}
+       setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
 
       </div>
   )

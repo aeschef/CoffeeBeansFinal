@@ -11,7 +11,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 import EditMeal from './EditMeal'
 
 // Modal that will appear when the user clicks on a meal so that they can view details about the meal.
-const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes, refresh, setRefresh}) => {
+const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, setCurrentMealDetails, currentMealIndex, recipes, setRecipes, refresh, setRefresh}) => {
 
   // Saves either meal title or the index of the recipe
   const mealDetails = currentMealDetails.value.label
@@ -43,6 +43,25 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
     }
   }, [])
 
+  useEffect(()=> {
+    if (!viewRecipe && refresh) {
+      const db = getDatabase()
+      console.log("index " + currentMealDetails.value.label)
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+currentMealDetails.value.label)
+      let arrMeals = []
+
+      // Stores all of the meal categories and pushes them to an array
+      onValue(recipesRef, (snapshot) => {
+        console.log("in on aalue")
+        setCurrentMealDetails({key: currentMealDetails.key, value:currentMealDetails.key, title:snapshot.val().title})
+      },  {
+        onlyOnce: true
+      });
+      setRefresh(false)
+
+    // Ensures that recipe information will be updated when the view recipe popup is open again
+    } 
+  }, [viewRecipe, refresh])
 
   // Indicates when modal should appear to edit the meal details
   const [editMeal, setEditMeal] = useState(false)
@@ -89,7 +108,10 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
                     <ViewRecipePopup 
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
+                      currentMealDetails={currentMealDetails}
+                      setCurrentMealDetails={setCurrentMealDetails}
                       indexOfRecipeToView={indexRecipe} 
+                      refresh={refresh} setRefresh={setRefresh} 
                       setRecipes={setRecipes}> 
                     </ViewRecipePopup>
                   </Row>
@@ -108,7 +130,8 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
           open={editMeal} onClose={()=>setEditMeal(false)}
           categories={categories} setCategories={setCategories}
           currentCategoryIndex={currentCategoryIndex} 
-          currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} 
+          currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
+          currentMealIndex={currentMealIndex} 
           recipes={recipes} setRecipes={setRecipes}
           refresh={refresh} setRefresh={setRefresh} 
           indexRecipe={indexRecipe}/>}

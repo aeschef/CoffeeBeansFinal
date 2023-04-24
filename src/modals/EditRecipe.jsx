@@ -112,9 +112,10 @@ export default function EditRecipePopup(props) {
             const db = getDatabase(props.app)
             
             // getting a reference to the 'recipes' section of this user's area of the database
-            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.inputs.key + '/');
+            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.indexOfRecipeToEdit + '/');
             set(dbRecipeRef, props.inputs)
 
+            // Ensures that information in view modal is updated
             props.handleCloseEditPopup();
         }
     }

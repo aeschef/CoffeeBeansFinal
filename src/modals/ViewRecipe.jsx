@@ -19,37 +19,52 @@ export default function ViewRecipePopup(props) {
   // variables and functions for Edit Recipe popup
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
+
+  // Contains the key value for the recipe
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
   const [tagsInStringForm, setTagsInStringForm] = useState("");
   const [ingredientsInStringForm, setIngredientsInStringForm] = useState("");
   const [stepsInStringForm, setStepsInStringForm] = useState("");
+
   const handleOpenEditPopup = (index) => {
+      // contains the key value for the recipe
       setIndexOfRecipeToEdit(index);
-      setInputs(props.recipes[index]);
+
+      setInputs(currentRecipe);
       setShowEditPopup(true);
-      setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
-      setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join("\n"));
-      setStepsInStringForm(props.recipes[index].steps?.join("\n"));
+      setTagsInStringForm(currentRecipe.tags?.join(", ") || null);
+      setIngredientsInStringForm(currentRecipe.ingredients?.map((ingredient) => ingredient.phrase).join("\n"));
+      setStepsInStringForm(currentRecipe.steps?.join("\n"));
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
   // TODO: megan's code starts here
   const [currentRecipe, setCurrentRecipe] =useState([])
-
+  const [refresh, setRefresh] = useState(true)
+  
+  // Retrieves recipe information when the view modal is supposed to be shown
   useEffect(()=> {
-    const db = getDatabase()
-    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.indexOfRecipeToView)
-    let arrMeals = []
-    // Stores all of the meal categories and pushes them to an array
-    onValue(recipesRef, (snapshot) => {
-        
-      setCurrentRecipe(snapshot.val())
-        
-    },  {
-      onlyOnce: true
-    });
+    if ((props.showViewPopup && refresh)) {
+      const db = getDatabase()
+      console.log("index " + props.indexOfRecipeToView)
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.indexOfRecipeToView)
+      let arrMeals = []
 
-  }, [])
+      // Stores all of the meal categories and pushes them to an array
+      onValue(recipesRef, (snapshot) => {
+        console.log("in on aalue")
+        setCurrentRecipe(snapshot.val())
+          
+      },  {
+        onlyOnce: true
+      });
+      setRefresh(false)
+
+    // Ensures that recipe information will be updated when the view recipe popup is open again
+    } else if (!props.showViewPopup) {
+      setRefresh(true)
+    }
+  }, [props.showViewPopup, refresh])
   // TODO: megan's code ends here
 
 // TODO: julia's code starts here
@@ -120,10 +135,18 @@ export default function ViewRecipePopup(props) {
                         app={props.app} 
                         recipes={props.recipes}
                         index={props.indexOfRecipeToView}
+                        currentRecipe={currentRecipe}
+
                         ></HandleAddtoMealPlan>
               </Modal.Body>
           </Modal>
-          <EditRecipePopup app={props.app} recipes={props.recipes} setRecipes={props.setRecipes} showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
+          <EditRecipePopup app={props.app} 
+          recipes={props.recipes} setRecipes={props.setRecipes} 
+          showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} 
+          setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} 
+          tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} 
+          ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} 
+          stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       
