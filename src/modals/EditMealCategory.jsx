@@ -17,60 +17,72 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
 
     const [deleteCategoryPopup, setDeleteCategoryPopup] = useState(false)
   
+
+    const [categoryError, setCategoryError] = useState(false)
+
     // Will update the quota array to contain the category with the updated category name and quota amount
     const updateMeal = () => {
       const db = getDatabase()
-
-      const oldMealRef = set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key))
-
-      // copy information from old category to new category and delete old category
-      if (mealCategory !== categories[categoryIndex].key) {
-
-        // Checks to see if newly selected category already exists
-        let categoryIndex = -1
-        for(var i = 0 ; i < categories.length ; i++){
-          if (categories[i].key === mealCategory) {
-            categoryIndex = i
-          }
-        }
-        let copyData = {}
-        onValue(ref(db, '/users/' +  getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key), (snapshot) => {
-          copyData = snapshot.val()
-          
-        }, {
-          onlyOnce: true
-        });
-  
-        // If the category already exists in database, do not add it again. 
-        if (categoryIndex !== -1) {
-          console.log("should not add the category since it already exists")
-
-        // If the category does not exist in database, add it.
-        } else {
-            // Creates basic structure for new category
-  
-            const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+mealCategory)
-            set(categoryRef, copyData);     
-          
-            // Removes the reference from the old category
-            set(oldMealRef, null)
-
-            // Indicates that state variable should be refreshed
-            setRefresh(true)
-        }
-      
-      // If the category did not change, just update old category's quota amount
+      console.log("category here" + categories[categoryIndex].key)
+      const oldMealRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key)
+      if (mealCategory === "") {
+        setCategoryError(true)
       } else {
-        // Reference to categories in the meal plan
-        console.log("meal quota contains  "+ mealQuota)
-        set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key + "/quota"), 
-        mealQuota);
+        setCategoryError(false)
+      
+        // copy information from old category to new category and delete old category
+        if (mealCategory !== categories[categoryIndex].key) {
 
-        setRefresh(true)
-      }
+          // Checks to see if newly selected category already exists
+          // let categoryIndex = -1
+          // for(var i = 0 ; i < categories.length ; i++){
+          //   console.log(categories[i])
+          //   if (categories[i].key == mealCategory) {
+          //     categoryIndex = i
+          //   }
+          // }
+          let copyData = {}
+          console.log("category before removing " + categories[categoryIndex].key)
+          console.log(mealCategory)
+          onValue(ref(db, '/users/' +  getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key), (snapshot) => {
+            copyData = snapshot.val()
+            
+          }, {
+            onlyOnce: true
+          });
+    
+          // If the category already exists in database, do not add it again. 
+          // if (categoryIndex !== -1) {
+          //   console.log("should not add the category since it already exists")
 
+          // // If the category does not exist in database, add it.
+          // } else {
+              // Creates basic structure for new category
+    
+              const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/"+mealCategory)
+              set(categoryRef, copyData);     
+            
+              // Removes the reference from the old category
+              set(oldMealRef, null)
+
+              // Indicates that state variable should be refreshed
+              setRefresh(true)
+          
+        
+        // If the category did not change, just update old category's quota amount
+        } else {
+          // Reference to categories in the meal plan
+          console.log("meal quota contains  "+ mealQuota)
+          set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key + "/quota"), 
+          mealQuota);
+
+          setRefresh(true)
+          
+        }
+        onClose(false)
+
+    }
       // Closes the edit category modal
-      onClose(false)
     }
 
     const handleQuotaChange = (newQuota) => {
@@ -89,7 +101,10 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
           <Form>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
               <Form.Label>Category</Form.Label>
-              
+              {categoryError && <div className="error-box">
+                The category name cannot be empty.
+                </div>}
+
               {/* Displays the category name and allows user to edit. */}
 
               <Form.Control
@@ -97,8 +112,6 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
                 type="text"
                 placeholder=""
                 autoFocus
-              
-                required
                 onChange={(e)=>updateMealCategory(e.target.value)}
                 value={mealCategory}
               />

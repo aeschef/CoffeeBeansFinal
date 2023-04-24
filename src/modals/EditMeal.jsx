@@ -11,12 +11,36 @@ import Creatable from 'react-select/creatable';
 import { getDatabase, ref, set, onValue, update, push, child, remove} from 'firebase/database';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import RemoveMealWarning from './removeMealWarning';
+import EditMealTags from './EditMealTags';
+
 
 // Modal that appears when a user selects a meal and presses the edit meal button. 
-const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, currentMealIndex, recipes, setRecipes,
+const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, setCurrentMealDetails, currentMealIndex, recipes, setRecipes,
   refresh, setRefresh,
   groceryList, addToGL, categoriesList, setCategoriesList, indexRecipe}) => {
   const auth = getAuth()
+
+  const [currRecipe, setCurrRecipe] = useState([])
+
+  // Used to indicate when modal should be displayed to add/edit/delete tags for meal plan
+  const [editTags, setEditTags] = useState(false)
+
+  useEffect(()=> {
+      const db = getDatabase()
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/" + indexRecipe)
+      let arrMeals = []
+      // Stores all of the meal categories and pushes them to an array
+      onValue(recipesRef, (snapshot) => {
+              
+        // getting data from the spot in the db that changes
+        // good source: https://info340.github.io/firebase.html#firebase-arrays
+        const allRecipesObject = snapshot.val();
+        setCurrRecipe(allRecipesObject)
+      })
+      
+  }, [])
+
+
 
   // Popup that appears when user attempts to delete a meal
   const [openWarning, setOpenWarning] = useState(false)
@@ -96,6 +120,22 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   }, [notes])
 
 
+  useEffect(()=> {
+    // retrieves updated info for the recipe from the database 
+    const db = getDatabase()
+    console.log("index " + indexRecipe)
+    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+indexRecipe)
+    let arrMeals = []
+
+    // // Stores all of the meal categories and pushes them to an array
+    // onValue(recipesRef, (snapshot) => {
+    //   console.log("in on aalue")
+    //   console.log({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
+    //   setCurrentMealDetails({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
+          
+    //   }, {
+    //   onlyOnce: true })
+  }, [recipes])
 
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
@@ -188,7 +228,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
         // Updates meal in current category so that it stores updated information
 
         // Checks to see if the tags were changed, and if so, will add new tags to the tags list. 
-        if (tagChanged && tags.indexOf(selectedTags.label) <= -1) {
+        if (tagChanged && tags?.indexOf(selectedTags.label) <= -1) {
           let arr = [...tags, selectedTags.label]
 
           const tagRef = ref(db, 'users/' + auth.currentUser.uid + "/meal_plan/tags");
@@ -269,7 +309,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
               {currentMealDetails.value.type === "Recipe" && 
               <Row>
                 <Form.Label>
-                  {recipes[indexRecipe].title}
+                  {currRecipe.title}
                 </Form.Label>
               </Row> }
           
@@ -287,14 +327,23 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
             />
 
             
-            <Form.Label className="edit-modal-header">Day</Form.Label>
+            <Form.Label className="edit-modal-header">
+              Tag
+              <a href="#" onClick={()=>setEditTags(true)} className="edit-tags-link">Edit Tags</a>
+            </Form.Label>
             
+            {editTags && <EditMealTags open={editTags} onClose={()=> setEditTags(false)} 
+            tags={tags} setTags={setTags} 
+            refresh={refresh} setRefresh={setRefresh}
+            prevTag={selectedTags} setPrevTag={setSelectedTags}
+            editPopup={open} closeEditPopup={onClose}
+            />}
             {/* Displays the dropdown of tags for te user to choose from. */}
             <Creatable 
 
                   defaultValue={{value: selectedTags, label: selectedTags}}
                   value={selectedTags}
-                  options={tags.map(opt => ({ label: opt, value: opt}))}
+                  options={tags?.map(opt => ({ label: opt, value: opt}))}
                   onChange={opt =>setSelectedTags(opt)}
 
             />
@@ -318,7 +367,10 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
                       indexOfRecipeToView={indexRecipe} 
-                      setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}> </ViewRecipePopup>
+                      currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
+                      setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}
+                      refresh={refresh} setRefresh={setRefresh}>
+                      </ViewRecipePopup>
                   </Row>
             }
 

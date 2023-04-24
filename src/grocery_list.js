@@ -216,7 +216,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                         </Col>
                         <CategorysPopup></CategorysPopup>
                     </div>
-                    {category.data.map((cat, i) =>
+                    {category?.data.map((cat, i) =>
                         <div className="left-spacing">
                             <Row>
                                 <DummyItem item_name={cat.item_name}

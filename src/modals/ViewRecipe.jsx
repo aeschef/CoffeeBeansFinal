@@ -1,8 +1,8 @@
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
+import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import EditRecipePopup from './EditRecipe'
-import Modal from 'react-bootstrap/Modal';
 import "../recipes.css";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -10,10 +10,11 @@ import Container from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/DropDown';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-
-import HandleAddtoMealPlan from './AddToMealPlan';
-import CompleteRecipe from './CompleteRecipe';
 import OutOfIngredients from './AlternateButton';
+import CompleteRecipe from './CompleteRecipe';
+
+
+import HandleAddtoMealPlan from './MealComplete';
 
 // popup for viewing a recipe
 export default function ViewRecipePopup(props) {
@@ -21,22 +22,52 @@ export default function ViewRecipePopup(props) {
   // variables and functions for Edit Recipe popup
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
+
+  // Contains the key value for the recipe
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
   const [tagsInStringForm, setTagsInStringForm] = useState("");
   const [ingredientsInStringForm, setIngredientsInStringForm] = useState("");
   const [stepsInStringForm, setStepsInStringForm] = useState("");
+
   const handleOpenEditPopup = (index) => {
+      // contains the key value for the recipe
       setIndexOfRecipeToEdit(index);
-      setInputs(props.recipes[index]);
+
+      setInputs(currentRecipe);
       setShowEditPopup(true);
-      setTagsInStringForm(props.recipes[index].tags?.join(", ") || null);
-      setIngredientsInStringForm(props.recipes[index].ingredients.map((ingredient) => ingredient.phrase).join("\n"));
-      setStepsInStringForm(props.recipes[index].steps?.join("\n"));
+      setTagsInStringForm(currentRecipe.tags?.join(", ") || null);
+      setIngredientsInStringForm(currentRecipe.ingredients?.map((ingredient) => ingredient.phrase).join("\n"));
+      setStepsInStringForm(currentRecipe.steps?.join("\n"));
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
   // TODO: megan's code starts here
-  const currentRecipe = props.recipes[props.indexOfRecipeToView];
+  const [currentRecipe, setCurrentRecipe] =useState([])
+  const [refresh, setRefresh] = useState(true)
+  
+  // Retrieves recipe information when the view modal is supposed to be shown
+  useEffect(()=> {
+    if ((props.showViewPopup && refresh)) {
+      const db = getDatabase()
+      console.log("index " + props.indexOfRecipeToView)
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.indexOfRecipeToView)
+      let arrMeals = []
+
+      // Stores all of the meal categories and pushes them to an array
+      onValue(recipesRef, (snapshot) => {
+        console.log("in on aalue")
+        setCurrentRecipe(snapshot.val())
+          
+      },  {
+        onlyOnce: true
+      });
+      setRefresh(false)
+
+    // Ensures that recipe information will be updated when the view recipe popup is open again
+    } else if (!props.showViewPopup) {
+      setRefresh(true)
+    }
+  }, [props.showViewPopup, refresh])
   // TODO: megan's code ends here
 
 // TODO: julia's code starts here
@@ -92,14 +123,18 @@ export default function ViewRecipePopup(props) {
                   
                   {/* recipe ingredients */}
                   <h6>Ingredients</h6>
+
                   {/* !!!!! Option B for AB Testing */}
                   <OutOfIngredients auth={props.auth} 
                         recipeTitle={currentRecipe?.title}
                         app={props.app} 
                         recipes={props.recipes}
-                        index={props.indexOfRecipeToView}></OutOfIngredients>
+                        index={props.indexOfRecipeToView}
+                        currentRecipe={currentRecipe}>
+
+                  </OutOfIngredients>
+
                   <ul>{recipeIngredients}</ul>
-                  
                   
                   {/* recipes steps */}
                   <h6>Steps</h6>
@@ -111,33 +146,31 @@ export default function ViewRecipePopup(props) {
 
                 {/* Completed the recipe... run out of anything? */}
                 {/* !!!!!!!!!!! A8 option A !!!!!!!!!!!!!!*/}
-                {/* <CompleteRecipe databaseCatGL={props.databaseCatGL}
+                <CompleteRecipe databaseCatGL={props.databaseCatGL}
                     auth={props.auth} 
                     recipeTitle={currentRecipe?.title}
                     app={props.app} 
                     recipes={props.recipes}
-                    index={props.indexOfRecipeToView}></CompleteRecipe> */}
+                    currentRecipe={currentRecipe}
+                    index={props.indexOfRecipeToView}></CompleteRecipe>
                     
-                {/* Add recipe to my meal plan? */}
-                <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
-                    auth={props.auth} 
-                    recipeTitle={currentRecipe?.title}
-                    app={props.app} 
-                    recipes={props.recipes}
-                    index={props.indexOfRecipeToView}></HandleAddtoMealPlan>
+                  <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
+                        auth={props.auth} recipeTitle={currentRecipe?.title}
+                        app={props.app} 
+                        recipes={props.recipes}
+                        index={props.indexOfRecipeToView}
+                        currentRecipe={currentRecipe}
+
+                  ></HandleAddtoMealPlan>
               </Modal.Body>
-            </Modal>
-            <EditRecipePopup app={props.app} recipes={props.recipes} 
-                setRecipes={props.setRecipes} showEditPopup={showEditPopup} 
-                handleCloseEditPopup={handleCloseEditPopup} 
-                setInputs={setInputs} inputs={inputs} 
-                indexOfRecipeToEdit={indexOfRecipeToEdit} 
-                tagsInStringForm={tagsInStringForm} 
-                setTagsInStringForm={setTagsInStringForm} 
-                ingredientsInStringForm={ingredientsInStringForm} 
-                setIngredientsInStringForm={setIngredientsInStringForm} 
-                stepsInStringForm={stepsInStringForm} 
-                setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
+          </Modal>
+          <EditRecipePopup app={props.app} 
+          recipes={props.recipes} setRecipes={props.setRecipes} 
+          showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} 
+          setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} 
+          tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} 
+          ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} 
+          stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
 
       </>
       

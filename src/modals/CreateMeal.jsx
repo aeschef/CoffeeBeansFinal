@@ -8,10 +8,10 @@ import RecipeCards from '../RecipeCards';
 import ChooseMeal from './ChooseMeal';
 import React from 'react'
 import Select from 'react-select';
-
 import Creatable from 'react-select/creatable'
 import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/database';
 import { getAuth} from "firebase/auth";
+import EditMealTags from './EditMealTags';
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
@@ -19,6 +19,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
    meal_category, setMealCategory, meal, setMeal, personalGroceryList, addToGL, refresh, setRefresh, categoriesList, setCategoriesList}) => {
   const auth = getAuth(app);
   
+  const [categoryError, setCategoryError] = useState(false)
   // Will be updated when user chooses a meal, stores either "Ingredients" or "Recipes"
   const [type, setType] = useState(null)
 
@@ -29,7 +30,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   const [openChooseMeal, setOpenChooseMeal] = useState(false)
 
   // Saves category selected when planning a meal
-  const [selectedCategory, setCategory] = useState([])
+  const [selectedCategory, setCategory] = useState({value: "", label: ""})
 
   // Saves the day selected when planning a meal
   const [selectedDay, setDay] = useState("Monday")
@@ -48,6 +49,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   // Determines which screen of creating meal the user is viewing
   const [tab, setTab] = useState(0)
 
+  const [editTags, setEditTags] = useState(false)
 
   // Days of the week used for tag names, but users can also add their own 
   const [tags, setTags] = useState([])
@@ -56,7 +58,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   
   // When page first loads, populates meals with information from user's database
   useEffect(()=> {
-    if (refresh) {
+   
       const db = getDatabase()
 
       // updates tags state variable so that it stores the saved tags from the user's database
@@ -66,9 +68,8 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
         setTags(data);
 
       });
-    }
 
-  }, [refresh])
+  }, [])
 
   
   // Will store the tag that the user selects for the new meal
@@ -173,7 +174,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
   // Executed whenever the user is ready to add the new meal, meaning that they had selected the "add meal" button
   useEffect(()=> {
     if (newMeal) {
-
+      
       // Adds meal to assigned category in database
       addNewMeal(addedMeal.id)
 
@@ -196,17 +197,19 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     e.preventDefault()
     console.log(mealDetails)
     console.log(selectedDay)
-    console.log(selectedCategory)
+    console.log("category " + selectedCategory)
 
     // TODO: Check for any errors
     const allErrors = {}
-    if (mealDetails === null || selectedCategory === null || selectedTags === null) {
+    if (mealDetails === null || selectedCategory.value === "" || selectedCategory === null ||  selectedTags === null) {
       console.log("error creating meal")
+      setCategoryError(true)
       return null
     }
 
     // If the user is adding meal from ingredients:
     else if (type === "Ingredients"){
+      setCategoryError(false)
       console.log("category before updating " + selectedCategory.label)
       setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails.mealIdea, type: type, notes: mealDetails.notes, completed: false})
       console.log("added ingredients")
@@ -214,9 +217,22 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
+      setCategoryError(false)
       setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: recipes[mealDetails].key, type: type, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
+    }
+  }
+
+  function handleNext() {
+    console.log("error")
+    console.log(selectedCategory.label)
+    if (selectedCategory.label == "" || selectedCategory === null) {
+      console.log(" i am here")
+      setCategoryError(true)
+    } else {
+      setCategoryError(false)
+      setTab(1)
     }
   }
 
@@ -241,7 +257,10 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
         <Form>
           <Form.Group className="mb-3">
             <Form.Label className="edit-modal-header">Category</Form.Label>
-            
+            {categoryError && <div className="error-box">
+                The category name cannot be empty.
+                </div>}
+
             {/* Populates a dropdown menu that contains the list of categories for user to choose from. */}
             <Creatable 
 
@@ -252,7 +271,18 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
             />
 
-            <Form.Label className="edit-modal-header">Day</Form.Label>
+            <Form.Label className="edit-modal-header">Tag
+
+            <a href="#" onClick={()=>setEditTags(true)} className="edit-tags-link">Edit Tags</a>
+            </Form.Label>
+            
+            {editTags && <EditMealTags open={editTags} onClose={()=> setEditTags(false)} 
+            tags={tags} setTags={setTags} 
+            refresh={refresh} setRefresh={setRefresh}
+            prevTag={selectedTags} setPrevTag={setSelectedTags}
+            editPopup={open} closeEditPopup={onClose}
+            />}
+
             {console.log(categories)}
 
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}
@@ -310,7 +340,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
             <Button variant="primary" onClick={onClose}>
               Cancel
             </Button>
-            <Button variant="primary" onClick={()=>setTab(1)}>
+            <Button variant="primary" onClick={handleNext}>
               Next
             </Button>
           </>
@@ -329,7 +359,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
       </Modal.Footer>
       {/* Popup that will be displayed when the user selects the next button, allowing them to choose a recipe or enter meal idea. */}
-      <ChooseMeal open={openChooseMeal} onClose={()=>setOpenChooseMeal(false)} recipes={recipes} setRecipes={setRecipes} tab={tab} setTab={setTab}
+      <ChooseMeal open={openChooseMeal} onClose={()=>setOpenChooseMeal(false)} chooseMeal={open} setChooseMeal={onClose} recipes={recipes} setRecipes={setRecipes} tab={tab} setTab={setTab}
           mealDetails={mealDetails} setMealDetails={setMealDetails} type={type} setType={setType} />
     </Modal>
   </>

@@ -12,7 +12,7 @@ import RecipeSearchBar from '../RecipeSearchBar';
 import FilterPopup from './FilterItems';
 
 // Modal that appears when user is trying to either choose a recipe or enter meal idea on meal plan page
-export default function ChooseMeal({open, onClose, tab, setTab, recipes, setRecipes, mealDetails, setMealDetails, type, setType}) {
+export default function ChooseMeal({open, onClose, tab, setTab, recipes, setRecipes, mealDetails, setMealDetails, type, setType, chooseMeal, setChooseMeal}) {
   
   // Used to display filter popup to filter the recipes 
   const [showFilterPopup, setShowFilterPopup] = useState(false)
@@ -79,10 +79,16 @@ export default function ChooseMeal({open, onClose, tab, setTab, recipes, setReci
     return true;
   }
 
+  
+  function handleClose() {
+    onClose()
+    setChooseMeal(false)
+  }
+
   return (
     <div>
   {/* Modal for choosing a recipe or a meal idea. */}
-    <Modal show={open} onHide={onClose} centered>
+    <Modal show={open} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>Add Meal</Modal.Title>
       </Modal.Header>

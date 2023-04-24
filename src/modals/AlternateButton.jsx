@@ -12,12 +12,11 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, on
 
 
 /* Retrieve ingredients for thsi recipe from the database Display in the */
-const IngredientItems = ( { recipes, index}) => {
-
+const IngredientItems = ( { recipes, index, currentRecipe}) => {
     return (
         <>
-            {recipes[index].ingredients.map((ingredient)=>(
-                <Dropdown.Item eventKey={ingredient.focus}>{ingredient.focus}</Dropdown.Item>
+            {currentRecipe.ingredients.map((ingredient)=>(
+                <Dropdown.Item eventKey={ingredient.focus} key={ingredient.focus}>{ingredient.focus} </Dropdown.Item>
             ))}
         </>
     )
@@ -182,7 +181,10 @@ const OutOfIngredients = (props) =>{
                             <IngredientItems ingList={ingList} 
                                 setIngredients={setIngredients}
                                 recipes={props.recipes}
-                                index={props.index}></IngredientItems>
+                                index={props.index}
+                                currentRecipe={props.currentRecipe}>
+
+                            </IngredientItems>
                             
                         </DropdownButton>
                     </Row>

@@ -225,9 +225,11 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
               }
             },
             meal_plan:{
-              categories:{0:""},
-              meals: {0:""},
-              tags:{0:""}
+              categories:{
+                Breakfast: {quota: 7, meals:[]}, 
+                Lunch: {quota: 7, meals:[]},
+                Dinner: {quota: 7, meals:[]}},
+              tags:{0:"Monday", 1:"Tuesday", 2:"Wednesday", 3: "Thursday", 4:"Friday", 5:"Saturday", 6:"Sunday"}
             },
             recipes: {0:""}  
           });

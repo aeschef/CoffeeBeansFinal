@@ -11,8 +11,13 @@ export default function RecipeCards(props) {
   const [showPopup, setShowPopup] = useState(false);
   const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
   
+
+  // dummy state variable that needs to be passed as parameter but isn't used
+  const [currentMealDetails, setCurrentMealDetails] = useState([])
+
   // Sets the needed information in order to open the view recipe modal of the selected recipe
   const handleOpenViewPopup = (index) => {
+      console.log("key of recipe " + index)
       setIndexOfRecipeToView(index);
       setShowPopup(true);
   }
@@ -33,7 +38,7 @@ export default function RecipeCards(props) {
       if (props.addedRecipe === index ) {
         props.setAddedRecipe(-1)
       
-      // Otherwise, added recipe will be set to store the index of the selected recipe
+      // Otherwise, added recipe will be set to store the key of the selected recipe
       } else {
         props.setAddedRecipe(index)
 
@@ -51,7 +56,7 @@ export default function RecipeCards(props) {
         sort(props.sortFunction).
         filter((recipe) => props.shouldBeShown(recipe)).
         map((recipe, index) => (
-        <div className={props.addedRecipe === index ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(props.recipes.indexOf(recipe))} key={index}>
+        <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(recipe.key)} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
@@ -65,7 +70,10 @@ export default function RecipeCards(props) {
             </div>
         </div>
       ))}
-      {props.view && <ViewRecipePopup app={props.app} recipes={props.recipes} showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView} setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
+      {props.view && <ViewRecipePopup app={props.app} recipes={props.recipes} 
+      currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
+      showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView}
+       setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
 
       </div>
   )

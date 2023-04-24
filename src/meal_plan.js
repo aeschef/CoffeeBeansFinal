@@ -50,6 +50,8 @@ const [addedMeal, setAddedMeal] = useState({id: "Category"}, {day:"tag"}, {mealD
 
 const [categoriesList, setCategoriesList] = useState([])
 
+const [mealRefresh, setMealRefresh] = useState(false)
+
 const [recipes, setRecipes] = useState([])
 
 const [refresh, setRefresh] = useState(true)
@@ -58,6 +60,16 @@ const [refresh, setRefresh] = useState(true)
   const [categories, setCategories] = useState([])
   const [meals, setMeals] = useState([])
 
+  function handleRecipeTitle(item) {
+    console.log(recipes[item.value.label])
+    console.log("obect end")
+    recipes.forEach((recipe, i)=> {
+      console.log(recipe)
+      if (recipe.key === item.value.label) {
+        return recipes[i].title
+      }
+    })
+  }
   // Updates database for a meal when user checks or unchecks the checkbox
   function handleChecked(category, mealKey, value, mealIndex, categoryIndex) {
     // const newValue = !value
@@ -71,6 +83,8 @@ const [refresh, setRefresh] = useState(true)
 
   // Retrieves the recipes
   useEffect(() => {
+    if (refresh) {
+      console.log("here")
     const db = getDatabase()
     const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes")
     let arrMeals = []
@@ -92,16 +106,15 @@ const [refresh, setRefresh] = useState(true)
         
       // });
 
-    },  {
-      onlyOnce: true
-    });
-
-  }, [])
+    })
+    setMealRefresh(true)
+    }
+  }, [refresh])
 
 
   useEffect(()=> {
     const db = getDatabase()
-    if (refresh) {
+    if (refresh && mealRefresh) {
       // Reference to categories in the meal plan
       const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
       let arrMeals = []
@@ -122,7 +135,32 @@ const [refresh, setRefresh] = useState(true)
           } else {
             let keys = Object.keys(childsnapshot.val()?.meals);
             keys.forEach((id) => {
-              dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
+              console.log("i am here")
+              if (recipes && childsnapshot.val().meals[id].type=== "Recipe") {
+                let index = -1;
+                console.log(recipes)
+                recipes.forEach((recipe, i)=> {
+                  console.log("mapping recipe ot meal info ")
+
+                  // If there was a meal selected that was a recipe, update its content
+                  if (currentMealDetails && currentMealDetails.value.label == recipe.key) {
+                    setCurrentMealDetails({key: id, value: childsnapshot.val().meals[id], title: recipes[i].title})
+                  }
+                  console.log("child " + childsnapshot.val().meals[id].label)
+                  console.log("recipe " + recipe.key)
+                  if (recipe.key == childsnapshot.val().meals[id].label) {
+                    console.log("recipe found")
+                    index = i
+                  }
+                })
+                if (index !== -1) {
+                  dataMeals.push({key: id, value: childsnapshot.val().meals[id], title: recipes[index].title})
+                }
+
+              } else {
+                dataMeals.push({key: id, value: childsnapshot.val().meals[id]})
+
+              }
             })
           }
           
@@ -132,15 +170,14 @@ const [refresh, setRefresh] = useState(true)
 
         setCategories(dataCategories)
         setCategoriesList(catList)
-      },  {
-        onlyOnce: true
-      });
+      })
 
       setRefresh(false)
+      setMealRefresh(false)
     }
 
     
-  }, [refresh])
+  }, [refresh, mealRefresh])
 
   // Populates state variables with needed information to display view meal popup once the meal is selected. 
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
@@ -284,10 +321,10 @@ return (
           </div>
           <div>   
             {/* Allows user to select the meal name in order to view additional details about the meal*/}
-            <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key:x.key, value:x.value}, i)}>
+            <div className={"m-1 popup " + (x.value.completed ? "completed-item" : "not-completed")} onClick={()=> handleViewMealPopup(category.key, {key:x.key, value:x.value, title:x.title}, i)}>
             
               {/* Displays meal title if the meal is made from ingredients, otherwise uses meal label as key to retrieve index to return the title for recipe */}
-              {x.value.type === "Ingredients" ? x.value.label : handleRecipe(x)}
+              {x.value.type === "Ingredients" ? x.value.label : x?.title}
             </div>
           </div>
         </div>
@@ -302,7 +339,7 @@ return (
     {/* Shows meal details if the meal is selected. */}
     {showViewMealPopup &&
        <ViewMeal open={showViewMealPopup} onClose={setShowViewMealPopup} categories={categories} setCategories={setCategories}
-          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes} 
+          currentCategoryIndex={currentCategoryIndex} currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails} currentMealIndex={currentMealIndex} recipes={recipes} setRecipes={setRecipes} 
           refresh={refresh} setRefresh={setRefresh}/>}
  
   {/* Displays modal to create a meal if the add button is pressed */}
