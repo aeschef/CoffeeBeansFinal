@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useEffect, useState, Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
@@ -68,6 +68,10 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
             <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search"></RecipeSearchBar>
             <ListCategory
                 user={authentication}
+                accessCode={showPersonal ? 0 : accessCode}
+                database={database}
+                refresh={refresh}
+                setRefresh={setRefresh}></ListCategory>                
                 databaseArr={showPersonal ? searchedPersonalList : searchedSharedList}></ListCategory>
             <AddItem
                 database={database}
@@ -85,9 +89,58 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ user, databaseArr }) {
+function ListCategory({ user, databaseArr, database, accessCode, refresh, setRefresh }) {
     let count = 0;
     console.log(databaseArr);
+
+    /**
+     * Remove item from inventory
+     */
+    const removeItem = (cat, category) => {
+        //get first part of ref address
+        let users = '/users/' + user.currentUser.uid;
+        let group = '/groups/' + accessCode;
+        let use = "";
+        if (("" + accessCode).length === 1) {
+            use = users;
+        } else {
+            use = group;
+        }
+        
+        let catRef = ref(getDatabase(), use + '/inventory/categories/' + category );
+        onValue(catRef, (snapshot) => {
+            snapshot.forEach((thing) => {
+                if(thing.val().item_name === cat.item_name){
+                    console.log("removeing: " + use + '/inventory/categories/' + category +'/'+ cat.key);
+                    remove(ref(getDatabase(), use + '/inventory/categories/' + category +'/'+ cat.key));               
+                    setRefresh(true);
+                }
+            })
+        });
+        
+      
+                         
+    }
+    
+
+    const Remove  = ( {cat, categories} ) => {
+
+        if(cat.key != 0)
+        {
+            return (
+                <>
+                    <Col>        
+                        <Button onClick={() => removeItem(cat, categories.value)}>X</Button>
+                    </Col>
+                </> 
+            )
+            
+        }
+         else{
+            return <></>
+         }
+                        
+    }
 
     return (
 
@@ -105,13 +158,16 @@ function ListCategory({ user, databaseArr }) {
                     </div>
                     {categories.data.map((cat, i) =>
                         <div className="left-spacing">
-                            {console.log("WTF")}
                             <Row>
                                 <Col>
                                     <label key={i}>
                                         {cat.item_name}
                                     </label>
                                 </Col>
+                                <Col>
+                                    <Remove cat={cat} categories={categories}></Remove>
+                                </Col>
+                               
                             </Row>
                         </div>
                     )}
@@ -124,18 +180,7 @@ function ListCategory({ user, databaseArr }) {
 
 }
 
-/**
- * Remove item from inventory
- */
-const RemoveItem = () => {
-    // TODO find swipe library? 
-    //button?
-    //get event info then simply remove from the list
 
-    return (
-        <></>
-    );
-}
 
 /**
  * Component contains the add item button and the popup 
