@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import RecipeSearchBar from './RecipeSearchBar';
 
