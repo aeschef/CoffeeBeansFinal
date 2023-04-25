@@ -52,6 +52,7 @@ h1 {
 
 .tags {
     text-align: left;
+    background-color: #F8F9AA;
 }
 
 #recipe-info {
@@ -102,4 +103,18 @@ h1 {
 
 #ran-out-of-ingredient-alt {
     color:#729701;
+}
+
+#add-button {
+    position: fixed;
+    top: 80%;
+    left: 80%;
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+    background-color: white;
+}
+
+#card_background {
+    background-color: #e3eace;
 }

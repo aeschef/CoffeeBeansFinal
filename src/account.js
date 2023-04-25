@@ -83,7 +83,7 @@ function ViewRoommates({email}) {
 
     return (
         <Row>
-            <Button className="category-header" onClick={handleShow}>Roommates</Button>
+            <Button className="category_header" onClick={handleShow}>Roommates</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Roommates</Modal.Title>
@@ -232,12 +232,11 @@ const AccountHome = ({login, setLogin, accessCode, props}) => {
                     const childKey = childSnapshot.key;
                     //console.log("KEY" + childKey);
                     const childData = childSnapshot.val();
-                    console.log("DATA");
                     //console.log(childData);
                     accessData.push({ value: childKey, data: childData })
                 });
                 setEmails(accessData);
-                console.log(emails);
+                //console.log(emails);
             }, {
                 onlyOnce: true
             });
