@@ -130,9 +130,7 @@ export default function ViewRecipePopup(props) {
                         app={props.app} 
                         recipes={props.recipes}
                         index={props.indexOfRecipeToView}
-                        currentRecipe={currentRecipe}>
-
-                  </OutOfIngredients>
+                        currentRecipe={currentRecipe}> </OutOfIngredients>
 
                   <ul>{recipeIngredients}</ul>
                   
@@ -146,13 +144,13 @@ export default function ViewRecipePopup(props) {
 
                 {/* Completed the recipe... run out of anything? */}
                 {/* !!!!!!!!!!! A8 option A !!!!!!!!!!!!!!*/}
-                <CompleteRecipe databaseCatGL={props.databaseCatGL}
+                {/* <CompleteRecipe databaseCatGL={props.databaseCatGL}
                     auth={props.auth} 
                     recipeTitle={currentRecipe?.title}
                     app={props.app} 
                     recipes={props.recipes}
                     currentRecipe={currentRecipe}
-                    index={props.indexOfRecipeToView}></CompleteRecipe>
+                    index={props.indexOfRecipeToView}></CompleteRecipe> */}
                     
                   <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
                         auth={props.auth} recipeTitle={currentRecipe?.title}
