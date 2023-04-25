@@ -10,6 +10,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import RecipeSearchBar from './RecipeSearchBar';
 
 //Import Style Sheet
 import './css/inventory.css';
@@ -46,6 +47,16 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
         }
     };
 
+    const [searchInput, setSearchInput] = useState("");
+
+    const searchedPersonalList = databaseArr_p.map((category) => {
+        return {...category, data: category.data.filter((item) => (item.item_name.toLowerCase().trim().match(searchInput.toLowerCase().trim())))}
+    }).filter((category) => (category.data.length > 0));
+
+    const searchedSharedList = databaseArr_s?.map((category) => {
+        return {...category, data: category.data.filter((item) => (item.item_name?.toLowerCase().trim().match(searchInput.toLowerCase().trim())))}
+    }).filter((category) => (category.data.length > 0)) || databaseArr_s;
+
     return (
         <Container>
             <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
@@ -54,9 +65,10 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
+            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search"></RecipeSearchBar>
             <ListCategory
                 user={authentication}
-                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
+                databaseArr={showPersonal ? searchedPersonalList : searchedSharedList}></ListCategory>
             <AddItem
                 database={database}
                 authentication={authentication}
@@ -75,6 +87,7 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
  */
 function ListCategory({ user, databaseArr }) {
     let count = 0;
+    console.log(databaseArr);
 
     return (
 
