@@ -151,17 +151,12 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
 
     /*displays the item in the grocery list*/
     function DummyItem({ item_name, i, cat, refresh, setRefresh, databaseArr, category, accessCode, auth, data, checked }) {
-        const [isChecked, setIsChecked] = useState(false);
-        const [userInfo, setUse] = useState("");
 
-        useEffect(() => {
-            // console.log("setting is checked to" + checked)
-            setIsChecked(checked === 'true');
-        }, []);
-
-
-        /** when an item is checked, add it to inventory */
+        /** when an item is checked, add it to inventory, update checked field in database
+         * 
+         */
         const handleCheck = (event) => {
+            //get first part of ref address
             let users = '/users/' + auth.currentUser.uid;
             let group = '/groups/' + accessCode;
             let use = "";
@@ -170,13 +165,12 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             } else {
                 use = group;
             }
+
             if(event.target.checked){
                 //checked! Add to Inv
                 push(ref(getDatabase(), use + '/inventory/categories/' + category), { item_name: item_name} );
             } else{
                 //unchecked ACK we need to remove!
-                
-                // remove this item
                 let catRef = ref(getDatabase(), use + '/inventory/categories/' + category );
                 onValue(catRef, (snapshot) => {
                     snapshot.forEach((thing)=>{
@@ -188,16 +182,14 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             }
 
             // set checked in database
-            // console.log("checked: " + cat.checked + " == " + event.target.checked)
-            // console.log('setting checked for: ' +  use + '/grocery_list/categories/' + category +'/' + i + " to " + event.target.checked)
             update(ref(getDatabase(), use + '/grocery_list/categories/' + category + '/'  + i ), {
                 checked: event.target.checked,
                 item_name: item_name,
                 item_num: cat.item_num
             });
 
-                  
-
+            //re-render page
+            setRefresh(true);
         }
     
 
