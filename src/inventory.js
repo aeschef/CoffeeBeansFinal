@@ -58,29 +58,31 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
     }).filter((category) => (category.data.length > 0)) || databaseArr_s;
 
     return (
-        <Container>
-            <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
-                <Tab eventKey='personal' title="personal" onSelect={handlePersonal}>
-                </Tab>
-                <Tab eventKey='shared' title="shared" onSelect={handleShared}>
-                </Tab>
-            </Tabs>
-            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search"></RecipeSearchBar>
-            <ListCategory
-                user={authentication}
-                accessCode={showPersonal ? 0 : accessCode}
-                database={database}
-                refresh={refresh}
-                setRefresh={setRefresh}></ListCategory>                
-                databaseArr={showPersonal ? searchedPersonalList : searchedSharedList}></ListCategory>
-            <AddItem
-                database={database}
-                authentication={authentication}
-                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
-                accessCode={showPersonal ? 0 : accessCode}
-                refresh={refresh}
-                setRefresh={setRefresh}></AddItem>
-        </Container>
+        <>
+            <Container>
+                <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
+                    <Tab eventKey='personal' title="personal" onSelect={handlePersonal}>
+                    </Tab>
+                    <Tab eventKey='shared' title="shared" onSelect={handleShared}>
+                    </Tab>
+                </Tabs>
+                <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search"></RecipeSearchBar>
+                <ListCategory
+                    user={authentication}
+                    accessCode={showPersonal ? 0 : accessCode}
+                    database={database}
+                    refresh={refresh}
+                    setRefresh={setRefresh}             
+                    databaseArr={showPersonal ? searchedPersonalList : searchedSharedList}></ListCategory>
+                <AddItem
+                    database={database}
+                    authentication={authentication}
+                    databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
+                    accessCode={showPersonal ? 0 : accessCode}
+                    refresh={refresh}
+                    setRefresh={setRefresh}></AddItem>
+            </Container>
+        </>
     );
 
 }
