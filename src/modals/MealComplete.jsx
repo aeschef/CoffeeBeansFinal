@@ -134,7 +134,7 @@ const HandleAddtoMealPlan = (props) => {
     return (        
         <>
             {/*  */}
-            <Button id='ran-out-of-ingredient' onClick={showModal}>Recipe Complete</Button>
+            <Button id='ran-out-of-ingredient' onClick={showModal}>Add to Meal Plan</Button>
 
              {/* add to GL popup modal */}
             <Modal show={show} onHide={handleClose} centered  
