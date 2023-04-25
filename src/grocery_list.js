@@ -9,8 +9,8 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, remove, update, get, query, orderByChild, onValue, set } from "firebase/database"
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getDatabase, ref, push, remove, update, onValue, set } from "firebase/database"
+import { getAuth } from "firebase/auth";
 
 //Import Style Sheet
 import './css/grocery_list.css';
@@ -24,7 +24,7 @@ import CategorysPopup from './modals/EditGLICategories';
  * Handles incrementing and decrementing the number of items 
  * needed from the grocery store
  */
-function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, auth, database}) {
+function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, auth, database, index}) {
     let [num, setNum] = useState(cat.item_num);
     //console.log(val);
     //console.log("NUM: " + category);
@@ -38,8 +38,32 @@ function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, a
     let dec_num = () => {
         setNum(Number(num) - 1);
         let updateNum = num - 1;
-        updateDatabase(updateNum);
+        if(updateNum <= 0){
+            removeItem(cat, category);
+        } else{
+            updateDatabase(updateNum);
+        }
     }
+
+    /**
+     * Remove item from inventory
+     */
+    const removeItem = (cat, category) => {
+        //get first part of ref address
+        let users = '/users/' + auth.currentUser.uid;
+        let group = '/groups/' + code;
+        let use = "";
+        if (("" + code).length === 1) {
+            use = users;
+        } else {
+            use = group;
+        }
+        
+        let catRef = ref(getDatabase(), use + '/grocery_list/categories/' + category );
+        remove(ref(getDatabase(), use + '/grocery_list/categories/' + category +'/'+ index));               
+        setRefresh(true);
+        
+    }   
 
     const updateDatabase = (num) => {
         //console.log("HERE");
@@ -221,7 +245,8 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                             name={item_name}
                             code={accessCode}
                             auth={auth}
-                            database={data}></IncDec>
+                            database={data}
+                            index={i}></IncDec>
                     </Col>
                 </Row>
             </div>
@@ -280,19 +305,6 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
 
         </div>
 
-    );
-}
-
-/**
- * Remove item from inventory
- */
-const RemoveItem = () => {
-    // TODO find swipe library? 
-    //button?
-    //get event info then simply remove from the list
-
-    return (
-        <></>
     );
 }
 
