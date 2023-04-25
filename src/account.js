@@ -2,12 +2,13 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useState, Component } from 'react';
+import React, { useState, Component, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './css/account.css';
 import Stack from 'react-bootstrap/Stack'
 import Alert from 'react-bootstrap/Alert';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 
 function ViewHelpPage() {
@@ -55,15 +56,29 @@ function ViewHelpPage() {
 /**
  * renders button to view roommates 
  */
-function ViewRoommates() {
+function ViewRoommates({email}) {
     const [show, setShow] = useState(false);
-    const handleShow = () => setShow(true);
+    //const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
  
     /** TODO starting next week roommate information will be retrieved through the database 
      * via a randomly generated access code BUT for now I will simply use dummy information*/
     const roommieList = ["Annabelle", "Luis", "Mirya", "Jane"];
 
+    const [members, setMembers] = useState([]);
+
+    const CreateMembers = (email) => {
+        const memb = []
+        email.map(mem => {
+            memb.push({name: mem.data});
+        })
+        setMembers(memb);
+    }
+
+    const handleShow = () =>{
+        setShow(true);
+        CreateMembers(email);
+    }
    
 
     return (
@@ -78,15 +93,13 @@ function ViewRoommates() {
                         <Row>
                         <ol>
                             <Stack gap={5}>
-                                {roommieList.map(reptile => (
-                                    <li key={reptile}>{reptile}</li>
+                                {members.map(reptile => (
+                                    <li key={reptile}>{reptile.name}</li>
                                 ))}
                             </Stack>
                         </ol>
                         </Row>
                     </Container>
-
-                    
                     <Button onClick={handleClose}>Leave</Button>
                 </Modal.Body>
             </Modal>
@@ -204,7 +217,34 @@ function ChangePassword(){
     );
 }
 
-const AccountHome = ({login, setLogin, accessCode}) => {
+const AccountHome = ({login, setLogin, accessCode, props}) => {
+
+    const db = getDatabase(props.app);
+    const [emails, setEmails] = useState([]);
+    const [refresh, setRefresh] = useState(true);
+
+    useEffect(() => {
+        if(accessCode){
+            const dbRef = ref(db, '/groups/' + accessCode + '/members');
+            onValue(dbRef, (snapshot) => {
+                const accessData = []
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    //console.log("KEY" + childKey);
+                    const childData = childSnapshot.val();
+                    console.log("DATA");
+                    //console.log(childData);
+                    accessData.push({ value: childKey, data: childData })
+                });
+                setEmails(accessData);
+                console.log(emails);
+            }, {
+                onlyOnce: true
+            });
+        }
+        setRefresh(false);
+    }, [accessCode, refresh])
+
     return (
         <Container fluid>
             <Row>
@@ -215,7 +255,8 @@ const AccountHome = ({login, setLogin, accessCode}) => {
             
             <Row>
                 <Stack gap={4} >
-                    <ViewRoommates></ViewRoommates>
+                    <ViewRoommates
+                    email={emails}></ViewRoommates>
                     <ChangePassword></ChangePassword>
                     <ViewHelpPage></ViewHelpPage>
                     <Alert key='success' variant='success'>
