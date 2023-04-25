@@ -176,35 +176,31 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
               categories: {
                 Produce: {
                   0: {
-                    item_name: "apples",
-                    item_num: ""
-                  },
-                  1:{
                     item_name: "",
                     item_num: ""
-                  }
+                  },
                 },
                 Dairy: {
                   0: {
-                    item_name: "yogurt",
+                    item_name: "",
                     item_num: 1
                   }
                 },
                 Meats: {
                   0: {
-                    item_name: "turkey",
+                    item_name: "",
                     item_num: 1
                   }
                 },
                 Grains: {
                   0: {
-                    item_name: "rice",
+                    item_name: "",
                     item_num: 1
                   }
                 },
                 Miscellaneous: {
                   0: {
-                    item_name: "Cheetos",
+                    item_name: "",
                     item_num: 1
                   }
                 }
