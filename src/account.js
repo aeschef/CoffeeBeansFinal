@@ -18,7 +18,7 @@ function ViewHelpPage() {
 
     return (
         <Row>
-            <Button className="category-header" onClick={handleShow}>Frequently Asked Questions</Button>
+            <Button variant="info" className="category-header" onClick={handleShow}>Frequently Asked Questions</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Frequently Asked Questions</Modal.Title>
@@ -83,7 +83,7 @@ function ViewRoommates({email}) {
 
     return (
         <Row>
-            <Button className="category_header" onClick={handleShow}>Roommates</Button>
+            <Button variant="info" className="category_header" onClick={handleShow}>Roommates</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Roommates</Modal.Title>
@@ -175,7 +175,7 @@ function ChangePassword(){
 
     return (
         <Row>
-            <Button className="category-header" onClick={handleShow}>Password</Button>
+            <Button variant="info" className="category-header" onClick={handleShow}>Password</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Password</Modal.Title>
