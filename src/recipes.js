@@ -6,6 +6,7 @@ import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe';
 import RecipeCards from './RecipeCards';
 import RecipeSearchBar from './RecipeSearchBar';
+import ImageUploading from "react-images-uploading";
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
@@ -239,6 +240,12 @@ export default function RecipesHome(props) {
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
 
+    const [images, setImages] = React.useState([]);
+    const maxNumber = 1;
+    const onImageListChange = (imageList, addUpdateIndex) => {
+        setImages(imageList);
+    };
+
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
@@ -322,12 +329,30 @@ function AddRecipePopup(props) {
                         
                         {/* picture entry - TODO: change to upload photo */}
                         <Form.Label>Picture:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="picture"
-                            value={inputs.picture || ""}
-                            onChange={handleChange}
-                        />
+                        <ImageUploading
+                            value={images}
+                            onChange={onImageListChange}
+                            maxNumber={maxNumber}
+                            dataURLKey="data_url"
+                            acceptType={["jpg"]}
+                        >
+                        {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
+                            <div className="upload__image-wrapper">
+                                <button onClick={onImageUpload}>
+                                    Upload Image
+                                </button>
+                                {imageList.map((image, index) => (
+                                    <div key={index} className="image-item">
+                                    <img src={image.data_url} alt="" width="100" />
+                                    <div className="image-item__btn-wrapper">
+                                        <button onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                    </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        </ImageUploading>
                         
                         {/* title entry */}
                         <Form.Label>Title:</Form.Label>
