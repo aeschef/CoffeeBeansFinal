@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import "../recipes.css";
 import { createPath } from 'react-router-dom';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
@@ -48,6 +48,14 @@ export default function EditRecipePopup(props) {
 
     const handleDeleteRecipe = () => {
         
+        // database info
+        const auth = getAuth(props.app)
+        const db = getDatabase(props.app)
+        
+        // getting a reference to the 'recipes' section of this user's area of the database and deleting the recipe
+        const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.indexOfRecipeToEdit + '/');
+        remove(dbRecipeRef)
+                
         // returning to main recipe page
         handleCloseDeleteAlert();
         props.handleCloseEditPopup();
