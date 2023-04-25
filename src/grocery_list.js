@@ -9,7 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
+import { getDatabase, ref, child, push, remove, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
@@ -148,27 +148,51 @@ const ShowTab = ({ database, authentication, databaseArray_p, databaseArray_s, a
  * takes in the list of items in the gorcery list currently
  */
 function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, data}) {
-    //console.log("LIST CATEGORY");
-    //console.log(database);
 
-    const handleCheck = (event) => {
-        {/*if (event.target.checked) {
-            const itemName = event.target.value;
-            const item = { value: itemName, label: itemName };
-            console.log(item + "added to inventory");
-            addtoInventory([
-                ...inventoryList,
-                { value: itemName, label: itemName }
-            ]);
+    /*displays the item in the grocery list*/
+    function DummyItem({ item_name, i, cat, refresh, setRefresh, databaseArr, category, accessCode, auth, data, checked }) {
 
-        } else {
-            //TODO remove from inventory
-        }*/}
-    }
+        /** when an item is checked, add it to inventory, update checked field in database
+         * 
+         */
+        const handleCheck = (event) => {
+            //get first part of ref address
+            let users = '/users/' + auth.currentUser.uid;
+            let group = '/groups/' + accessCode;
+            let use = "";
+            if (("" + accessCode).length === 1) {
+                use = users;
+            } else {
+                use = group;
+            }
 
-    let count = 0;
+            if(event.target.checked){
+                //checked! Add to Inv
+                push(ref(getDatabase(), use + '/inventory/categories/' + category), { item_name: item_name} );
+            } else{
+                //unchecked ACK we need to remove!
+                let catRef = ref(getDatabase(), use + '/inventory/categories/' + category );
+                onValue(catRef, (snapshot) => {
+                    snapshot.forEach((thing)=>{
+                        if(thing.val().item_name === item_name){
+                            remove(ref(getDatabase(), use + '/inventory/categories/' + category +'/'+ thing.key))
+                        }
+                    })
+                });
+            }
 
-    function DummyItem({ item_name, i, cat, refresh, setRefresh, databaseArr, category, accessCode, auth, data }) {
+            // set checked in database
+            update(ref(getDatabase(), use + '/grocery_list/categories/' + category + '/'  + i ), {
+                checked: event.target.checked,
+                item_name: item_name,
+                item_num: cat.item_num
+            });
+
+            //re-render page
+            setRefresh(true);
+        }
+    
+
         if (item_name.length === 0) {
             return null;
         }
@@ -182,6 +206,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                                 type="checkbox"
                                 name="lang"
                                 value={item_name}
+                                checked={cat.checked}
                                 onChange={handleCheck}
                             />
                             {item_name}
@@ -218,6 +243,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                     </div>
                     {category?.data.map((cat, i) =>
                         <div className="left-spacing">
+                            
                             <Row>
                                 <DummyItem item_name={cat.item_name}
                                     i={i}
@@ -228,7 +254,8 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                                     category={category.value}
                                     accessCode={accessCode}
                                     auth={auth}
-                                    data={data}></DummyItem>
+                                    data={data}
+                                    checked={cat.checked}></DummyItem>
                                 {/*<Col>
                                     <label key={i}>
                                         <input
@@ -316,6 +343,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
 
     const addToDatabase = () => {
         setShow(false);
+
         let found = false;
         let count_c = 0;
         databaseArr.map(category => {
@@ -330,7 +358,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
                     count += 1;
                 })
                 let obj = {}
-                const item = { item_name: itemName, item_num: 1 };
+                const item = { item_name: itemName, item_num: 1, checked: 'false' };
                 obj[count] = item;
                 let users = '/users/' + auth.currentUser.uid;
                 let group = '/groups/' + accessCode;
@@ -349,7 +377,7 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
 
         if (!found) {
             let add = {};
-            const item = { item_name: itemName, item_num: 1 };
+            const item = { item_name: itemName, item_num: 1, checked: 'false' };
             add[count_c] = { value: categoryName };
             console.log("not found");
             let itemAdd = {};
@@ -370,7 +398,6 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
             } else {
                 update(ref(database, '/groups/' + accessCode + '/grocery_list/categories/' + categoryName), itemAdd);
             }*/}
-
             update(ref(database, use + '/grocery_list/categories/' + categoryName), itemAdd);
             //set(ref(database, use + '/inventory/categories/'), categoryName);
             let invAdd = {};
@@ -508,4 +535,5 @@ const GroceryListHome = ({ props, accessCode }) => {
         </Container>
     );
 }
+
 export default GroceryListHome
