@@ -152,8 +152,8 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
     /*displays the item in the grocery list*/
     function DummyItem({ item_name, i, cat, refresh, setRefresh, databaseArr, category, accessCode, auth, data, checked }) {
 
-        /** when an item is checked, add it to inventory, update checked field in database
-         * 
+        /** 
+         * when an item is checked, add it to inventory, update checked field in database
          */
         const handleCheck = (event) => {
             //get first part of ref address

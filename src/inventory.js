@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/Modal';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 //Import Style Sheet
@@ -56,7 +56,12 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
             </Tabs>
             <ListCategory
                 user={authentication}
-                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
+                databaseArr={showPersonal ? databaseArr_p : databaseArr_s}
+                accessCode={showPersonal ? 0 : accessCode}
+                database={database}
+                refresh={refresh}
+                setRefresh={setRefresh}></ListCategory>
+                
             <AddItem
                 database={database}
                 authentication={authentication}
@@ -73,8 +78,57 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
  * container for list categories and their items
  * list-> list that stores items
  */
-function ListCategory({ user, databaseArr }) {
+function ListCategory({ user, databaseArr, database, accessCode, refresh, setRefresh }) {
     let count = 0;
+
+    /**
+     * Remove item from inventory
+     */
+    const removeItem = (cat, category) => {
+        //get first part of ref address
+        let users = '/users/' + user.currentUser.uid;
+        let group = '/groups/' + accessCode;
+        let use = "";
+        if (("" + accessCode).length === 1) {
+            use = users;
+        } else {
+            use = group;
+        }
+        
+        let catRef = ref(getDatabase(), use + '/inventory/categories/' + category );
+        onValue(catRef, (snapshot) => {
+            snapshot.forEach((thing) => {
+                if(thing.val().item_name === cat.item_name){
+                    console.log("removeing: " + use + '/inventory/categories/' + category +'/'+ cat.key);
+                    remove(ref(getDatabase(), use + '/inventory/categories/' + category +'/'+ cat.key));               
+                    setRefresh(true);
+                }
+            })
+        });
+        
+      
+                         
+    }
+    
+
+    const Remove  = ( {cat, categories} ) => {
+
+        if(cat.key != 0)
+        {
+            return (
+                <>
+                    <Col>        
+                        <Button onClick={() => removeItem(cat, categories.value)}>X</Button>
+                    </Col>
+                </> 
+            )
+            
+        }
+         else{
+            return <></>
+         }
+                        
+    }
 
     return (
 
@@ -92,13 +146,16 @@ function ListCategory({ user, databaseArr }) {
                     </div>
                     {categories.data.map((cat, i) =>
                         <div className="left-spacing">
-                            {console.log("WTF")}
                             <Row>
                                 <Col>
                                     <label key={i}>
                                         {cat.item_name}
                                     </label>
                                 </Col>
+                                <Col>
+                                    <Remove cat={cat} categories={categories}></Remove>
+                                </Col>
+                               
                             </Row>
                         </div>
                     )}
@@ -111,18 +168,7 @@ function ListCategory({ user, databaseArr }) {
 
 }
 
-/**
- * Remove item from inventory
- */
-const RemoveItem = () => {
-    // TODO find swipe library? 
-    //button?
-    //get event info then simply remove from the list
 
-    return (
-        <></>
-    );
-}
 
 /**
  * Component contains the add item button and the popup 
