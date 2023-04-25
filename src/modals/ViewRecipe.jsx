@@ -170,7 +170,8 @@ export default function ViewRecipePopup(props) {
           setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} 
           tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} 
           ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} 
-          stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}></EditRecipePopup>
+          stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}
+          handleCloseViewPopup={props.handleCloseViewPopup}></EditRecipePopup>
 
       </>
       
