@@ -218,7 +218,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     // If the user is adding a meal from recipe:
     } else if (type === "Recipe") {
       setCategoryError(false)
-      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: recipes[mealDetails].key, type: type, notes:"", completed: false})
+      setAddedMeal({id: selectedCategory.label, tags:selectedTags.value, description: mealDetails, type: type, notes:"", completed: false})
       console.log("added recipe")
       setNewMeal(true)
     }

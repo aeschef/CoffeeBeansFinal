@@ -5,19 +5,15 @@ import Modal from 'react-bootstrap/Modal';
 import Alert from 'react-bootstrap/Alert';
 import "../recipes.css";
 import { createPath } from 'react-router-dom';
-import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
+import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 
 
-function DeleteAlert() {
-    const [show, setShow] = useState(false);
-
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
+function DeleteAlert(props) {
 
     return (
         <>
-            <Modal show={show} onHide={handleClose} centered>
+            <Modal show={props.showDeleteAlert} onHide={props.handleCloseDeleteAlert} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>Warning!</Modal.Title>
                 </Modal.Header>
@@ -28,42 +24,43 @@ function DeleteAlert() {
                     </p>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShow(false)}>
+                <Button variant="secondary" onClick={() => props.handleCloseDeleteAlert()}>
                         No
                     </Button>
-                    <Button class="float-right" id="delete" variant="secondary" type="delete" onClick={() => setShow(false)}>
+                    <Button class="float-right" id="delete" variant="secondary" type="delete" onClick={() => props.handleDeleteRecipe()}>
                         Yes
                     </Button>
                 </Modal.Footer>
 
 
             </Modal>
-            <Button variant="secondary" type="submit" onClick={handleShow}>
-                        Delete
-                    </Button>
-            {/*<Alert show={show} variant="success" onClose={() => setShow(false)} dismissible>
-                <Alert.Heading>Warning!</Alert.Heading>
-                <p>You are about to delete a recipe from the database!
-                    Do you mean to delete this?
-                </p>
-                <hr />
-                <div class="text-right">
-                    <Button variant="secondary" onClick={() => setShow(false)}>
-                        No
-                    </Button>
-                    <Button class="float-right" id="delete" variant="secondary" type="delete">
-                        Yes
-                    </Button>
-                </div>
-            </Alert>
-
-    {!show && <Button class="float-right" onClick={() => setShow(true)}>Delete</Button>}*/}
         </>
     );
 }
 
 // popup for editing a recipe
 export default function EditRecipePopup(props) {
+
+    const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+
+    const handleShowDeleteAlert = () => setShowDeleteAlert(true);
+    const handleCloseDeleteAlert = () => setShowDeleteAlert(false);
+
+    const handleDeleteRecipe = () => {
+        
+        // database info
+        const auth = getAuth(props.app)
+        const db = getDatabase(props.app)
+        
+        // getting a reference to the 'recipes' section of this user's area of the database and deleting the recipe
+        const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.indexOfRecipeToEdit + '/');
+        remove(dbRecipeRef)
+                
+        // returning to main recipe page
+        handleCloseDeleteAlert();
+        props.handleCloseEditPopup();
+        props.handleCloseViewPopup();
+    }
 
     const findQuotedWord = (word) => {
         const indexOfFirstQuote = word.indexOf("\"");
@@ -260,7 +257,10 @@ export default function EditRecipePopup(props) {
 
                 {/* modal footer with submit button */}
                 <Modal.Footer>
-                    <DeleteAlert></DeleteAlert>
+                    <DeleteAlert showDeleteAlert={showDeleteAlert} handleCloseDeleteAlert={handleCloseDeleteAlert} handleDeleteRecipe={handleDeleteRecipe}></DeleteAlert>
+                    <Button variant="secondary" type="submit" onClick={handleShowDeleteAlert}>
+                        Delete
+                    </Button>
                     <Button variant="primary" type="submit" onClick={handleSubmit}>
                         Submit
                     </Button>
