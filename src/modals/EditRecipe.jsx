@@ -27,7 +27,7 @@ function DeleteAlert(props) {
                 <Button variant="secondary" onClick={() => props.handleCloseDeleteAlert()}>
                         No
                     </Button>
-                    <Button class="float-right" id="delete" variant="secondary" type="delete" onClick={() => props.handleCloseDeleteAlert()}>
+                    <Button class="float-right" id="delete" variant="secondary" type="delete" onClick={() => props.handleDeleteRecipe()}>
                         Yes
                     </Button>
                 </Modal.Footer>
@@ -45,6 +45,14 @@ export default function EditRecipePopup(props) {
 
     const handleShowDeleteAlert = () => setShowDeleteAlert(true);
     const handleCloseDeleteAlert = () => setShowDeleteAlert(false);
+
+    const handleDeleteRecipe = () => {
+        
+        // returning to main recipe page
+        handleCloseDeleteAlert();
+        props.handleCloseEditPopup();
+        props.handleCloseViewPopup();
+    }
 
     const findQuotedWord = (word) => {
         const indexOfFirstQuote = word.indexOf("\"");
@@ -241,7 +249,7 @@ export default function EditRecipePopup(props) {
 
                 {/* modal footer with submit button */}
                 <Modal.Footer>
-                    <DeleteAlert showDeleteAlert={showDeleteAlert} handleCloseDeleteAlert={handleCloseDeleteAlert}></DeleteAlert>
+                    <DeleteAlert showDeleteAlert={showDeleteAlert} handleCloseDeleteAlert={handleCloseDeleteAlert} handleDeleteRecipe={handleDeleteRecipe}></DeleteAlert>
                     <Button variant="secondary" type="submit" onClick={handleShowDeleteAlert}>
                         Delete
                     </Button>
