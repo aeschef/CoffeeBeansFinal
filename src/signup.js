@@ -93,30 +93,35 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
         categories: {
           Produce: {
             0: {
+              checked: false,
               item_name: "grapes",
               item_num: 1
             }
           },
           Dairy: {
             0: {
+              checked: false,
               item_name: "milk",
               item_num: 1
             }
           },
           Meats: {
             0: {
+              checked: false,
               item_name: "ham",
               item_num: 1
             }
           },
           Grains: {
             0: {
+              checked: false,
               item_name: "bread",
               item_num: 1
             }
           },
           Miscellaneous: {
             0: {
+              checked: false,
               item_name: "Hot Fries",
               item_num: 1
             }

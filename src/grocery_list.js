@@ -155,6 +155,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
         const [userInfo, setUse] = useState("");
 
         useEffect(() => {
+            // console.log("setting is checked to" + checked)
             setIsChecked(checked === 'true');
         }, []);
 
@@ -171,11 +172,9 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             }
             if(event.target.checked){
                 //checked! Add to Inv
-                setIsChecked(true);
                 push(ref(getDatabase(), use + '/inventory/categories/' + category), { item_name: item_name} );
             } else{
                 //unchecked ACK we need to remove!
-                setIsChecked(false);
                 
                 // remove this item
                 let catRef = ref(getDatabase(), use + '/inventory/categories/' + category );
@@ -189,11 +188,12 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             }
 
             // set checked in database
-            console.log('accessing ' +  use + '/grocery_list/categories/' + category +'/' + i)
-            set(ref(getDatabase(), use + '/grocery_list/categories/' + category + '/' ), {
-                checked: !checked,
+            // console.log("checked: " + cat.checked + " == " + event.target.checked)
+            // console.log('setting checked for: ' +  use + '/grocery_list/categories/' + category +'/' + i + " to " + event.target.checked)
+            update(ref(getDatabase(), use + '/grocery_list/categories/' + category + '/'  + i ), {
+                checked: event.target.checked,
                 item_name: item_name,
-                iten_num: cat.item_num
+                item_num: cat.item_num
             });
 
                   
@@ -214,7 +214,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
                                 type="checkbox"
                                 name="lang"
                                 value={item_name}
-                                checked={isChecked}
+                                checked={cat.checked}
                                 onChange={handleCheck}
                             />
                             {item_name}
