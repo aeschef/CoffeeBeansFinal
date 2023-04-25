@@ -10,6 +10,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import RecipeSearchBar from './RecipeSearchBar';
 
 //Import Style Sheet
 import './css/inventory.css';
@@ -46,6 +47,8 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
         }
     };
 
+    const [searchInput, setSearchInput] = useState("");
+
     return (
         <Container>
             <Tabs defaultActiveKey={'personal'} animation={false} onSelect={handleSelect} className="mb-2">
@@ -54,6 +57,7 @@ const ShowTab = ({ database, authentication, databaseArr_p, databaseArr_s, acces
                 <Tab eventKey='shared' title="shared" onSelect={handleShared}>
                 </Tab>
             </Tabs>
+            <RecipeSearchBar searchInput={searchInput} setSearchInput={setSearchInput} placeholder="Search"></RecipeSearchBar>
             <ListCategory
                 user={authentication}
                 databaseArr={showPersonal ? databaseArr_p : databaseArr_s}></ListCategory>
