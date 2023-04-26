@@ -12,12 +12,18 @@ import { getDatabase, ref, child, push, update, get, query, orderByChild, onValu
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import OutOfIngredients from './AlternateButton';
 import CompleteRecipe from './CompleteRecipe';
-
+import LowEnergyIcon from '../svg/low_energy.svg'
+import MediumEnergyIcon from '../svg/medium_energy.svg'
+import HighEnergyIcon from '../svg/high_energy.svg'
+import TimeIcon from '../svg/time_icon.svg';
 
 import HandleAddtoMealPlan from './MealComplete';
 
 // popup for viewing a recipe
 export default function ViewRecipePopup(props) {
+
+  const energyIcons = [LowEnergyIcon, MediumEnergyIcon, HighEnergyIcon];
+  const energyLevels = ["Low", "Medium", "High"];
   
   // variables and functions for Edit Recipe popup
   const [showEditPopup, setShowEditPopup] = useState(false);
@@ -111,11 +117,23 @@ export default function ViewRecipePopup(props) {
                       </div>
                       
                       {/* energy and time required for this recipe */}
-                      <div className='col-6'>
-                          <h6>Energy Required</h6>
-                          <p>{currentRecipe?.energyRequired !== "" ? currentRecipe?.energyRequired + " Energy" : ""}</p>
-                          <h6>Time Required</h6>
-                          <p>{currentRecipe?.hoursRequired !== "0" ? currentRecipe?.hoursRequired + " hours " : ""}{currentRecipe?.minsRequired !== "0" ? currentRecipe?.minsRequired + " mins" : ""}</p>
+                      <div className='col-6' id='time-and-energy'>
+                        <div className='row'>
+                          <div className='col-3'>
+                            <img class="energy-icon" src={energyIcons[energyLevels.indexOf(currentRecipe?.energyRequired)]}></img>
+                          </div>
+                          <div className='col-9'>
+                            <p>{currentRecipe?.energyRequired !== "" ? currentRecipe?.energyRequired + " Energy" : ""}</p>
+                          </div>
+                        </div>
+                        <div className='row'>
+                          <div className='col-3'>
+                            <img class="time-icon" src={TimeIcon}></img>
+                          </div>
+                          <div className='col-9'>
+                            <p>{currentRecipe?.hoursRequired !== "0" ? currentRecipe?.hoursRequired + " hours " : ""}{currentRecipe?.minsRequired !== "0" ? currentRecipe?.minsRequired + " mins" : ""}</p>
+                          </div>
+                        </div>
                       </div>
                   </div>
 
