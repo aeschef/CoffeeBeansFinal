@@ -282,7 +282,7 @@ function AddRecipePopup(props) {
         }
         const newRecipe = {
             title: inputs.title, 
-            picture: images[0].data_url, 
+            picture: images[0]?.data_url || null, 
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired || 0, 
             minsRequired: inputs.minsRequired || 0, 
