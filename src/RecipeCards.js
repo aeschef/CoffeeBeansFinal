@@ -56,15 +56,10 @@ export default function RecipeCards(props) {
         sort(props.sortFunction).
         filter((recipe) => props.shouldBeShown(recipe)).
         map((recipe, index) => (
-<<<<<<< HEAD
-        <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} id = "card_background" onClick={()=>handleClick(recipe.key)} key={index}>
-            <div className='col-6' id='image'>{recipe.picture}</div>
-=======
         <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(recipe.key)} key={index}>
             <div className='col-6' id='image'>
             <img src={recipe.picture} id="recipe-image" alt=""/>            
             </div>
->>>>>>> 01d5da351698b596b6f5721c784a57fd0ae0f2db
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
                 <div className='row'>
