@@ -135,3 +135,15 @@ h1 {
 .search-bar { position: relative; width:86%; margin: auto }
 .search-bar input { padding-left: 35px; background-color:#fff; display:block; width: 100%; box-sizing: border-box }
 .search-bar img { position: absolute; top: 2px; left: 5px; padding: 1px }
+
+.energy-icon {
+    height: 32px;
+}
+
+.time-icon {
+    height: 28px;
+}
+
+#time-and-energy {
+    padding-top: 12px;
+}

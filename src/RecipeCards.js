@@ -2,8 +2,14 @@
 import React, { useState } from 'react';
 import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe'
+import LowEnergyIcon from './svg/low_energy.svg'
+import MediumEnergyIcon from './svg/medium_energy.svg'
+import HighEnergyIcon from './svg/high_energy.svg'
 
 export default function RecipeCards(props) {
+
+  const energyIcons = [LowEnergyIcon, MediumEnergyIcon, HighEnergyIcon];
+  const energyLevels = ["Low", "Medium", "High"];
   
   // TODO: add a "no recipes to show" message if needed
   
@@ -63,7 +69,9 @@ export default function RecipeCards(props) {
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
                 <div className='row'>
-                    <div className='col-6'>{recipe.energyRequired + " Energy"}</div>
+                    <div className='col-6'>
+                      <img className="energy-icon" src={energyIcons[energyLevels.indexOf(recipe.energyRequired)]}></img>
+                    </div>
                     <div className='col-6'>
                       {recipe.hoursRequired !== "0" ? recipe.hoursRequired + " hours " : ""}{recipe.minsRequired !== "0" ? recipe.minsRequired + " mins" : ""}
                     </div>
