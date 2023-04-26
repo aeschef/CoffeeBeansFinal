@@ -17,7 +17,7 @@ import EditMealTags from './EditMealTags';
 // Modal that appears when a user selects a meal and presses the edit meal button. 
 const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCategories, currentCategoryIndex, currentMealDetails, setCurrentMealDetails, currentMealIndex, recipes, setRecipes,
   refresh, setRefresh,
-  groceryList, addToGL, categoriesList, setCategoriesList, indexRecipe}) => {
+  groceryList, addToGL, categoriesList, setCategoriesList, recipeKey}) => {
   const auth = getAuth()
 
   const [currRecipe, setCurrRecipe] = useState([])
@@ -27,7 +27,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   useEffect(()=> {
       const db = getDatabase()
-      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/" + indexRecipe)
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/" + recipeKey)
       let arrMeals = []
       // Stores all of the meal categories and pushes them to an array
       onValue(recipesRef, (snapshot) => {
@@ -39,8 +39,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
       })
       
   }, [])
-
-
 
   // Popup that appears when user attempts to delete a meal
   const [openWarning, setOpenWarning] = useState(false)
@@ -73,7 +71,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   const [updatedMeal, setUpdatedMeal] = useState(null)
 
   // Days of the week used for tag names
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
   const [tags, setTags] = useState([])
 
   useEffect(()=> {
@@ -119,28 +116,10 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
     }
   }, [notes])
 
-
-  useEffect(()=> {
-    // retrieves updated info for the recipe from the database 
-    const db = getDatabase()
-    console.log("index " + indexRecipe)
-    const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+indexRecipe)
-    let arrMeals = []
-
-    // // Stores all of the meal categories and pushes them to an array
-    // onValue(recipesRef, (snapshot) => {
-    //   console.log("in on aalue")
-    //   console.log({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
-    //   setCurrentMealDetails({key: snapshot.key, value: snapshot.val(), title: snapshot.val().title})
-          
-    //   }, {
-    //   onlyOnce: true })
-  }, [recipes])
-
   // Keeps track if user changed meal description, meaning that it needs to be reinserted into the category's list of meals
   useEffect(()=> {
     if (currentMealDetails.value.type === "Recipe") {
-      setMealDetails(indexRecipe)
+      setMealDetails(recipeKey)
     } else {
       if (mealDetails !== currentMealDetails.value.description) {
         setMealDetailsChanged(true)
@@ -191,7 +170,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
           // Indicates that state variable should be refreshed
           setRefresh(true)
 
-          
 
         // Otherwise, if the category was not found, this means it needs to be added to the database
         } else {
@@ -218,9 +196,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
           // Indicates that state variable should be refreshed
           setRefresh(true)
         }
-
-        // Deletes the meal's entry in the old category
-        // set(mealRef, null)
 
 
       // Doesn't need to create new key for meal, but just updates its key to map to the updated object
@@ -268,8 +243,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
 
   }
 
-
-
   const sortFunction = (recipeA, recipeB) => { 
     const titleA = recipeA.title.toLowerCase();
     const titleB = recipeB.title.toLowerCase();
@@ -279,7 +252,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
   const shouldBeShown = (recipe) => {
     return true;
   }
-
  
   return (
     <>
@@ -366,7 +338,7 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                     <ViewRecipePopup 
                       recipes={recipes} showViewPopup={viewRecipe} 
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
-                      indexOfRecipeToView={indexRecipe} 
+                      keyOfRecipeToView={recipeKey} 
                       currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
                       setRecipes={setRecipes} groceryList={groceryList} addToGL={addToGL}
                       refresh={refresh} setRefresh={setRefresh}>
@@ -383,8 +355,6 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
                 onChange={(e)=>setNotes(e.target.value)}></textarea>
               </div>
             </>}
-                  
-
           </Form.Group>
         </Form> 
 
@@ -402,6 +372,8 @@ const EditMeal = ({ viewPopup, closeViewPopup, open, onClose, categories, setCat
           </>
       </Modal.Footer>
     </Modal>
+
+    {/* Warning modal when user attempts to delete category */}
     {openWarning && 
       <RemoveMealWarning 
         viewPopup={viewPopup} closeViewPopup={closeViewPopup}

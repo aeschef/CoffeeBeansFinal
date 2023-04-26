@@ -32,7 +32,6 @@ const FilterPopup = () => {
                 </Modal.Body>
             </Modal>
         </>
-
     );
 }
 

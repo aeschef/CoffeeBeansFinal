@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import Modal from "react-bootstrap/Modal"
 import Form from "react-bootstrap/Form"
 import Button from 'react-bootstrap/Button'
-import { getDatabase, ref, set, onValue, push, remove, child, get} from 'firebase/database';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getDatabase, ref, set, onValue} from 'firebase/database';
+import {getAuth} from "firebase/auth";
 import DeleteMealCategoryPopup from './DeleteMealCategoryPopup';
 
 // Modal that appears when user wants to edit category's information
@@ -15,9 +15,10 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
 
     const [categoriesList, setCategoriesList] = useState([])
 
+    // State variable that indicates when warning should appear if user tries deleting category
     const [deleteCategoryPopup, setDeleteCategoryPopup] = useState(false)
   
-
+    // Error if category name is empty
     const [categoryError, setCategoryError] = useState(false)
 
     // Will update the quota array to contain the category with the updated category name and quota amount
@@ -46,7 +47,7 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
           console.log(mealCategory)
           onValue(ref(db, '/users/' +  getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key), (snapshot) => {
             copyData = snapshot.val()
-            
+          
           }, {
             onlyOnce: true
           });
@@ -68,11 +69,8 @@ const EditMealCategory = ({ open, onClose, categoryIndex, categories, setCategor
               // Indicates that state variable should be refreshed
               setRefresh(true)
           
-        
         // If the category did not change, just update old category's quota amount
         } else {
-          // Reference to categories in the meal plan
-          console.log("meal quota contains  "+ mealQuota)
           set(ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories/" + categories[categoryIndex].key + "/quota"), 
           mealQuota);
 

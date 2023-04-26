@@ -25,14 +25,14 @@ export default function ViewRecipePopup(props) {
   const [images, setImages] = useState([]);
 
   // Contains the key value for the recipe
-  const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
+  const [keyOfRecipeToEdit, setKeyOfRecipeToEdit] = useState(props.keyOfRecipeToView);
   const [tagsInStringForm, setTagsInStringForm] = useState("");
   const [ingredientsInStringForm, setIngredientsInStringForm] = useState("");
   const [stepsInStringForm, setStepsInStringForm] = useState("");
 
-  const handleOpenEditPopup = (index) => {
+  const handleOpenEditPopup = (key) => {
       // contains the key value for the recipe
-      setIndexOfRecipeToEdit(index);
+      setKeyOfRecipeToEdit(key);
 
       setInputs(currentRecipe);
       setShowEditPopup(true);
@@ -51,8 +51,8 @@ export default function ViewRecipePopup(props) {
   useEffect(()=> {
     if ((props.showViewPopup && refresh)) {
       const db = getDatabase()
-      console.log("index " + props.indexOfRecipeToView)
-      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.indexOfRecipeToView)
+      console.log("index " + props.keyOfRecipeToView)
+      const recipesRef = ref(db, 'users/' + getAuth().currentUser.uid + "/recipes/"+props.keyOfRecipeToView)
       let arrMeals = []
 
       // Stores all of the meal categories and pushes them to an array
@@ -98,7 +98,7 @@ export default function ViewRecipePopup(props) {
               {/* modal header with title, edit button, and close button */}
               <Modal.Header closeButton>
                   <Modal.Title>{currentRecipe?.title}</Modal.Title>
-                  <button onClick={() => handleOpenEditPopup(props.indexOfRecipeToView)}>Edit</button>
+                  <button onClick={() => handleOpenEditPopup(props.keyOfRecipeToView)}>Edit</button>
               </Modal.Header>
               
               {/* modal body with recipe info - NEXT */}
@@ -131,7 +131,7 @@ export default function ViewRecipePopup(props) {
                         recipeTitle={currentRecipe?.title}
                         app={props.app} 
                         recipes={props.recipes}
-                        index={props.indexOfRecipeToView}
+                        index={props.keyOfRecipeToView}
                         currentRecipe={currentRecipe}> </OutOfIngredients>
 
                   <ul>{recipeIngredients}</ul>
@@ -158,7 +158,7 @@ export default function ViewRecipePopup(props) {
                         auth={props.auth} recipeTitle={currentRecipe?.title}
                         app={props.app} 
                         recipes={props.recipes}
-                        index={props.indexOfRecipeToView}
+                        index={props.keyOfRecipeToView}
                         currentRecipe={currentRecipe}
 
                   ></HandleAddtoMealPlan>
@@ -167,11 +167,12 @@ export default function ViewRecipePopup(props) {
           <EditRecipePopup app={props.app} 
           recipes={props.recipes} setRecipes={props.setRecipes} 
           showEditPopup={showEditPopup} handleCloseEditPopup={handleCloseEditPopup} 
-          setInputs={setInputs} inputs={inputs} indexOfRecipeToEdit={indexOfRecipeToEdit} 
+          setInputs={setInputs} inputs={inputs} keyOfRecipeToEdit={keyOfRecipeToEdit} 
           tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} 
           ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} 
           stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}
           handleCloseViewPopup={props.handleCloseViewPopup}
+          refresh={refresh} setRefresh={setRefresh}
           images={images} setImages={setImages}></EditRecipePopup>
 
       </>
