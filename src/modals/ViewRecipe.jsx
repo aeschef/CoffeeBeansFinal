@@ -104,8 +104,8 @@ export default function ViewRecipePopup(props) {
                   <div className="row">
                       
                       {/* recipe image */}
-                      <div className='col-6'>
-                          <div id="image">{currentRecipe?.picture}</div>
+                      <div className='col-6' id='image'>
+                      <img src={currentRecipe?.picture} id="recipe-image" alt=""/>            
                       </div>
                       
                       {/* energy and time required for this recipe */}

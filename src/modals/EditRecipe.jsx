@@ -7,6 +7,7 @@ import "../recipes.css";
 import { createPath } from 'react-router-dom';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import ImageUploading from "react-images-uploading";
 
 
 function DeleteAlert(props) {
@@ -40,6 +41,13 @@ function DeleteAlert(props) {
 
 // popup for editing a recipe
 export default function EditRecipePopup(props) {
+
+    const [images, setImages] = React.useState([{"data_url": props.inputs?.picture}]); // TODO: fix lag here
+    const maxNumber = 1;
+    const onImageListChange = (imageList, addUpdateIndex) => {
+        setImages(imageList);
+        props.setInputs(values => ({ ...values, ["picture"]: imageList[0].data_url})); 
+    };
 
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
 
@@ -133,12 +141,31 @@ export default function EditRecipePopup(props) {
 
                         {/* picture input */}
                         <Form.Label>Picture:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="picture"
-                            value={props.inputs?.picture || ""}
-                            onChange={handleChange}
-                        />
+                        <ImageUploading
+                            value={images}
+                            onChange={onImageListChange}
+                            maxNumber={maxNumber}
+                            dataURLKey="data_url"
+                            acceptType={["jpg"]}
+                        >
+                        {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
+                            <div className="upload__image-wrapper">
+                                <button onClick={onImageUpload}>
+                                    Upload Image
+                                </button>
+                                {imageList.map((image, index) => (
+                                    <div key={index} className="image-item">
+                                    <img src={image.data_url} alt="" id="recipe-image" width="100" />
+                                    <div className="image-item__btn-wrapper">
+                                        <button onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                    </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        </ImageUploading>
+
                         {/* TODO: turn back to actual photo upload
                       <button>Upload new picture</button>
                       <br></br> */}

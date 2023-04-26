@@ -9,6 +9,7 @@ import RecipeSearchBar from './RecipeSearchBar';
 import ImageUploading from "react-images-uploading";
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getStorage } from '@firebase/storage';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
@@ -272,7 +273,7 @@ function AddRecipePopup(props) {
 
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
-        
+
         if (!("minsRequired" in inputs)) {
             setInputs(values => ({...values, ["minsRequired"]: 0}))
         }
@@ -281,7 +282,7 @@ function AddRecipePopup(props) {
         }
         const newRecipe = {
             title: inputs.title, 
-            picture: inputs.picture, 
+            picture: images[0].data_url, 
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired || 0, 
             minsRequired: inputs.minsRequired || 0, 
@@ -343,7 +344,7 @@ function AddRecipePopup(props) {
                                 </button>
                                 {imageList.map((image, index) => (
                                     <div key={index} className="image-item">
-                                    <img src={image.data_url} alt="" width="100" />
+                                    <img src={image.data_url} id="recipe-image" alt="" width="100" />
                                     <div className="image-item__btn-wrapper">
                                         <button onClick={() => onImageUpdate(index)}>Change</button>
                                         <button onClick={() => onImageRemove(index)}>Remove</button>
