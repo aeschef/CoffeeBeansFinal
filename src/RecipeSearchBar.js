@@ -5,6 +5,8 @@ import "./recipes.css";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import SearchIcon from './svg/search.svg'
+
 
 export default function SearchBar(props) {
 
@@ -14,7 +16,8 @@ export default function SearchBar(props) {
 
     return (
         <div className='col-6'>
-            <Col id='search_bar'>
+            <Col className='search-bar' id='search_bar'>
+                <img src={SearchIcon}></img>
                 <input
                     type="text"
                     placeholder={props.placeholder}
