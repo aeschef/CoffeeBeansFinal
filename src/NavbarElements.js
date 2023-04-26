@@ -32,9 +32,6 @@ function NavbarElements(props) {
     //console.log(db)
     const auth = getAuth(props.app)
     
-    // Used for meal plan page: Keeps track of which tags should be displayed
-    const [showTags, setShowTags] = useState(null)
-
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
 
@@ -124,7 +121,7 @@ function NavbarElements(props) {
                         accessCode={accessCode}>  </InventoryHome>
                 } />
                 <Route path="*" element={
-                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} showTags={showTags} setShowTags={setShowTags}/>
+                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL}/>
                 } />
                 <Route path="/recipes.js" element={
                 <RecipesHome 

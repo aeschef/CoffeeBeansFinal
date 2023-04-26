@@ -7,7 +7,7 @@ import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/dat
 import { getAuth} from "firebase/auth";
 
 // Sets filter to only display meals that have the checked off tags
-const FilterMealTags = ({open, onClose,  showTags, setShowTags, refreshFilter, setRefreshFilter}) => {
+const FilterMealTags = ({open, onClose,  showTags, setShowTags}) => {
 
 const [remove, setRemove] = useState([])
 const [selectedTags, setSelectedTags] = useState([])
@@ -29,7 +29,7 @@ useEffect(()=> {
     let arr = []
     tagsArr?.forEach((tag)=> {
       // If the current tag is already incluedd in the filter, keep it checked
-      if ((showTags && showTags.indexOf(tag) > -1) || (showTags === null) || (showTags.length === 0)) {
+      if ((showTags && showTags.indexOf(tag) > -1) || (showTags === null)) {
         arr.push({value: tag, checked: true})
       } else {
         arr.push({value: tag, checked: false})
@@ -78,20 +78,21 @@ function handleFilter() {
   // Stores an array of all the checked off tags, aka the tags that should still be displayed
   let oldArr = selectedTags.filter((tag) => tag.checked ? tag : null)
   let arr = oldArr.map((tag)=>tag.value)
-  console.log("included " + arr)
   setShowTags(arr)
-  setRefreshFilter(true)
   onClose()
 }
+
+
+
 
 return (            
 <Modal show={open} onHide={onClose} centered>
   <Modal.Header closeButton>
-      <Modal.Title>Edit Tags</Modal.Title>
+      <Modal.Title>Filter Tags</Modal.Title>
   </Modal.Header>
   <Modal.Body>
   <div className="left-spacing">
-
+    <p>Select which tags should be displayed. </p>
     {/* Allows user to select which tags they want to display */}
     {selectedTags && 
       <div className="color-checked">
@@ -114,7 +115,7 @@ return (
   </div>
   </Modal.Body>
   <Modal.Footer>
-    <Button variant="primary" onClick={()=>handleFilter()}>Confirm</Button>
+    <Button variant="primary" onClick={handleFilter}>Filter meals</Button>
   </Modal.Footer>
 </Modal>)
 

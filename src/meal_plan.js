@@ -65,12 +65,8 @@ const [showTags, setShowTags] = useState(null)
 // Determines when we show show or hide the filter tag modal
 const [showFilterTags, setShowFilterTags] = useState(false)
 
-const [refreshFilter, setRefreshFilter] = useState(false)
-
  // Stores category names after retrieving from database
 const [categories, setCategories] = useState([])
-
-
 
 
   // Updates database for a meal when user checks or unchecks the checkbox
@@ -116,6 +112,16 @@ const [categories, setCategories] = useState([])
     }
   }, [retrieveRecipes])
 
+  const tagShouldShow = (meal) => {
+    console.log(meal)
+    console.log(showTags?.indexOf(meal.value.tags))
+    if ((meal.value.tags && showTags?.indexOf(meal.value.tags) > -1) || (!showTags)) {
+      console.log("should show tag ")
+      return true
+    } else {
+      return false
+    }
+  }
 
   useEffect(()=> {
     if (recipes) {
@@ -195,15 +201,6 @@ const [categories, setCategories] = useState([])
     
   }, [refresh, mealRefresh])
 
-
-  useEffect(()=> {
-    if (refreshFilter) {
-      setCategories([...categories])
-      setRefreshFilter(false)
-    }
-  }, [refreshFilter])
-
-  
   // Populates state variables with needed information to display view meal popup once the meal is selected. 
   function handleViewMealPopup(categoryIndex, mealInfo, mealIndex) {
     setCurrentCategoryIndex(categoryIndex)
@@ -297,8 +294,7 @@ return (
     {showFilterTags && 
       <FilterMealTags 
       open={showFilterTags} onClose={()=>setShowFilterTags(false)} 
-      showTags={props.showTags} setShowTags={props.setShowTags} 
-      refreshFilter={refreshFilter} setRefreshFilter={setRefreshFilter}/>}
+      showTags={showTags} setShowTags={setShowTags} />}
 
     {/* For each category stored in the quotas array, will map the associated information to be displayed on the page. */}
     {categories.map((category, j) =>  (
@@ -325,8 +321,10 @@ return (
         </Col>
       </div>
 
-     {category.meals?.map((x, i) => (
-      (!props.showTags || props.showTags.length === 0 || (x.value.tag && props.showTags && props.showTags.indexOf(x.value.tag) >= -1)) &&
+     {category.meals
+     .filter((x) => tagShouldShow(x) || !showTags)
+     .map((x, i) => (
+      
       <div className="left-spacing">
           <div className="box-custom"> 
             <div>
