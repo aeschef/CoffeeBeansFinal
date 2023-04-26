@@ -152,15 +152,14 @@ export default function ViewRecipePopup(props) {
                     app={props.app} 
                     recipes={props.recipes}
                     currentRecipe={currentRecipe}
-                    index={props.indexOfRecipeToView}></CompleteRecipe> */}
-                    
+                    index={props.indexOfRecipeToView}></CompleteRecipe>
+                     */}
                   <HandleAddtoMealPlan databaseCatGL={props.databaseCatGL}
                         auth={props.auth} recipeTitle={currentRecipe?.title}
                         app={props.app} 
                         recipes={props.recipes}
                         index={props.keyOfRecipeToView}
                         currentRecipe={currentRecipe}
-
                   ></HandleAddtoMealPlan>
               </Modal.Body>
           </Modal>

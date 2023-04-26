@@ -12,6 +12,7 @@ import Creatable from 'react-select/creatable'
 import { getDatabase, ref, set, onValue, push, child, remove} from 'firebase/database';
 import { getAuth} from "firebase/auth";
 import EditMealTags from './EditMealTags';
+import TagsInput from '../TagsInput';
 
 
 // Modal for creating a meal that appears when user wants to add a meal to the meal plan
@@ -284,6 +285,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
             />}
 
             {console.log(categories)}
+
 
             {/* Dropdown menu that populates a list of all the tags for the user to choose from */}
 
