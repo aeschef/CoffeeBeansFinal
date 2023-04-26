@@ -209,19 +209,29 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
             inventory: {
               categories: {
                 Produce: {
-                  0: ""
+                  0: {
+                    item_name: "",
+                  }
                 },
                 Dairy: {
-                  0: ""
+                  0: {
+                    item_name: "",
+                  }
                 },
                 Meats: {
-                  0: ""
+                  0: {
+                    item_name: "",
+                  }
                 },
                 Grains: {
-                  0: ""
+                  0: {
+                    item_name: "",
+                  }
                 },
                 Miscellaneous: {
-                  0: ""
+                  0: {
+                    item_name: "",
+                  }
                 }
               }
             },

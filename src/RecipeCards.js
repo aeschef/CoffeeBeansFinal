@@ -9,38 +9,38 @@ export default function RecipeCards(props) {
   
   // variables and functions for View Recipe popup
   const [showPopup, setShowPopup] = useState(false);
-  const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
+  const [keyOfRecipeToView, setKeyOfRecipeToView] = useState(0);
   
 
   // dummy state variable that needs to be passed as parameter but isn't used
   const [currentMealDetails, setCurrentMealDetails] = useState([])
 
   // Sets the needed information in order to open the view recipe modal of the selected recipe
-  const handleOpenViewPopup = (index) => {
-      console.log("key of recipe " + index)
-      setIndexOfRecipeToView(index);
+  const handleOpenViewPopup = (key) => {
+      console.log("key of recipe " + key)
+      setKeyOfRecipeToView(key);
       setShowPopup(true);
   }
 
   const handleCloseViewPopup = () => setShowPopup(false);
 
   // When user clicks a recipe, this handler determines the action that should be taken next.
-  const handleClick = (index) => {
+  const handleClick = (key) => {
     
     // If view is true, this means that the view modal of the recipe should be displayed
     if (props.view === true) {
-      handleOpenViewPopup(index)
+      handleOpenViewPopup(key)
 
     // Otherwise, if view is false, this means that the recipe is just selected to be added to the meal plan.
     // And therefore its index is being saved.
     } else  {
-      // If the user had alreayd selected the recipe but clicked it again, the recipe will be deselected.
-      if (props.addedRecipe === index ) {
+      // If the user had already selected the recipe but clicked it again, the recipe will be deselected.
+      if (props.addedRecipe === key ) {
         props.setAddedRecipe(-1)
       
       // Otherwise, added recipe will be set to store the key of the selected recipe
       } else {
-        props.setAddedRecipe(index)
+        props.setAddedRecipe(key)
 
         // Sets custom to false to no longer select the custom meal option
         props.setCustom(false)
@@ -56,8 +56,15 @@ export default function RecipeCards(props) {
         sort(props.sortFunction).
         filter((recipe) => props.shouldBeShown(recipe)).
         map((recipe, index) => (
+<<<<<<< HEAD
         <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} id = "card_background" onClick={()=>handleClick(recipe.key)} key={index}>
             <div className='col-6' id='image'>{recipe.picture}</div>
+=======
+        <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(recipe.key)} key={index}>
+            <div className='col-6' id='image'>
+            <img src={recipe.picture} id="recipe-image" alt=""/>            
+            </div>
+>>>>>>> 01d5da351698b596b6f5721c784a57fd0ae0f2db
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
                 <div className='row'>
@@ -72,7 +79,7 @@ export default function RecipeCards(props) {
       ))}
       {props.view && <ViewRecipePopup app={props.app} recipes={props.recipes} 
       currentMealDetails={currentMealDetails} setCurrentMealDetails={setCurrentMealDetails}
-      showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} indexOfRecipeToView={indexOfRecipeToView}
+      showViewPopup={showPopup} handleCloseViewPopup={handleCloseViewPopup} keyOfRecipeToView={keyOfRecipeToView}
        setRecipes={props.setRecipes} groceryList={props.groceryList} addToGL={props.addToGL}> </ViewRecipePopup>}
 
       </div>

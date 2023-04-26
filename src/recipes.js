@@ -6,8 +6,11 @@ import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe';
 import RecipeCards from './RecipeCards';
 import RecipeSearchBar from './RecipeSearchBar';
+import ImageUploading from "react-images-uploading";
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getStorage } from '@firebase/storage';
+import { defaultRecipePhoto } from './defaultRecipePhoto';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
@@ -99,9 +102,9 @@ export default function RecipesHome(props) {
 
     // variables and functions for View Recipe popup
     const [showViewPopup, setShowViewPopup] = useState(false);
-    const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
+    const [keyOfRecipeToView, setKeyOfRecipeToView] = useState(0);
     const handleOpenViewPopup = (index) => {
-        setIndexOfRecipeToView(index);
+        setKeyOfRecipeToView(index);
         setShowViewPopup(true);
     }
     const handleCloseViewPopup = () => setShowViewPopup(false);
@@ -231,15 +234,15 @@ export default function RecipesHome(props) {
 
             {/* popups */}
             <AddRecipePopup app={props.app} recipes={recipes} setRecipes={props.setRecipes} showAddPopup={showAddPopup} handleCloseAddPopup={handleCloseAddPopup}></AddRecipePopup>
-            <ViewRecipePopup app={props.app}
-                recipes={recipes}
-                showViewPopup={showViewPopup}
-                handleCloseViewPopup={handleCloseViewPopup}
-                indexOfRecipeToView={indexOfRecipeToView}
-                setRecipes={props.setRecipes}
-                view={true}
-                groceryList={props.personalGroceryList}
-                addToGL={props.addToGL}> </ViewRecipePopup>
+            <ViewRecipePopup app={props.app} 
+            recipes={recipes} 
+            showViewPopup={showViewPopup} 
+            handleCloseViewPopup={handleCloseViewPopup} 
+            keyOfRecipeToView={keyOfRecipeToView} 
+            setRecipes={props.setRecipes} 
+            view={true} 
+            groceryList={props.personalGroceryList}
+            addToGL={props.addToGL}> </ViewRecipePopup>
             <FilterPopup recipes={recipes} showFilterPopup={showFilterPopup} handleCloseFilterPopup={handleCloseFilterPopup} tags={tags} setTags={setTags} sortRules={sortRules} sortRule={sortRule} setSortRule={setSortRule} energyLevels={energyLevels} showAllRecipes={showAllRecipes} setShowAllRecipes={setShowAllRecipes} tagCheckboxesValues={tagCheckboxesValues} setTagCheckboxesValues={setTagCheckboxesValues} showAllRecipesCheckboxValue={showAllRecipesCheckboxValue} setShowAllRecipesCheckboxValue={setShowAllRecipesCheckboxValue}></FilterPopup>
         </>
     )
@@ -247,6 +250,12 @@ export default function RecipesHome(props) {
 
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
+
+    const [images, setImages] = React.useState([]);
+    const maxNumber = 1;
+    const onImageListChange = (imageList, addUpdateIndex) => {
+        setImages(imageList);
+    };
 
     // database info
     const auth = getAuth(props.app)
@@ -282,12 +291,12 @@ function AddRecipePopup(props) {
             setInputs(values => ({ ...values, ["hoursRequired"]: 0 }))
         }
         const newRecipe = {
-            title: inputs.title,
-            picture: inputs.picture,
-            energyRequired: inputs.energyRequired,
-            hoursRequired: inputs.hoursRequired || 0,
-            minsRequired: inputs.minsRequired || 0,
-            tags: inputs.tags?.split(",").map(s => s.trim()) || [],
+            title: inputs.title, 
+            picture: images[0]?.data_url || defaultRecipePhoto,
+            energyRequired: inputs.energyRequired, 
+            hoursRequired: inputs.hoursRequired || 0, 
+            minsRequired: inputs.minsRequired || 0, 
+            tags: inputs.tags?.split(",").map(s => s.trim()) || [], 
             ingredients: inputs.ingredients?.
                 split("\n").
                 map(s => s.trim()).
@@ -331,13 +340,31 @@ function AddRecipePopup(props) {
 
                         {/* picture entry - TODO: change to upload photo */}
                         <Form.Label>Picture:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="picture"
-                            value={inputs.picture || ""}
-                            onChange={handleChange}
-                        />
-
+                        <ImageUploading
+                            value={images}
+                            onChange={onImageListChange}
+                            maxNumber={maxNumber}
+                            dataURLKey="data_url"
+                            acceptType={["jpg"]}
+                        >
+                        {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
+                            <div className="upload__image-wrapper">
+                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
+                                    Upload Image
+                                </button>
+                                {imageList.map((image, index) => (
+                                    <div key={index} className="image-item">
+                                    <img src={image.data_url} id="recipe-image" alt="" width="100" />
+                                    <div className="image-item__btn-wrapper">
+                                        <button onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                    </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        </ImageUploading>
+                        
                         {/* title entry */}
                         <Form.Label>Title:</Form.Label>
                         <Form.Control
