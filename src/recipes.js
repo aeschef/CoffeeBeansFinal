@@ -6,8 +6,11 @@ import "./recipes.css";
 import ViewRecipePopup from './modals/ViewRecipe';
 import RecipeCards from './RecipeCards';
 import RecipeSearchBar from './RecipeSearchBar';
+import ImageUploading from "react-images-uploading";
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
+import { getStorage } from '@firebase/storage';
+import { defaultRecipePhoto } from './defaultRecipePhoto';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
@@ -239,6 +242,12 @@ export default function RecipesHome(props) {
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
 
+    const [images, setImages] = React.useState([]);
+    const maxNumber = 1;
+    const onImageListChange = (imageList, addUpdateIndex) => {
+        setImages(imageList);
+    };
+
     // database info
     const auth = getAuth(props.app)
     const db = getDatabase(props.app)
@@ -265,7 +274,7 @@ function AddRecipePopup(props) {
 
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
-        
+
         if (!("minsRequired" in inputs)) {
             setInputs(values => ({...values, ["minsRequired"]: 0}))
         }
@@ -274,7 +283,7 @@ function AddRecipePopup(props) {
         }
         const newRecipe = {
             title: inputs.title, 
-            picture: inputs.picture, 
+            picture: images[0]?.data_url || defaultRecipePhoto,
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired || 0, 
             minsRequired: inputs.minsRequired || 0, 
@@ -322,12 +331,30 @@ function AddRecipePopup(props) {
                         
                         {/* picture entry - TODO: change to upload photo */}
                         <Form.Label>Picture:</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            name="picture"
-                            value={inputs.picture || ""}
-                            onChange={handleChange}
-                        />
+                        <ImageUploading
+                            value={images}
+                            onChange={onImageListChange}
+                            maxNumber={maxNumber}
+                            dataURLKey="data_url"
+                            acceptType={["jpg"]}
+                        >
+                        {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
+                            <div className="upload__image-wrapper">
+                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
+                                    Upload Image
+                                </button>
+                                {imageList.map((image, index) => (
+                                    <div key={index} className="image-item">
+                                    <img src={image.data_url} id="recipe-image" alt="" width="100" />
+                                    <div className="image-item__btn-wrapper">
+                                        <button onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                    </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        </ImageUploading>
                         
                         {/* title entry */}
                         <Form.Label>Title:</Form.Label>

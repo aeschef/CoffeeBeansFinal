@@ -129,6 +129,7 @@ function NavbarElements(props) {
                     addToGL={addPersonalItemGL}
                     app={props.app}
                     userAuth={auth}
+                    storage={props.storage}
                 /> 
             } />
                 <Route path="/account.js" element={

@@ -57,7 +57,9 @@ export default function RecipeCards(props) {
         filter((recipe) => props.shouldBeShown(recipe)).
         map((recipe, index) => (
         <div className={props.addedRecipe === recipe.key ? "row pe-auto chosenRecipe" : "row pe-auto recipe-card"} onClick={()=>handleClick(recipe.key)} key={index}>
-            <div className='col-6' id='image'>{recipe.picture}</div>
+            <div className='col-6' id='image'>
+            <img src={recipe.picture} id="recipe-image" alt=""/>            
+            </div>
             <div className='col-6' id='recipe-info'>
                 <h4>{recipe.title}</h4>
                 <div className='row'>

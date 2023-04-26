@@ -41,6 +41,7 @@ h1 {
     height: 125px;
     width: 125px;
     margin: 5%;
+    padding: 0;
 }
 
 .recipe-cards {
@@ -102,4 +103,10 @@ h1 {
 
 #ran-out-of-ingredient-alt {
     color:#729701;
+}
+
+#recipe-image {
+    object-fit: cover;
+    height: 125px;
+    width: 125px;
 }

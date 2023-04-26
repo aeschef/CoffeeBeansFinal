@@ -4,6 +4,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NavbarElements from './NavbarElements';
 import LoginHome from './login';
+import firebase from 'firebase/compat/app'
 
 
 // Import the functions you need from the SDKs you need
