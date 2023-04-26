@@ -10,6 +10,7 @@ import ImageUploading from "react-images-uploading";
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getStorage } from '@firebase/storage';
+import { defaultRecipePhoto } from './defaultRecipePhoto';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
@@ -282,7 +283,7 @@ function AddRecipePopup(props) {
         }
         const newRecipe = {
             title: inputs.title, 
-            picture: images[0]?.data_url || null, 
+            picture: images[0]?.data_url || defaultRecipePhoto,
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired || 0, 
             minsRequired: inputs.minsRequired || 0, 
@@ -339,7 +340,7 @@ function AddRecipePopup(props) {
                         >
                         {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
                             <div className="upload__image-wrapper">
-                                <button onClick={onImageUpload}>
+                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
                                     Upload Image
                                 </button>
                                 {imageList.map((image, index) => (

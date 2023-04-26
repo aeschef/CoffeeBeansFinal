@@ -8,6 +8,8 @@ import { createPath } from 'react-router-dom';
 import { getDatabase, ref, child, push, update, get, query, orderByChild, onValue, set, remove } from "firebase/database"
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import ImageUploading from "react-images-uploading";
+import { defaultRecipePhoto } from '../defaultRecipePhoto';
+
 
 
 function DeleteAlert(props) {
@@ -45,7 +47,7 @@ export default function EditRecipePopup(props) {
     const maxNumber = 1;
     const onImageListChange = (imageList, addUpdateIndex) => {
         props.setImages(imageList);
-        props.setInputs(values => ({ ...values, ["picture"]: imageList[0].data_url})); 
+        props.setInputs(values => ({ ...values, ["picture"]: imageList[0]?.data_url || defaultRecipePhoto})); 
     };
 
     const [showDeleteAlert, setShowDeleteAlert] = useState(false);
@@ -149,7 +151,7 @@ export default function EditRecipePopup(props) {
                         >
                         {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
                             <div className="upload__image-wrapper">
-                                <button onClick={onImageUpload}>
+                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
                                     Upload Image
                                 </button>
                                 {imageList.map((image, index) => (
