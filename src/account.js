@@ -2,35 +2,90 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import React, { useState, Component } from 'react';
+import React, { useState, Component, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './css/account.css';
 import Stack from 'react-bootstrap/Stack'
 import Alert from 'react-bootstrap/Alert';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 
+function ViewHelpPage() {
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
+    return (
+        <Row>
+            <Button variant="info" className="category-header" onClick={handleShow}>Frequently Asked Questions</Button>
+            <Modal show={show} fullscreen={true} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Frequently Asked Questions</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ol>
+                        <li class="questions">What does the energy stand for?
+                            <ul>
+                                <li class="answers">The energy bar stands for how much overall energy it would take you to make the meal.
+                                For example, a recipe like Thanksgiving has most of its cooking time spent in the oven and not so much time spent
+                                with hands-on cooking so it would be a medium or low energy.</li>
+                            </ul>
+                        </li>
+                        <li class="questions">Can I edit the categories?
+                            <ul>
+                                <li class="answers">Yes! The category headers are editable! You 
+                                simply have to click on the pencil icon and it will allow you to edit
+                                the category name.</li>
+                            </ul>
+                        </li>
+                        <li class="questions">How do I add a new recipe?
+                            <ul>
+                                <li class="answers">To add a new recipe, you have to go to the recipe page. Then, by clicking the 
+                                add button at the bottom right of the page, you can manually input the information. There are a few required fields
+                                that do need to be filled out!</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </Modal.Body>
+            </Modal>
+        </Row>
+    );
+}
 
 /**
  * renders button to view roommates 
  */
-function ViewRoommates() {
+function ViewRoommates({email}) {
     const [show, setShow] = useState(false);
-    const handleShow = () => setShow(true);
+    //const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
  
     /** TODO starting next week roommate information will be retrieved through the database 
      * via a randomly generated access code BUT for now I will simply use dummy information*/
     const roommieList = ["Annabelle", "Luis", "Mirya", "Jane"];
 
+    const [members, setMembers] = useState([]);
+
+    const CreateMembers = (email) => {
+        const memb = []
+        email.map(mem => {
+            memb.push({name: mem.data});
+        })
+        setMembers(memb);
+    }
+
+    const handleShow = () =>{
+        setShow(true);
+        CreateMembers(email);
+    }
    
 
     return (
         <Row>
-            <Button onClick={handleShow}>Roommates</Button>
-            <Modal show={show} fullscreen={true}>
-                <Modal.Header>
+            <Button variant="info" className="category_header" onClick={handleShow}>Roommates</Button>
+            <Modal show={show} fullscreen={true} onHide={handleClose}>
+                <Modal.Header closeButton>
                     <Modal.Title>Roommates</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -38,15 +93,13 @@ function ViewRoommates() {
                         <Row>
                         <ol>
                             <Stack gap={5}>
-                                {roommieList.map(reptile => (
-                                    <li key={reptile}>{reptile}</li>
+                                {members.map(reptile => (
+                                    <li key={reptile}>{reptile.name}</li>
                                 ))}
                             </Stack>
                         </ol>
                         </Row>
                     </Container>
-
-                    
                     <Button onClick={handleClose}>Leave</Button>
                 </Modal.Body>
             </Modal>
@@ -122,7 +175,7 @@ function ChangePassword(){
 
     return (
         <Row>
-            <Button onClick={handleShow}>Password</Button>
+            <Button variant="info" className="category-header" onClick={handleShow}>Password</Button>
             <Modal show={show} fullscreen={true} onHide={handleClose}>
                 <Modal.Header closeButton>
                     <Modal.Title>Password</Modal.Title>
@@ -164,15 +217,33 @@ function ChangePassword(){
     );
 }
 
-function Profile() {
-    return (
-        <Row>
-            <Button>Profile</Button>
-        </Row>
-    );
-}
+const AccountHome = ({login, setLogin, accessCode, props}) => {
 
-const AccountHome = ({login, setLogin, accessCode}) => {
+    const db = getDatabase(props.app);
+    const [emails, setEmails] = useState([]);
+    const [refresh, setRefresh] = useState(true);
+
+    useEffect(() => {
+        if(accessCode){
+            const dbRef = ref(db, '/groups/' + accessCode + '/members');
+            onValue(dbRef, (snapshot) => {
+                const accessData = []
+                snapshot.forEach((childSnapshot) => {
+                    const childKey = childSnapshot.key;
+                    //console.log("KEY" + childKey);
+                    const childData = childSnapshot.val();
+                    //console.log(childData);
+                    accessData.push({ value: childKey, data: childData })
+                });
+                setEmails(accessData);
+                //console.log(emails);
+            }, {
+                onlyOnce: true
+            });
+        }
+        setRefresh(false);
+    }, [accessCode, refresh])
+
     return (
         <Container fluid>
             <Row>
@@ -183,16 +254,14 @@ const AccountHome = ({login, setLogin, accessCode}) => {
             
             <Row>
                 <Stack gap={4} >
-                    <ViewRoommates></ViewRoommates>
-                    <Profile></Profile>
+                    <ViewRoommates
+                    email={emails}></ViewRoommates>
                     <ChangePassword></ChangePassword>
+                    <ViewHelpPage></ViewHelpPage>
+                    <Alert key='success' variant='success'>
+                        Access Code: {accessCode}
+                    </Alert>
                 </Stack>
-            </Row>
-        
-            <Row>
-            <Alert key='success' variant='success'>
-                Access Code: {accessCode}
-            </Alert>
             </Row>
             <SignOut login={login} setLogin={setLogin}></SignOut>
             

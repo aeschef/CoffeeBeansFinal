@@ -133,8 +133,10 @@ function NavbarElements(props) {
                 /> 
             } />
                 <Route path="/account.js" element={
-                    <AccountHome login={props.login} setLogin={props.setLogin}
-                    accessCode={accessCode}/>
+                    <AccountHome login={props.login} 
+                    setLogin={props.setLogin}
+                    accessCode={accessCode}
+                    props={props}/>
                 } />
             </Routes>
 
