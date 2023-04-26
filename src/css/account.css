@@ -1,0 +1,20 @@
+.category_header {
+    background-color: #e3eace;
+    font-size: 20px;
+    padding-left: 1rem;
+    color: #525252;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-color: #525252;
+}
+
+.btn-info {
+    background-color: #e3eace !important;
+    border-color: #525252 !important;
+    color: #525252 !important;
+}
+
+.sign-out {
+    justify-content: center;
+    background-color: #729701;
+}
