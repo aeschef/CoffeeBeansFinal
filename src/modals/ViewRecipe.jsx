@@ -22,6 +22,7 @@ export default function ViewRecipePopup(props) {
   // variables and functions for Edit Recipe popup
   const [showEditPopup, setShowEditPopup] = useState(false);
   const [inputs, setInputs] = useState(null); // these are what show up in the inputs originally
+  const [images, setImages] = useState([]);
 
   // Contains the key value for the recipe
   const [indexOfRecipeToEdit, setIndexOfRecipeToEdit] = useState(props.indexOfRecipeToView);
@@ -38,6 +39,7 @@ export default function ViewRecipePopup(props) {
       setTagsInStringForm(currentRecipe.tags?.join(", ") || null);
       setIngredientsInStringForm(currentRecipe.ingredients?.map((ingredient) => ingredient.phrase).join("\n"));
       setStepsInStringForm(currentRecipe.steps?.join("\n"));
+      setImages([{"data_url": currentRecipe.picture}]);
   }
   const handleCloseEditPopup = () => setShowEditPopup(false);
 
@@ -104,8 +106,8 @@ export default function ViewRecipePopup(props) {
                   <div className="row">
                       
                       {/* recipe image */}
-                      <div className='col-6'>
-                          <div id="image">{currentRecipe?.picture}</div>
+                      <div className='col-6' id='image'>
+                      <img src={currentRecipe?.picture} id="recipe-image" alt=""/>            
                       </div>
                       
                       {/* energy and time required for this recipe */}
@@ -169,7 +171,8 @@ export default function ViewRecipePopup(props) {
           tagsInStringForm={tagsInStringForm} setTagsInStringForm={setTagsInStringForm} 
           ingredientsInStringForm={ingredientsInStringForm} setIngredientsInStringForm={setIngredientsInStringForm} 
           stepsInStringForm={stepsInStringForm} setStepsInStringForm={setStepsInStringForm}
-          handleCloseViewPopup={props.handleCloseViewPopup}></EditRecipePopup>
+          handleCloseViewPopup={props.handleCloseViewPopup}
+          images={images} setImages={setImages}></EditRecipePopup>
 
       </>
       
