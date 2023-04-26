@@ -42,10 +42,9 @@ function DeleteAlert(props) {
 // popup for editing a recipe
 export default function EditRecipePopup(props) {
 
-    const [images, setImages] = React.useState([{"data_url": props.inputs?.picture}]); // TODO: fix lag here
     const maxNumber = 1;
     const onImageListChange = (imageList, addUpdateIndex) => {
-        setImages(imageList);
+        props.setImages(imageList);
         props.setInputs(values => ({ ...values, ["picture"]: imageList[0].data_url})); 
     };
 
@@ -142,7 +141,7 @@ export default function EditRecipePopup(props) {
                         {/* picture input */}
                         <Form.Label>Picture:</Form.Label>
                         <ImageUploading
-                            value={images}
+                            value={props.images}
                             onChange={onImageListChange}
                             maxNumber={maxNumber}
                             dataURLKey="data_url"
