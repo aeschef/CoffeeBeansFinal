@@ -248,7 +248,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
   return (
     <>
-    <Modal show={open} onHide={onClose} centered>
+    <Modal show={open} onHide={onClose} centered className="modal-lg">
       <Modal.Header closeButton>
         <Modal.Title>Add Meal</Modal.Title>
       </Modal.Header>

@@ -53,7 +53,7 @@ export default function EditRecipePopup(props) {
         const db = getDatabase(props.app)
         
         // getting a reference to the 'recipes' section of this user's area of the database and deleting the recipe
-        const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.indexOfRecipeToEdit + '/');
+        const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.keyOfRecipeToEdit + '/');
         remove(dbRecipeRef)
                 
         // returning to main recipe page
@@ -109,10 +109,11 @@ export default function EditRecipePopup(props) {
             const db = getDatabase(props.app)
             
             // getting a reference to the 'recipes' section of this user's area of the database
-            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.indexOfRecipeToEdit + '/');
+            const dbRecipeRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/' + props.keyOfRecipeToEdit + '/');
             set(dbRecipeRef, props.inputs)
 
             // Ensures that information in view modal is updated
+            props.setRefresh(true)
             props.handleCloseEditPopup();
         }
     }

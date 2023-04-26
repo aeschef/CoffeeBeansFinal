@@ -99,9 +99,9 @@ export default function RecipesHome(props) {
 
     // variables and functions for View Recipe popup
     const [showViewPopup, setShowViewPopup] = useState(false);
-    const [indexOfRecipeToView, setIndexOfRecipeToView] = useState(0);
+    const [keyOfRecipeToView, setKeyOfRecipeToView] = useState(0);
     const handleOpenViewPopup = (index) => {
-        setIndexOfRecipeToView(index);
+        setKeyOfRecipeToView(index);
         setShowViewPopup(true);
     }
     const handleCloseViewPopup = () => setShowViewPopup(false);
@@ -226,7 +226,7 @@ export default function RecipesHome(props) {
             recipes={recipes} 
             showViewPopup={showViewPopup} 
             handleCloseViewPopup={handleCloseViewPopup} 
-            indexOfRecipeToView={indexOfRecipeToView} 
+            keyOfRecipeToView={keyOfRecipeToView} 
             setRecipes={props.setRecipes} 
             view={true} 
             groceryList={props.personalGroceryList}

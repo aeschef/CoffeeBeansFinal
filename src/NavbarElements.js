@@ -31,6 +31,10 @@ function NavbarElements(props) {
     const db = getDatabase(props.app)
     //console.log(db)
     const auth = getAuth(props.app)
+    
+    // Used for meal plan page: Keeps track of which tags should be displayed
+    const [showTags, setShowTags] = useState(null)
+
     // method called when user first signs up for our app in order to populate database with their collection
     function writeUserData() {
 
@@ -119,8 +123,8 @@ function NavbarElements(props) {
                         //databaseArray_s={categories_is}
                         accessCode={accessCode}>  </InventoryHome>
                 } />
-                <Route path="/meal_plan.js" element={
-                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} />
+                <Route path="*" element={
+                    <MealPlanHome personalGroceryList={itemsInPersonalGL} addToGL={addPersonalItemGL} showTags={showTags} setShowTags={setShowTags}/>
                 } />
                 <Route path="/recipes.js" element={
                 <RecipesHome 
@@ -170,7 +174,8 @@ function NavbarElements(props) {
                             </a>
                         </Row>
                         <Row className="justify-content-md-center">
-                            <Link to="/meal_plan.js" className='nav-link text-style'>Meal Plan</Link>
+                            <Link to="/meal_plan.js" className='nav-link text-style'>
+                              Meal Plan</Link>
                             { }
                         </Row>
                     </Col>

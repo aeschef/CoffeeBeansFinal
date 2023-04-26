@@ -19,27 +19,14 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
   // Used to indicate when a popup should open to view recipe
   const [viewRecipe, setViewRecipe] = useState(false)
 
-  const [indexRecipe, setIndexRecipe] = useState(-1)
-  const handleRecipe = () => {
-    if (currentMealDetails.value.type === "Recipe") {
-      let index = -1
-      recipes.forEach((recipe, i)=> {
-        if (recipe.key === currentMealDetails.value.label) {
-          index = i
-        }
-      })
-      if (index !== -1) {
-        return (recipes[index].title)
-      } else {
-        return "Recipe not found"
-      }
-    }
-  }
+
+  const [recipeKey, setRecipeKey] = useState(-1)
+
   useEffect(()=> {
     if (currentMealDetails.value.type === "Recipe") {
         console.log("in use effect")
         console.log("label" + currentMealDetails.value.label)
-        setIndexRecipe(currentMealDetails.value.label)
+        setRecipeKey(currentMealDetails.value.label)
     }
   }, [])
 
@@ -110,7 +97,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
                       handleCloseViewPopup={()=>setViewRecipe(false)} 
                       currentMealDetails={currentMealDetails}
                       setCurrentMealDetails={setCurrentMealDetails}
-                      indexOfRecipeToView={indexRecipe} 
+                      keyOfRecipeToView={recipeKey} 
                       refresh={refresh} setRefresh={setRefresh} 
                       setRecipes={setRecipes}> 
                     </ViewRecipePopup>
@@ -134,7 +121,7 @@ const ViewMeal = ({ open, onClose, categories, setCategories, currentCategoryInd
           currentMealIndex={currentMealIndex} 
           recipes={recipes} setRecipes={setRecipes}
           refresh={refresh} setRefresh={setRefresh} 
-          indexRecipe={indexRecipe}/>}
+          recipeKey={recipeKey}/>}
         
           </Form.Group>
         </Form> 
