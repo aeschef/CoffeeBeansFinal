@@ -11,6 +11,7 @@ import { getDatabase, ref, child, push, update, get, query, orderByChild, onValu
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import { getStorage } from '@firebase/storage';
 import { defaultRecipePhoto } from './defaultRecipePhoto';
+import Choices from 'choices.js';
 
 // home page of the recipes screen
 export default function RecipesHome(props) {
@@ -251,6 +252,17 @@ export default function RecipesHome(props) {
 // popup for adding a recipe - TODO: make (all?) fields in the form required
 function AddRecipePopup(props) {
 
+    var tagsChoice;
+
+    useEffect(() => {
+        const object = document.querySelector("tags-selector");
+        console.log(object);
+        // const tagsChoice = new Choices("#tags-selector", {
+        //     values: ["a", "b", "c"],
+
+        // })
+    })
+
     const [images, setImages] = React.useState([]);
     const maxNumber = 1;
     const onImageListChange = (imageList, addUpdateIndex) => {
@@ -429,12 +441,20 @@ function AddRecipePopup(props) {
                                 <span className="info-tooltip-text">Tags must be separated by commas.</span>
                             </div>
                         </div>
-                        <Form.Control
+
+                        <p id="tags-selector">hey!!!</p>
+
+                        {/* <select name="tags-selector" id="tags-selector" multiple="multiple">
+
+                        </select> */}
+                        {/* {tagsChoice} */}
+
+                        {/* <Form.Control
                             type="text"
                             name="tags"
                             value={inputs.tags || ""}
                             onChange={handleChange}
-                        />
+                        /> */}
 
                         {/* ingredients entry */}
                         <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
