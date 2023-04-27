@@ -222,7 +222,7 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
         }
     
 
-        if (item_name.length === 0) {
+        if (!item_name || item_name?.length === 0) {
             return null;
         }
         //console.log("CAT: " + category);
@@ -456,17 +456,6 @@ const AddItem = ({ database, auth, databaseArr, accessCode, refresh, setRefresh 
                             />
                         </Form.Group>
                     </Form>
-                    <ToggleButton
-                        className="mb-2"
-                        id="toggle-check"
-                        type="checkbox"
-                        variant="outline-secondary"
-                        checked={checked}
-                        value="1"
-                        onChange={(e) => setChecked(e.currentTarget.checked)}
-                    >
-                        Filter out checked off buttons
-                    </ToggleButton>
                     <Button variant="primary" onClick={addToDatabase}>Save</Button>
                 </Modal.Body>
             </Modal>
