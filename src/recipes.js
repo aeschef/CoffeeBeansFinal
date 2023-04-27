@@ -192,14 +192,14 @@ export default function RecipesHome(props) {
         <>
             {/* header with title and filter button */}
             <div className='row' id='header'>
-                <div className='col-3'>
+                <div className='col-2'>
                 </div>
-                <div className='col-6'>
+                <div className='col-8'>
                     <h1>Recipes</h1>
                 </div>
-                <div className='col-3'>
+                <div className='col-2'>
                     {/*<button onClick={handleOpenFilterPopup}>filter</button>*/}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" version="1.1" viewBox="0 0 700 700" onClick={handleOpenFilterPopup}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#525252" width="35px" height="40px" version="1.1" viewBox="0 0 700 700" onClick={handleOpenFilterPopup}>
                         <g fill-rule="evenodd">
                             <path d="m262.5 280c-42.125 0-77.551 30.195-85.723 70h-54.277c-4.6406 0-9.0938 1.8438-12.375 5.125s-5.125 7.7344-5.125 12.375 1.8438 9.0938 5.125 12.375 7.7344 5.125 12.375 5.125h54.277c8.1719 39.805 43.598 70 85.723 70s77.551-30.195 85.723-70h229.28c4.6406 0 9.0938-1.8438 12.375-5.125s5.125-7.7344 5.125-12.375-1.8438-9.0938-5.125-12.375-7.7344-5.125-12.375-5.125h-229.28c-8.1719-39.805-43.598-70-85.723-70z" />
                             <path d="m437.5 105c-42.125 0-77.551 30.195-85.723 70h-229.28c-4.6406 0-9.0938 1.8438-12.375 5.125s-5.125 7.7344-5.125 12.375 1.8438 9.0938 5.125 12.375 7.7344 5.125 12.375 5.125h229.28c8.1719 39.805 43.598 70 85.723 70s77.551-30.195 85.723-70h54.277c4.6406 0 9.0938-1.8438 12.375-5.125s5.125-7.7344 5.125-12.375-1.8438-9.0938-5.125-12.375-7.7344-5.125-12.375-5.125h-54.277c-8.1719-39.805-43.598-70-85.723-70z" />
