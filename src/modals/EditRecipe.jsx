@@ -109,8 +109,15 @@ export default function EditRecipePopup(props) {
     }
 
     const handleSubmit = () => {        
-        if (props.inputs.ingredients.length !== props.inputs.ingredients.filter((ingredient) => ingredient.focus).length) {
+        if (props.inputs.title === undefined || props.inputs.title === "") {
+            alert("Please give your recipe a title!");
+        } else if (!(["Low", "Medium", "High"].includes(props.inputs.energyRequired))) {
+            alert("Please give your recipe an 'energy required' level!");
+            console.log(props.inputs.energyRequired);
+        } else if (props.inputs.ingredients?.length !== props.inputs.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
+        } else if (props.inputs.ingredients.length === 0) {
+            alert("Please give your recipe at least one ingredient!");
         } else {
             
             // database info
