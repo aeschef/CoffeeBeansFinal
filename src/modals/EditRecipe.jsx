@@ -114,6 +114,8 @@ export default function EditRecipePopup(props) {
         } else if (!(["Low", "Medium", "High"].includes(props.inputs.energyRequired))) {
             alert("Please give your recipe an 'energy required' level!");
             console.log(props.inputs.energyRequired);
+        } else if (props.inputs.hoursRequired === 0 && props.inputs.minsRequired === 0) {
+            alert("Please enter a non-zero value for the amount of time required!");
         } else if (props.inputs.ingredients?.length !== props.inputs.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else if (props.inputs.ingredients.length === 0) {

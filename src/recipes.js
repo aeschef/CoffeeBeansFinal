@@ -286,13 +286,6 @@ function AddRecipePopup(props) {
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
 
-        if (!("minsRequired" in inputs)) {
-            setInputs(values => ({ ...values, ["minsRequired"]: 0 }))
-        }
-        if (!("hoursRequired" in inputs)) {
-            setInputs(values => ({ ...values, ["hoursRequired"]: 0 }))
-        }
-
         const newRecipe = {
             title: inputs.title, 
             picture: images[0]?.data_url || defaultRecipePhoto,
@@ -312,12 +305,16 @@ function AddRecipePopup(props) {
             notes: inputs.notes || ""
         };
 
-        console.log(newRecipe.tags);
+        console.log(newRecipe.hoursRequired);
+        console.log(newRecipe.minsRequired);
+
         if (newRecipe.title === undefined || newRecipe.title === "") {
             alert("Please give your recipe a title!");
         } else if (!(["Low", "Medium", "High"].includes(newRecipe.energyRequired))) {
             alert("Please give your recipe an 'energy required' level!");
             console.log(newRecipe.energyRequired);
+        } else if (newRecipe.hoursRequired === 0 && newRecipe.minsRequired === 0) {
+            alert("Please enter a non-zero value for the amount of time required!");
         } else if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
         } else if (newRecipe.ingredients.length === 0) {
