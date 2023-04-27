@@ -144,9 +144,9 @@ function NavbarElements(props) {
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" className="">
+                            <Link to="/grocery_list.js" className="">
                                 <img src={GroceryListIcon} alt="Grocery List Navigation Bar Icon" className='navbar-icon grocery_list'/>
-                            </a>
+                            </Link>
                         </Row>
                         <Row className="justify-content-md-center">
                             <Link to="/grocery_list.js" className='nav-link text-style'>List</Link>
@@ -156,9 +156,9 @@ function NavbarElements(props) {
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" >
+                            <Link to="/inventory.js" >
                                 <img src={InventoryIcon}alt="Inventory Navigation Bar Icon" className="navbar-icon inventory" />
-                            </a>
+                            </Link>
                         </Row>
                         <Row className="justify-content-md-center">
                             <Link to="/inventory.js" className='nav-link text-style'>Inventory</Link>
@@ -169,9 +169,9 @@ function NavbarElements(props) {
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" className="">
+                            <Link to="/meal_plan.js" className="">
                                 <img src={MealPlanIcon} alt="Meal Plan Navigation Bar Icon" className="navbar-icon meal_plan" />
-                            </a>
+                            </Link>
                         </Row>
                         <Row className="justify-content-md-center">
                             <Link to="/meal_plan.js" className='nav-link text-style'>
@@ -183,9 +183,9 @@ function NavbarElements(props) {
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" className="">
+                            <Link to="/recipes.js" className="">
                                 <img src={RecipeIcon} alt="Recipe Navigation Bar Icon" className="navbar-icon recipes" />
-                            </a>
+                            </Link>
                         </Row>
                         <Row className="justify-content-md-center">
                             <Link to="/recipes.js" className='nav-link text-style'>Recipes</Link>
@@ -196,9 +196,9 @@ function NavbarElements(props) {
                 <span className="navbar-text">
                     <Col>
                         <Row className="justify-content-md-center">
-                            <a href="#" className="">
+                            <Link to="/account.js" className="">
                                 <img src={AccountIcon} alt="Account Navigation Bar Icon" className="navbar-icon account" />
-                            </a>
+                            </Link>
                         </Row>
                         <Row className="justify-content-md-center">
                             <Link to="/account.js" className='nav-link text-style' id="account">Account</Link>
