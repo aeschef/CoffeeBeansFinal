@@ -99,13 +99,18 @@ function IncDec({ cat, refresh, setRefresh, databaseArr, category, name, code, a
 
     return (
         <>
-            <div className="input-group">
-                <div className="input-group-prepend">
-                    <button type="button" onClick={dec_num}>-</button>
+            <div className="d-flex justify-space-between">
+                <div>
+                <svg  onClick={dec_num} fill="#525252" width="20px" height="20px" viewBox="-1.7 0 20.4 20.4" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg"><path d="M16.416 10.283A7.917 7.917 0 1 1 8.5 2.366a7.916 7.916 0 0 1 7.916 7.917zm-2.958.01a.792.792 0 0 0-.792-.792H4.32a.792.792 0 0 0 0 1.583h8.346a.792.792 0 0 0 .792-.791z"/></svg>
+
                 </div>
-                <input className="form-control input-sm" size="2" value={num} onChange={handleChange} />
-                <div className="input-group-prepend">
-                    <button type="button" onClick={inc_num}>+</button>
+                <div>
+                <input className="custom-input" size="2" value={num} onChange={handleChange} />
+                </div>
+                <div>
+                  <svg width="20px" height="20px" viewBox="0 0 24 24" fill="#525252" xmlns="http://www.w3.org/2000/svg" class="cf-icon-svg" onClick={inc_num}>
+                    <path fill="#525252" d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+                  </svg>
                 </div>
             </div>
         </>
@@ -530,12 +535,9 @@ const GroceryListHome = ({ props, accessCode }) => {
         <Container fluid="md">
             <Row>
                 <Col xs={{ span: 6, offset: 3 }}>
-                    <h1>Grocery List</h1>
+                    <h1 className="grocery-title">Grocery List</h1>
                 </Col>
-                <Col xs={{ span: 2 }}>
-                    <FilterPopup itemsInPersonalGL={categories}
-                        itemsInSharedGL={categories_s}></FilterPopup>
-                </Col>
+                
             </Row>
             <ShowTab
                 database={db}

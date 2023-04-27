@@ -14,7 +14,7 @@ import {
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
 import Modal from 'react-bootstrap/Modal';
 import { getDatabase, ref, set, onValue, push } from 'firebase/database';
-
+import './css/login.css'
 
 // Screen that is displayed when user is first logging in
 const LoginHome = ({login, setLogin, auth}) => {
@@ -93,6 +93,8 @@ const LoginHome = ({login, setLogin, auth}) => {
     <div className="d-flex justify-content-center align-items-center"><h3>Sign In</h3></div>
     <div className="d-flex justify-content-center align-items-center">
     <Form>
+    <div className="box-login">
+
       <Form.Group className="mb-3" controlId="formBasicEmail">
         
         {/* Field where user enters their username */}
@@ -105,13 +107,13 @@ const LoginHome = ({login, setLogin, auth}) => {
         <Form.Label>Password</Form.Label>
         <Form.Control type="password" placeholder="Password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
       </Form.Group>
-      <Form.Group className="mb-3" controlId="formBasicCheckbox">
-        <Form.Check type="checkbox" label="Check me out" />
-      </Form.Group>
+      </div>
       <Button variant="primary" onClick={handleLogin}>
         Submit
       </Button>
-    </Form></div>
+    </Form>
+    
+    </div>
     <div className="d-flex justify-content-center align-items-center"><h5>Don't have an account? 
     <BrowserRouter>
         <Routes>
@@ -122,7 +124,10 @@ const LoginHome = ({login, setLogin, auth}) => {
         <Link to="/signup.js">Sign up</Link>
     </BrowserRouter>
 
-      </h5></div>
+      </h5>
+      
+      </div>
+      
     </div>
   );
 };
