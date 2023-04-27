@@ -142,7 +142,7 @@ export default function EditRecipePopup(props) {
                     <Form.Group className="recipe-input">
 
                         {/* picture input */}
-                        <Form.Label>Picture:</Form.Label>
+                        <Form.Label><b>Picture:</b></Form.Label>
                         <ImageUploading
                             value={props.images}
                             onChange={onImageListChange}
@@ -152,54 +152,58 @@ export default function EditRecipePopup(props) {
                         >
                         {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
                             <div className="upload__image-wrapper">
-                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
+                                <button className="upload-image-button" onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
                                     Upload Image
                                 </button>
                                 {imageList.map((image, index) => (
                                     <div key={index} className="image-item">
                                     <img src={image.data_url} alt="" id="recipe-image" width="100" />
                                     <div className="image-item__btn-wrapper">
-                                        <button onClick={() => onImageUpdate(index)}>Change</button>
-                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                        <button className="picture-button" onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button className="picture-button" onClick={() => onImageRemove(index)}>Remove</button>
                                     </div>
                                     </div>
                                 ))}
                             </div>
                         )}
                         </ImageUploading>
+                        <br></br>
 
                         {/* TODO: turn back to actual photo upload
                       <button>Upload new picture</button>
                       <br></br> */}
 
                         {/* title input */}
-                        <Form.Label>Title:</Form.Label>
+                        <Form.Label><b>Title:</b></Form.Label>
                         <Form.Control
                             type="text"
                             name="title"
                             value={props.inputs?.title || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* energy input */}
-                        <Form.Label>Energy Required:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">How much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                        <div className='label-and-tooltip'>
+                            <Form.Label><b>Energy Required:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">How much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                                </div>
                             </div>
                         </div>
-                        <br></br>
-                        <select name="energyRequired" onChange={handleChange} defaultValue={props.inputs?.energyRequired || ""}>
+
+                        <select className="energy-required-dropdown" name="energyRequired" onChange={handleChange} defaultValue={props.inputs?.energyRequired || ""}>
                             <option value="" id="select-energy-level">Select an Energy Level</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
                         </select>
-                        <br></br>
+                        <br></br><br></br>
 
                         {/* time required input - TODO: only take number */}
-                        <Form.Label>Time Required:</Form.Label>
+                        <Form.Label><b>Time Required:</b></Form.Label>
                         <div className='row'>
                             <div className="col-3">
                                 <Form.Control 
@@ -224,30 +228,39 @@ export default function EditRecipePopup(props) {
                                 <p>mins</p>
                             </div>
                         </div>
+                        <br></br>
 
                         {/* tags input */}
-                        <Form.Label>Tags:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                        <div className='label-and-tooltip'>
+                            <Form.Label><b>Tags:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                                </div>
                             </div>
                         </div>
+                        <br></br>
+
                         <Form.Control
                             type="text"
                             name="tags"
                             value={props.tagsInStringForm || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* ingredients input */}
-                        <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in all caps (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                        <div className="label-and-tooltip">
+                            <Form.Label><b>Ingredients with Focus Phrases:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in all caps (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                </div>
                             </div>
                         </div>
+
                         <Form.Control
                             type="text"
                             as="textarea"
@@ -255,15 +268,19 @@ export default function EditRecipePopup(props) {
                             value={props.ingredientsInStringForm || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* steps input */}
-                        <Form.Label>Steps:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Each step should be on its own line.</span>
+                        <div className='label-and-tooltip'>
+                            <Form.Label><b>Steps:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Each step should be on its own line.</span>
+                                </div>
                             </div>
                         </div>
+
                         <Form.Control
                             type="text"
                             as="textarea"
@@ -271,9 +288,10 @@ export default function EditRecipePopup(props) {
                             value={props.stepsInStringForm || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* notes input */}
-                        <Form.Label>Notes:</Form.Label>
+                        <Form.Label><b>Notes:</b></Form.Label>
                         <Form.Control
                             type="text"
                             as="textarea"
