@@ -310,7 +310,7 @@ function AddRecipePopup(props) {
         } else if (!(["Low", "Medium", "High"].includes(newRecipe.energyRequired))) {
             alert("Please give your recipe an 'energy required' level!");
             console.log(newRecipe.energyRequired);
-        } else if (newRecipe.hoursRequired === "0" && newRecipe.minsRequired === "0") { // works for 0's,
+        } else if (newRecipe.hoursRequired === "0" && newRecipe.minsRequired === "0") { 
             alert("Please enter a non-zero value for the amount of time required!");
         } else if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
