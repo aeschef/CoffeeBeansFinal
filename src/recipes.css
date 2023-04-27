@@ -190,3 +190,28 @@ p, h1, h4 {
     background-color: transparent;
     margin-right: 10%;
 }
+
+.picture-button {
+    border-radius: 7px;
+    border: solid #525252;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.upload-image-button {
+    border-radius: 7px;
+    border: solid #525252;
+}
+
+.label-and-tooltip {
+    display: flex;
+}
+
+.information {
+    margin-left: 5px;
+}
+
+.energy-required-dropdown {
+    border-radius: 7px;
+    border: solid #525252;
+}

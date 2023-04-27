@@ -339,7 +339,7 @@ function AddRecipePopup(props) {
                     <Form.Group>
 
                         {/* picture entry - TODO: change to upload photo */}
-                        <Form.Label>Picture:</Form.Label>
+                        <Form.Label><b>Picture</b></Form.Label>
                         <ImageUploading
                             value={images}
                             onChange={onImageListChange}
@@ -349,52 +349,54 @@ function AddRecipePopup(props) {
                         >
                         {({onImageUpload, onImageRemoveAll, imageList, onImageUpdate, onImageRemove}) => (
                             <div className="upload__image-wrapper">
-                                <button onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
+                                <button className="upload-image-button" onClick={onImageUpload} style={imageList.length > 0 ? {display: "none"} : null}>
                                     Upload Image
                                 </button>
                                 {imageList.map((image, index) => (
                                     <div key={index} className="image-item">
                                     <img src={image.data_url} id="recipe-image" alt="" width="100" />
                                     <div className="image-item__btn-wrapper">
-                                        <button onClick={() => onImageUpdate(index)}>Change</button>
-                                        <button onClick={() => onImageRemove(index)}>Remove</button>
+                                        <button className="picture-button" onClick={() => onImageUpdate(index)}>Change</button>
+                                        <button className="picture-button" onClick={() => onImageRemove(index)}>Remove</button>
                                     </div>
                                     </div>
                                 ))}
                             </div>
                         )}
                         </ImageUploading>
+                        <br></br>
                         
                         {/* title entry */}
-                        <Form.Label>Title:</Form.Label>
+                        <Form.Label><b>Title:</b></Form.Label>
                         <Form.Control
                             type="text"
                             name="title"
                             value={inputs.title || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* energy entry */}
-                        <Form.Label>Energy Required:</Form.Label>
-
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">How much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                        <div className="label-and-tooltip">
+                            <Form.Label><b>Energy Required:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">How much energy this recipe will take for you; consider time, complexity, cleanup, etc!</span>
+                                </div>
                             </div>
                         </div>
 
-                        <br></br>
-                        <select name="energyRequired" onChange={handleChange}>
+                        <select className="energy-required-dropdown" name="energyRequired" onChange={handleChange}>
                             <option id="select-energy-level">Select an Energy Level</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
                         </select>
-                        <br></br>
+                        <br></br><br></br>
 
                         {/* time required entry - TODO: only take number */}
-                        <Form.Label>Time Required:</Form.Label>
+                        <Form.Label><b>Time Required:</b></Form.Label>
                         <div className='row'>
                             <div className="col-3">
                                 <Form.Control
@@ -419,31 +421,38 @@ function AddRecipePopup(props) {
                                 <p>mins</p>
                             </div>
                         </div>
-
+                        <br></br>
 
                         {/* tags entry */}
-                        <Form.Label>Tags:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                        <div className='label-and-tooltip'>
+                            <Form.Label><b>Tags:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Tags must be separated by commas.</span>
+                                </div>
                             </div>
                         </div>
+
                         <Form.Control
                             type="text"
                             name="tags"
                             value={inputs.tags || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
 
                         {/* ingredients entry */}
-                        <Form.Label>Ingredients with Focus Word/Phrase:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                        <div className="label-and-tooltip">
+                            <Form.Label><b>Ingredients with Focus Word/Phrase:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Each ingredient should be on its own line. Put the focus word or phrase in quotes (i.e. 12 "tortillas", flour or corn). The focus word is what will show up in your grocery list or inventory!</span>
+                                </div>
                             </div>
                         </div>
+
                         <Form.Control
                             type="text"
                             as="textarea"
@@ -451,15 +460,20 @@ function AddRecipePopup(props) {
                             value={inputs.ingredients || ""}
                             onChange={handleChange}
                         />
+                        <br></br>
+
 
                         {/* steps entry */}
-                        <Form.Label>Steps:</Form.Label>
-                        <div className='information'>
-                            <div className='info-tooltip'>
-                                &#x1F6C8;
-                                <span className="info-tooltip-text">Each step should be on its own line.</span>
+                        <div className="label-and-tooltip">
+                            <Form.Label><b>Steps:</b></Form.Label>
+                            <div className='information'>
+                                <div className='info-tooltip'>
+                                    &#x1F6C8;
+                                    <span className="info-tooltip-text">Each step should be on its own line.</span>
+                                </div>
                             </div>
                         </div>
+
                         <Form.Control
                             type="text"
                             as="textarea"
@@ -468,8 +482,10 @@ function AddRecipePopup(props) {
                             onChange={handleChange}
                         />
 
+                        <br></br>
+
                         {/* notes entry */}
-                        <Form.Label>Notes:</Form.Label>
+                        <Form.Label><b>Notes:</b></Form.Label>
                         <Form.Control
                             type="text"
                             as="textarea"
