@@ -11,7 +11,7 @@ import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { getDatabase, ref, push, remove, update, onValue, set } from "firebase/database"
 import { getAuth } from "firebase/auth";
-
+import './css/meal_plan.css'
 //Import Style Sheet
 import './css/grocery_list.css';
 
@@ -225,10 +225,11 @@ function ListCategory({ user, database, refresh, setRefresh, accessCode, auth, d
             <div className="left-spacing">
                 <Row>
                     <Col>
-                        <label key={i}>
+                        <label key={i} className="color-checked">
                             <input
                                 type="checkbox"
                                 name="lang"
+                                className="pl-1"
                                 value={item_name}
                                 checked={cat.checked}
                                 onChange={handleCheck}

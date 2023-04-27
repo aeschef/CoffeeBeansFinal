@@ -322,7 +322,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
           {/* If the type of the meal is a recipe, and the modal to choose a recipe isn't open, then the recipe card will be displayed. */}
           {type === "Recipe" && !openChooseMeal && 
             <>
-            <Form.Label>Recipe</Form.Label>
+            <Form.Label className="edit-modal-header">Recipe</Form.Label>
             <RecipeCards recipes={recipes.filter((recipe, index) => (recipe.key === mealDetails))} 
             setRecipes={setRecipes} onClickFunction={()=>setShowViewPopup(true)} view={true} searchInput={""}
             sortFunction={sortFunction}

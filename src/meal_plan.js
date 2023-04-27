@@ -224,11 +224,12 @@ const [categories, setCategories] = useState([])
   // Clears meals that are completed
   function handleClear() {
     const db = getDatabase()
-
+    setRecipes([...recipes])
       // Reference to categories in the meal plan
       const categoryRef = ref(db, 'users/' + getAuth().currentUser.uid + "/meal_plan/categories")
       // Stores all of the meal categories and pushes them to an array, while removing meals that are completed
       onValue(categoryRef, (snapshot) => {
+
         const dataCategories = []
         const catList = []
       
@@ -273,19 +274,39 @@ return (
     <div className="title">
         <Row>
             
-            <Col>          
-            <Button variant="primary" className="clear-button" onClick={handleClear}>
-              Trash
-            </Button>
+            <Col>    
+             <svg fill="#525252" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"  
+              viewBox="0 0 457.503 457.503" onClick={handleClear}>
+            <g>
+              <g>
+                <path d="M381.575,57.067h-90.231C288.404,25.111,261.461,0,228.752,0C196.043,0,169.1,25.111,166.16,57.067H75.929
+                  c-26.667,0-48.362,21.695-48.362,48.362c0,26.018,20.655,47.292,46.427,48.313v246.694c0,31.467,25.6,57.067,57.067,57.067
+                  h195.381c31.467,0,57.067-25.6,57.067-57.067V153.741c25.772-1.02,46.427-22.294,46.427-48.313
+                  C429.936,78.761,408.242,57.067,381.575,57.067z M165.841,376.817c0,8.013-6.496,14.509-14.508,14.509
+                  c-8.013,0-14.508-6.496-14.508-14.509V186.113c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z
+                  M243.26,376.817c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.508-6.496-14.508-14.509V186.113
+                  c0-8.013,6.496-14.508,14.508-14.508c8.013,0,14.508,6.496,14.508,14.508V376.817z M320.679,376.817
+                  c0,8.013-6.496,14.509-14.508,14.509c-8.013,0-14.509-6.496-14.509-14.509V186.113c0-8.013,6.496-14.508,14.509-14.508
+                  s14.508,6.496,14.508,14.508V376.817z"/>
+              </g>
+            </g>
+            </svg>      
+       
             </Col>  
 
-            <Col>
-              <h1>Meal Plan</h1>
+            <Col xs={5}>
+              <h1 className="meal-title">Meal Plan</h1>
             </Col>
               
             
             <Col>
-            <Button variant="primary" onClick={()=>setShowFilterTags(true)}>Filter</Button>
+            
+            <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" version="1.1" viewBox="0 0 600 600" onClick={()=>setShowFilterTags(true)} >
+                        <g fill-rule="evenodd">
+                            <path fill="#525252" d="m262.5 280c-42.125 0-77.551 30.195-85.723 70h-54.277c-4.6406 0-9.0938 1.8438-12.375 5.125s-5.125 7.7344-5.125 12.375 1.8438 9.0938 5.125 12.375 7.7344 5.125 12.375 5.125h54.277c8.1719 39.805 43.598 70 85.723 70s77.551-30.195 85.723-70h229.28c4.6406 0 9.0938-1.8438 12.375-5.125s5.125-7.7344 5.125-12.375-1.8438-9.0938-5.125-12.375-7.7344-5.125-12.375-5.125h-229.28c-8.1719-39.805-43.598-70-85.723-70z" />
+                            <path fill="#525252" d="m437.5 105c-42.125 0-77.551 30.195-85.723 70h-229.28c-4.6406 0-9.0938 1.8438-12.375 5.125s-5.125 7.7344-5.125 12.375 1.8438 9.0938 5.125 12.375 7.7344 5.125 12.375 5.125h229.28c8.1719 39.805 43.598 70 85.723 70s77.551-30.195 85.723-70h54.277c4.6406 0 9.0938-1.8438 12.375-5.125s5.125-7.7344 5.125-12.375-1.8438-9.0938-5.125-12.375-7.7344-5.125-12.375-5.125h-54.277c-8.1719-39.805-43.598-70-85.723-70z" />
+                        </g>
+            </svg>
             </Col>
  
         </Row>      
