@@ -122,9 +122,11 @@ export default function RecipesHome(props) {
     const handleOpenFilterPopup = () => {
         const newTags = tags.slice();
         for (const recipe of recipes) {
-            for (const tag of recipe.tags) {
-                if (!(newTags.map(tag => tag.name).includes(tag))) {
-                    newTags.push({ name: tag, show: false });
+            if (recipe.tags !== [] && recipe.tags !== undefined) {
+                for (const tag of recipe.tags) {
+                    if (!(newTags.map(tag => tag.name).includes(tag))) {
+                        newTags.push({ name: tag, show: false });
+                    }
                 }
             }
         }
@@ -284,19 +286,13 @@ function AddRecipePopup(props) {
     // handling submit by closing popup and updating the 'recipes' mock database
     const handleSubmit = () => {
 
-        if (!("minsRequired" in inputs)) {
-            setInputs(values => ({ ...values, ["minsRequired"]: 0 }))
-        }
-        if (!("hoursRequired" in inputs)) {
-            setInputs(values => ({ ...values, ["hoursRequired"]: 0 }))
-        }
         const newRecipe = {
             title: inputs.title, 
             picture: images[0]?.data_url || defaultRecipePhoto,
             energyRequired: inputs.energyRequired, 
             hoursRequired: inputs.hoursRequired || 0, 
             minsRequired: inputs.minsRequired || 0, 
-            tags: inputs.tags?.split(",").map(s => s.trim()) || [], 
+            tags: (inputs.tags) ? ((inputs.tags === '') ? [] : inputs.tags?.split(",").map(s => s.trim())) : [], 
             ingredients: inputs.ingredients?.
                 split("\n").
                 map(s => s.trim()).
@@ -306,13 +302,28 @@ function AddRecipePopup(props) {
                     "focus": findQuotedWord(ingredientPhrase)
                 })) || [],
             steps: inputs.steps?.split("\n").map(s => s.trim()) || [],
-            notes: inputs.notes
+            notes: inputs.notes || ""
         };
 
-        if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
+        console.log(newRecipe.hoursRequired);
+        console.log(newRecipe.minsRequired);
+
+        if (newRecipe.title === undefined || newRecipe.title === "") {
+            alert("Please give your recipe a title!");
+        } else if (!(["Low", "Medium", "High"].includes(newRecipe.energyRequired))) {
+            alert("Please give your recipe an 'energy required' level!");
+            console.log(newRecipe.energyRequired);
+        } else if (newRecipe.hoursRequired === 0 && newRecipe.minsRequired === 0) {
+            alert("Please enter a non-zero value for the amount of time required!");
+        } else if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
+        } else if (newRecipe.ingredients.length === 0) {
+            alert("Please give your recipe at least one ingredient!");
         } else {
             props.handleCloseAddPopup();
+
+            setInputs(values => ({...values, ["title"]: "", ["picture"]: "", ["energyRequired"]: "default", ["hoursRequired"]: "", ["minsRequired"]: "", ["tags"]: "", ["ingredients"]: "", ["steps"]: "", ["notes"]: "" }))
+            setImages([]);
 
             // getting a reference to the 'recipes' section of this user's area of the database
             const dbRecipesRef = ref(db, '/users/' + auth.currentUser.uid + '/recipes/');
@@ -388,7 +399,7 @@ function AddRecipePopup(props) {
                         </div>
 
                         <select className="energy-required-dropdown" name="energyRequired" onChange={handleChange}>
-                            <option id="select-energy-level">Select an Energy Level</option>
+                            <option value="default" id="select-energy-level">Select an Energy Level</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
                             <option value="High">High</option>
