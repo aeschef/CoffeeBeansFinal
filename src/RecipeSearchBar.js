@@ -15,17 +15,15 @@ export default function SearchBar(props) {
     }
 
     return (
-        <div className='col-6'>
-            <Col className='search-bar' id='search_bar'>
-                <img src={SearchIcon}></img>
-                <input
-                    type="text"
-                    placeholder={props.placeholder}
-                    onChange={handleChange}
-                    value={props.searchInput}>
-                </input>
-            </Col>
-        </div>
+    <div className='search-bar'>
+        <img src={SearchIcon}></img>
+        <input
+            type="text"
+            placeholder={props.placeholder}
+            onChange={handleChange}
+            value={props.searchInput}>
+        </input>
+    </div>
 
 
     )

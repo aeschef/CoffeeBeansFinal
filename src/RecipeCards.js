@@ -5,6 +5,7 @@ import ViewRecipePopup from './modals/ViewRecipe'
 import LowEnergyIcon from './svg/low_energy.svg'
 import MediumEnergyIcon from './svg/medium_energy.svg'
 import HighEnergyIcon from './svg/high_energy.svg'
+import TagIcon from "./svg/tag.svg"
 
 export default function RecipeCards(props) {
 
@@ -67,16 +68,18 @@ export default function RecipeCards(props) {
             <img src={recipe.picture} id="recipe-image" alt=""/>            
             </div>
             <div className='col-6' id='recipe-info'>
-                <h4>{recipe.title}</h4>
-                <div className='row'>
-                    <div className='col-6'>
+                <h4 className='recipe-title'>{recipe.title}</h4>
+                <div className='row' id="energy-and-time">
+                    <div className='col-5' id="card-energy-icon">
                       <img className="energy-icon" src={energyIcons[energyLevels.indexOf(recipe.energyRequired)]}></img>
                     </div>
-                    <div className='col-6'>
+                    <div className='col-7' id="card-time">
                       {recipe.hoursRequired !== "0" ? recipe.hoursRequired + " hours " : ""}{recipe.minsRequired !== "0" ? recipe.minsRequired + " mins" : ""}
                     </div>
                 </div>
-                <p className='tags'>{recipe.tags?.join(", ")}</p>
+                <div className="recipe-tags">
+                  {recipe.tags?.map((tag) => (<><div className='recipe-tag'><img className='tag-icon' src={TagIcon}></img><p>{tag}</p></div></>))}
+                </div>
             </div>
         </div>
       ))}

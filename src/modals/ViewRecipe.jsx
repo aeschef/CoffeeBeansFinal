@@ -16,6 +16,8 @@ import LowEnergyIcon from '../svg/low_energy.svg'
 import MediumEnergyIcon from '../svg/medium_energy.svg'
 import HighEnergyIcon from '../svg/high_energy.svg'
 import TimeIcon from '../svg/time_icon.svg';
+import TagIcon from '../svg/tag.svg'
+import EditRecipeIcon from '../svg/edit_recipe_icon.svg'
 
 import HandleAddtoMealPlan from './MealComplete';
 
@@ -103,8 +105,8 @@ export default function ViewRecipePopup(props) {
               
               {/* modal header with title, edit button, and close button */}
               <Modal.Header closeButton>
-                  <Modal.Title>{currentRecipe?.title}</Modal.Title>
-                  <button onClick={() => handleOpenEditPopup(props.keyOfRecipeToView)}>Edit</button>
+                  <button id='edit-recipe-button' onClick={() => handleOpenEditPopup(props.keyOfRecipeToView)}><img id='edit-recipe-icon' src={EditRecipeIcon}></img></button>
+                  <Modal.Title id='view-recipe-title'>{currentRecipe?.title}</Modal.Title>
               </Modal.Header>
               
               {/* modal body with recipe info - NEXT */}
@@ -139,8 +141,9 @@ export default function ViewRecipePopup(props) {
 
                   {/* recipe tags */}
                   <h6>Tags</h6>
-                  <p>{currentRecipe?.tags?.join(", ")}</p>
-                  
+                  <div className="recipe-tags">
+                    {currentRecipe?.tags?.map((tag) => (<><div className='recipe-tag'><img className='tag-icon' src={TagIcon}></img><p>{tag}</p></div></>))}
+                  </div>                  
                   {/* recipe ingredients */}
                   <h6>Ingredients</h6>
 

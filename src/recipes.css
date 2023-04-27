@@ -17,10 +17,10 @@ h1 {
 }
 
 .recipe-card {
-    background-color: lightgray;
+    background-color: #e3eacc;
     margin-bottom: 20px;
-    padding-bottom:1rem;
-
+    padding-bottom: 12px;
+    border-radius: 7px;
 }
 
 
@@ -37,7 +37,6 @@ h1 {
 }
 
 #image {
-    background-color: gray;
     height: 125px;
     width: 125px;
     margin: 5%;
@@ -48,12 +47,29 @@ h1 {
     text-align: center;
     margin-left: 10%;
     margin-right: 10%;
-    margin-top: 7%;
+    margin-top: 20px;
 }
 
-.tags {
+.recipe-tags {
+    display: inline;
+}
+
+.recipe-tag {
     text-align: left;
     background-color: #F8F9AA;
+    border-radius: 7px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-right: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 0px;
+    width: fit-content;
+    white-space: nowrap;
+    display:flex;
+}
+
+.recipe-tag p {
+    margin-bottom: 2px;
 }
 
 #recipe-info {
@@ -120,21 +136,19 @@ h1 {
     background-color: #e3eace;
 }
 
-#search-bar {
-    padding-left: 5%;
-    margin-left: 20%;
-    background-color: aqua;
-}
-
 #recipe-image {
     object-fit: cover;
     height: 125px;
     width: 125px;
+    border-radius: 7px;
 }
 
-.search-bar { position: relative; width:86%; margin: auto }
-.search-bar input { padding-left: 35px; background-color:#fff; display:block; width: 100%; box-sizing: border-box }
-.search-bar img { position: absolute; top: 2px; left: 5px; padding: 1px }
+.search-bar { position: relative; width:86%; margin-left: 7%; margin-right: 7% }
+.search-bar input { padding-left: 35px; padding-top: 3px; padding-bottom: 5px; display:block; width: 100%; box-sizing: border-box; border-radius: 7px; border: none; background-color: #ececec}
+.search-bar input:focus {outline: #729701}
+.search-bar img { position: absolute; top: 2px; left: 5px; padding: 1px; padding-top: 2px; padding-bottom: 2px; }
+
+::placeholder { color: #525252 }
 
 .energy-icon {
     height: 32px;
@@ -146,4 +160,43 @@ h1 {
 
 #time-and-energy {
     padding-top: 12px;
+}
+
+p, h1, h4 {
+    color:#525252
+}
+
+.recipe-title {
+    text-align: left;
+}
+
+#card-energy-icon {
+    padding-left: 0;
+}
+
+#card-time {
+    padding-top: 2.5px;
+}
+
+#energy-and-time {
+    margin-bottom: 12px;
+}
+
+.tag-icon {
+    height: 22px;
+    padding-right: 2px;
+}
+
+#view-recipe-title {
+    margin: auto;
+}
+
+#edit-recipe-icon {
+    height: 26px;
+}
+
+#edit-recipe-button {
+    border: none;
+    background-color: transparent;
+    margin-right: 10%;
 }

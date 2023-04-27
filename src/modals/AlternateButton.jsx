@@ -159,7 +159,7 @@ const OutOfIngredients = (props) =>{
 
     return (        
         <>
-            <Button id='ran-out-of-ingredient-alt' variant='link' onClick={showModal}> Run out of something? click here! </Button>
+            <Button id='ran-out-of-ingredient-alt' variant='link' onClick={showModal}> Run out of something? Click here! </Button>
 
             {/* add to GL popup modal */}
             <Modal show={show} onHide={handleClose} centered  
