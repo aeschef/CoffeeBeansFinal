@@ -74,7 +74,7 @@ export default function RecipeCards(props) {
                       <img className="energy-icon" src={energyIcons[energyLevels.indexOf(recipe.energyRequired)]}></img>
                     </div>
                     <div className='col-7' id="card-time">
-                      {recipe.hoursRequired !== "0" ? recipe.hoursRequired + " hours " : ""}{recipe.minsRequired !== "0" ? recipe.minsRequired + " mins" : ""}
+                      {(recipe.hoursRequired !== "0" && recipe.hoursRequired !== "") ? recipe.hoursRequired + " hours " : ""}{(recipe.minsRequired !== "0" && recipe.minsRequired !== "") ? recipe.minsRequired + " mins" : ""}
                     </div>
                 </div>
                 <div className="recipe-tags">

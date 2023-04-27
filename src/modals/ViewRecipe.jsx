@@ -133,7 +133,7 @@ export default function ViewRecipePopup(props) {
                             <img class="time-icon" src={TimeIcon}></img>
                           </div>
                           <div className='col-9'>
-                            <p>{currentRecipe?.hoursRequired !== "0" ? currentRecipe?.hoursRequired + " hours " : ""}{currentRecipe?.minsRequired !== "0" ? currentRecipe?.minsRequired + " mins" : ""}</p>
+                          {(currentRecipe?.hoursRequired !== "0" && currentRecipe?.hoursRequired !== "") ? currentRecipe?.hoursRequired + " hours " : ""}{(currentRecipe?.minsRequired !== "0" && currentRecipe?.minsRequired !== "") ? currentRecipe?.minsRequired + " mins" : ""}
                           </div>
                         </div>
                       </div>
