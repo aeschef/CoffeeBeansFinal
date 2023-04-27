@@ -90,7 +90,9 @@
   padding-left: .25rem;
 }
 
-
+.meal-title {
+  color: #525252;
+}
 
 .popup {
   display: inline;
@@ -148,4 +150,8 @@
   color: black;
   font-size: 14px;
 
+}
+
+.filter-btn {
+  padding: none;
 }

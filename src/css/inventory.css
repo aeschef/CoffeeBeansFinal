@@ -19,3 +19,13 @@
     border-radius: 100%;
     background-color: white;
 }
+
+.inventory-title {
+  color: #525252;
+  padding-top: 1rem;
+}
+.custom-input {
+  border-radius: 25px;
+  width: 85%;
+  text-align: center;
+}

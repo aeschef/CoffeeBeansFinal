@@ -91,7 +91,7 @@ const OutOfIngredients = (props) =>{
 
             // for every ingredient in the recipe
             onValue(inventoryRef, (snapshot) => {
-                props.recipes[props.index].ingredients.map( item => {
+                props.currentRecipe?.ingredients.map( item => {
                     snapshot.forEach((childSnapshot) =>{
                         let category = childSnapshot.key;
                         childSnapshot.forEach((thing)=>{

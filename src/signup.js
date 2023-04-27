@@ -323,7 +323,6 @@ const SignupHome = ({createUser, login, setLogin, auth}) => {
             </Modal.Body>
           </Modal>
         </div>
-      <div className="d-flex justify-content-center align-items-center"><h5>Don't have an account? <a href="./meal_plan">Sign up</a></h5></div>
     </div>
   );
 };

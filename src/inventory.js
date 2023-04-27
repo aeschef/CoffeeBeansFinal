@@ -132,7 +132,19 @@ function ListCategory({ user, databaseArr, database, accessCode, refresh, setRef
             return (
                 <>
                     <Col>        
-                        <Button onClick={() => removeItem(cat, categories.value)}>X</Button>
+                       <svg onClick={() => removeItem(cat, categories.value)} fill="#000000" height="20px" width="20px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 455 455">
+                        <g>
+                          <g>
+                            <path fill="#525252" d="M227.5,0C101.761,0,0,101.75,0,227.5C0,353.239,101.75,455,227.5,455C353.239,455,455,353.25,455,227.5
+                              C455.001,101.761,353.251,0,227.5,0z M310.759,268.333c11.715,11.716,11.715,30.711,0,42.427
+                              c-5.858,5.858-13.536,8.787-21.213,8.787s-15.355-2.929-21.213-8.787L227.5,269.927l-40.832,40.832
+                              c-5.858,5.858-13.536,8.787-21.213,8.787s-15.355-2.929-21.213-8.787c-11.715-11.716-11.715-30.711,0-42.427l40.832-40.832
+                              l-40.832-40.832c-11.715-11.716-11.715-30.711,0-42.427c11.716-11.716,30.711-11.716,42.427,0l40.832,40.832l40.832-40.832
+                              c11.716-11.716,30.711-11.716,42.427,0c11.715,11.716,11.715,30.711,0,42.427L269.927,227.5L310.759,268.333z"/>
+                          </g>
+                        </g>
+                        </svg>
                     </Col>
                 </> 
             )
@@ -290,32 +302,24 @@ const AddItem = ({ database, authentication, databaseArr, accessCode, refresh, s
                 <Modal.Body>
                     <Form>
                         <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            <Form.Label>Item Name</Form.Label>
                             <Form.Control
                                 size="sm"
                                 type="text"
-                                placeholder="Item Name"
+                                placeholder="i.e apples, rice, etc."
                                 onChange={setItemName}
                                 autoFocus
                             />
+                            <Form.Label>Category Name</Form.Label>
                             <Form.Control
                                 size="sm"
                                 type="text"
-                                placeholder="Category Name"
+                                placeholder="i.e produce, dairy, etc."
                                 onChange={setCategoryName}
                             />
                         </Form.Group>
                     </Form>
-                    <ToggleButton
-                        className="mb-2"
-                        id="toggle-check"
-                        type="checkbox"
-                        variant="outline-secondary"
-                        checked={checked}
-                        value="1"
-                        onChange={(e) => setChecked(e.currentTarget.checked)}
-                    >
-                        Filter out checked off buttons
-                    </ToggleButton>
+                
                     <Button variant="primary" onClick={addToDatabase}>Save</Button>
                 </Modal.Body>
             </Modal>
@@ -393,11 +397,9 @@ const InventoryHome = ({ props, accessCode }) => {
         <Container fluid="md">
             <Row>
                 <Col xs={{ span: 6, offset: 3 }}>
-                    <h1>Inventory</h1>
+                    <h1 className="inventory-title">Inventory</h1>
                 </Col>
-                <Col xs={{ span: 2 }}>
-                    <FilterPopup></FilterPopup>
-                </Col>
+               
             </Row>
             <ShowTab
                 database={db}
