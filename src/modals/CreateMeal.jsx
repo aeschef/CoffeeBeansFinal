@@ -169,6 +169,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
     if (!open) {
       setTab(0)
       setAddedRecipe(null)
+      setMealDetails(null)
     }
   }, [open])
 
@@ -249,7 +250,7 @@ const CreateMeal = ({ app, open, onClose, categories, setCategories, newMeal, se
 
   return (
     <>
-    <Modal show={open} onHide={onClose} centered className="modal-lg">
+    <Modal show={open} onHide={onClose} size="lg" centered>
       <Modal.Header closeButton>
         <Modal.Title>Add Meal</Modal.Title>
       </Modal.Header>

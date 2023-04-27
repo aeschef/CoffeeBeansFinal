@@ -29,9 +29,12 @@ h1 {
 }
 
 .chosenRecipe {
-  background-color: #e3eace;
+  border-color: #729701;
   cursor: pointer;
-
+  border-style: solid;
+  background-color: #e3eacc;
+  border-radius: 7px;
+  border-width: medium;
   margin-bottom: 20px;
   padding-bottom:1rem;
 }
