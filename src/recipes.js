@@ -290,8 +290,8 @@ function AddRecipePopup(props) {
             title: inputs.title, 
             picture: images[0]?.data_url || defaultRecipePhoto,
             energyRequired: inputs.energyRequired, 
-            hoursRequired: inputs.hoursRequired || 0, 
-            minsRequired: inputs.minsRequired || 0, 
+            hoursRequired: (inputs.hoursRequired && inputs.hoursRequired > 0 && inputs.hoursRequired !== "") ? inputs.hoursRequired : "0",
+            minsRequired: (inputs.minsRequired && inputs.minsRequired > 0 && inputs.minsRequired !== "") ? inputs.minsRequired : "0",
             tags: (inputs.tags) ? ((inputs.tags === '') ? [] : inputs.tags?.split(",").map(s => s.trim())) : [], 
             ingredients: inputs.ingredients?.
                 split("\n").
@@ -305,15 +305,12 @@ function AddRecipePopup(props) {
             notes: inputs.notes || ""
         };
 
-        console.log(newRecipe.hoursRequired);
-        console.log(newRecipe.minsRequired);
-
         if (newRecipe.title === undefined || newRecipe.title === "") {
             alert("Please give your recipe a title!");
         } else if (!(["Low", "Medium", "High"].includes(newRecipe.energyRequired))) {
             alert("Please give your recipe an 'energy required' level!");
             console.log(newRecipe.energyRequired);
-        } else if (newRecipe.hoursRequired === 0 && newRecipe.minsRequired === 0) {
+        } else if (newRecipe.hoursRequired === "0" && newRecipe.minsRequired === "0") { // works for 0's,
             alert("Please enter a non-zero value for the amount of time required!");
         } else if (newRecipe.ingredients?.length !== newRecipe.ingredients?.filter((ingredient) => ingredient.focus).length) {
             alert("All ingredients must have a focus word or phrase in quotes!");
