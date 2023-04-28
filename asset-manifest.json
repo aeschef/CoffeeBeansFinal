@@ -1,22 +1,29 @@
 {
   "files": {
-    "main.css": "/CoffeeBeansFinal/static/css/main.7010fca8.css",
-    "main.js": "/CoffeeBeansFinal/static/js/main.a9249894.js",
+    "main.css": "/CoffeeBeansFinal/static/css/main.5af44cc7.css",
+    "main.js": "/CoffeeBeansFinal/static/js/main.0292d746.js",
     "static/js/787.8bbe40bb.chunk.js": "/CoffeeBeansFinal/static/js/787.8bbe40bb.chunk.js",
-    "static/media/recipes.svg": "/CoffeeBeansFinal/static/media/recipes.fa12144a1157301948139e1bd52082da.svg",
-    "static/media/inventory.svg": "/CoffeeBeansFinal/static/media/inventory.66e45cbf0d61e60107d4cf9f2c9932e1.svg",
-    "static/media/grocery_list.svg": "/CoffeeBeansFinal/static/media/grocery_list.f7f9bf1a00eeaffc1d4b6acd3a27361e.svg",
+    "static/media/high_energy.svg": "/CoffeeBeansFinal/static/media/high_energy.e6659bdadb88488956bbeb56270ee9aa.svg",
+    "static/media/medium_energy.svg": "/CoffeeBeansFinal/static/media/medium_energy.b8d007cc6e97ed886d4a1a1f07b3a1ab.svg",
+    "static/media/low_energy.svg": "/CoffeeBeansFinal/static/media/low_energy.0ffb1c78a992018fd2e3b151b1a1e48e.svg",
+    "static/media/recipes.svg": "/CoffeeBeansFinal/static/media/recipes.f73bd918e164db1b481efcefe95cbaf6.svg",
+    "static/media/inventory.svg": "/CoffeeBeansFinal/static/media/inventory.38a71400d1530c7b24b25fbb49810e19.svg",
+    "static/media/tag.svg": "/CoffeeBeansFinal/static/media/tag.89fb2ebc4f8da51badad92774c0862a1.svg",
+    "static/media/grocery_list.svg": "/CoffeeBeansFinal/static/media/grocery_list.b5211cbe27e780897c6f6637284c724e.svg",
+    "static/media/edit_recipe_icon.svg": "/CoffeeBeansFinal/static/media/edit_recipe_icon.a138edd69564b0267e999578258159ef.svg",
+    "static/media/search.svg": "/CoffeeBeansFinal/static/media/search.4090a44b2561ac3bfd634b0240cb1475.svg",
+    "static/media/time_icon.svg": "/CoffeeBeansFinal/static/media/time_icon.4ffd240aa198c0ff856dacae37ab6ebb.svg",
     "static/media/pencil_icon.svg": "/CoffeeBeansFinal/static/media/pencil_icon.a3ca4f49036222d6f50495a8b7a02af3.svg",
     "static/media/logo.svg": "/CoffeeBeansFinal/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "static/media/meal_plan.svg": "/CoffeeBeansFinal/static/media/meal_plan.fc9819b9bc3966df13088d31c49470f1.svg",
+    "static/media/meal_plan.svg": "/CoffeeBeansFinal/static/media/meal_plan.90593978e10316227c0f3d20ebab8b86.svg",
     "index.html": "/CoffeeBeansFinal/index.html",
-    "static/media/account.svg": "/CoffeeBeansFinal/static/media/account.202ae8f6be14bf14c627db794ac4b9d2.svg",
-    "main.7010fca8.css.map": "/CoffeeBeansFinal/static/css/main.7010fca8.css.map",
-    "main.a9249894.js.map": "/CoffeeBeansFinal/static/js/main.a9249894.js.map",
+    "static/media/account.svg": "/CoffeeBeansFinal/static/media/account.db20c6fdfc6a0ea3d3c463b865aec1ba.svg",
+    "main.5af44cc7.css.map": "/CoffeeBeansFinal/static/css/main.5af44cc7.css.map",
+    "main.0292d746.js.map": "/CoffeeBeansFinal/static/js/main.0292d746.js.map",
     "787.8bbe40bb.chunk.js.map": "/CoffeeBeansFinal/static/js/787.8bbe40bb.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7010fca8.css",
-    "static/js/main.a9249894.js"
+    "static/css/main.5af44cc7.css",
+    "static/js/main.0292d746.js"
   ]
 }
